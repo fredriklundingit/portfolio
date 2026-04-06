@@ -4096,6 +4096,9 @@ graphicsStateStack.<span class="fn">Pop</span>();</pre></div>
   // Video observer — module-level so showPage can access it
   let videoObserver = null;
 
+  // Track all currently playing videos so we can pause on tab hide
+  const playingVideos = new Set();
+
   function showPage(id, scrollTarget) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     const page = document.getElementById('page-' + id);
@@ -4107,9 +4110,12 @@ graphicsStateStack.<span class="fn">Pop</span>();</pre></div>
         if (el) el.scrollIntoView({ behavior: 'smooth' });
       }, 80);
     }
-    // Play any static videos on the newly visible page
-    page.querySelectorAll('video[data-src]').forEach(vid => {
-      videoObserver.observe(vid);
+    // Stagger video observation on new page to avoid simultaneous loads
+    const vids = [...page.querySelectorAll('video[data-src]')];
+    vids.forEach((vid, i) => {
+      setTimeout(() => {
+        if (videoObserver) videoObserver.observe(vid);
+      }, i * 50);
     });
     initReveal();
   }
@@ -4137,9 +4143,11 @@ graphicsStateStack.<span class="fn">Pop</span>();</pre></div>
           vid.src = vid.dataset.src;
         }
         vid.play().catch(() => {});
+        playingVideos.add(vid);
       });
       row.addEventListener('mouseleave', () => {
         vid.pause();
+        playingVideos.delete(vid);
       });
     }
   }
@@ -4148,8 +4156,29 @@ graphicsStateStack.<span class="fn">Pop</span>();</pre></div>
     // Tool card videos: autoplay silently on loop
     vid.muted = true;
     vid.loop  = true;
+    if (vid.dataset.src && !vid.src) {
+      vid.src = vid.dataset.src;
+    }
     vid.play().catch(() => {});
+    playingVideos.add(vid);
   }
+
+  // Pause all videos when tab is hidden, resume when visible again
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+      document.querySelectorAll('video').forEach(v => {
+        if (!v.paused) {
+          v.pause();
+          v.dataset.wasPlaying = '1';
+        }
+      });
+    } else {
+      document.querySelectorAll('video[data-was-playing]').forEach(v => {
+        v.play().catch(() => {});
+        delete v.dataset.wasPlaying;
+      });
+    }
+  });
 
   document.addEventListener('DOMContentLoaded', () => {
 
