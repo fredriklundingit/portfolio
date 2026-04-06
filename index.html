@@ -44,7 +44,7 @@
   }
 
   nav > * {
-    width: 100%;
+    flex-shrink: 0;
   }
 
   /* Grain */
@@ -357,6 +357,27 @@
     line-height: 1.8;
     opacity: 0.75;
     max-width: 340px;
+  }
+
+  .project-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    margin-bottom: 1rem;
+  }
+
+  .project-meta-item {
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.04em;
+    opacity: 0.65;
+    line-height: 1.6;
+  }
+
+  .project-meta-item strong {
+    opacity: 1;
+    color: var(--fg);
+    font-weight: 700;
   }
 
   .project-contributions {
@@ -1729,7 +1750,12 @@
       <div class="project-info">
         <span class="project-title">Human Resources</span>
         <span class="project-category">C++ · HLSL · Custom Engine</span>
-        <p class="project-desc">Engine iteration on the same codebase — render refactor, editor integration and new rendering features.</p>
+        <div class="project-meta">
+          <span class="project-meta-item"><strong>Genre</strong> — First person shooter</span>
+          <span class="project-meta-item"><strong>Duration</strong> — 17 part time weeks</span>
+          <span class="project-meta-item"><strong>Team</strong> — 6 programmers, 4 artists, 2 procedural artists, 2 level designers</span>
+          <span class="project-meta-item"><strong>Engine</strong> — Custom Engine</span>
+        </div>
         <div class="project-contributions">
           <span class="project-contributions-label">Contributions</span>
           <div class="project-contributions-list"><span class="project-contribution-pill">Render Refactor</span><span class="project-contribution-pill">Editor Integration</span><span class="project-contribution-pill">Asset Preview</span><span class="project-contribution-pill">Enemy Behaviour</span></div>
@@ -1746,7 +1772,12 @@
       <div class="project-info">
         <span class="project-title">Cycles of Deluge</span>
         <span class="project-category">C++ · HLSL · Custom Engine</span>
-        <p class="project-desc">3D action game on a custom engine. Engine programmer across render, scene management, AI and audio.</p>
+        <div class="project-meta">
+          <span class="project-meta-item"><strong>Genre</strong> — Diablo-like adventure</span>
+          <span class="project-meta-item"><strong>Duration</strong> — 14 part time weeks</span>
+          <span class="project-meta-item"><strong>Team</strong> — 6 programmers, 4 artists, 2 procedural artists, 2 level designers, 4 sound designers</span>
+          <span class="project-meta-item"><strong>Engine</strong> — Custom Engine</span>
+        </div>
         <div class="project-contributions">
           <span class="project-contributions-label">Contributions</span>
           <div class="project-contributions-list"><span class="project-contribution-pill">Render Pipeline</span><span class="project-contribution-pill">Scene Management</span><span class="project-contribution-pill">Enemy AI</span><span class="project-contribution-pill">Audio & FMOD</span><span class="project-contribution-pill">VFX</span></div>
@@ -1762,7 +1793,12 @@
       <div class="project-info">
         <span class="project-title">Cannibal Crossing</span>
         <span class="project-category">C++ · Custom Engine</span>
-        <p class="project-desc">Fully responsible for enemy systems — pathfinding, behaviour and state handling across three enemy types.</p>
+        <div class="project-meta">
+          <span class="project-meta-item"><strong>Genre</strong> — Top down adventure</span>
+          <span class="project-meta-item"><strong>Duration</strong> — 8 part time weeks</span>
+          <span class="project-meta-item"><strong>Team</strong> — 5 programmers, 4 artists, 2 procedural artists, 3 level designers</span>
+          <span class="project-meta-item"><strong>Engine</strong> — Custom Engine</span>
+        </div>
         <div class="project-contributions">
           <span class="project-contributions-label">Contributions</span>
           <div class="project-contributions-list"><span class="project-contribution-pill">A* Pathfinding</span><span class="project-contribution-pill">Enemy Behaviour</span><span class="project-contribution-pill">State Machine</span><span class="project-contribution-pill">Projectile System</span></div>
@@ -1776,9 +1812,14 @@
         <div class="project-thumb-inner"><video muted loop playsinline preload="none" data-src="videos/HornswaggleWeb.mp4" poster="images/hornswagllethumbnailimage.png" style="width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0;"></video></div>
       </div>
       <div class="project-info">
-        <span class="project-title">Captain Hornswaggle</span>
+        <span class="project-title">The Misadventures of Captain Hornswaggle</span>
         <span class="project-category">C++ · Custom Engine</span>
-        <p class="project-desc">GOTY winner. Audio, cinematics and project management on a pirate adventure.</p>
+        <div class="project-meta">
+          <span class="project-meta-item"><strong>Genre</strong> — Platformer</span>
+          <span class="project-meta-item"><strong>Duration</strong> — 12 part time weeks</span>
+          <span class="project-meta-item"><strong>Team</strong> — 5 programmers, 3 artists, 2 procedural artists, 2 level designers, 4 sound designers</span>
+          <span class="project-meta-item"><strong>Engine</strong> — Custom Engine</span>
+        </div>
         <div class="project-contributions">
           <span class="project-contributions-label">Contributions</span>
           <div class="project-contributions-list"><span class="project-contribution-pill">Custom Audio Manager</span><span class="project-contribution-pill">Cinematics</span><span class="project-contribution-pill">Project Manager</span></div>
@@ -1801,6 +1842,12 @@
         <div class="other-project-info">
           <span class="project-title">Frogment</span>
           <span class="project-category">C# · Unity</span>
+          <div class="project-meta" style="margin-top:0.5rem;">
+            <span class="project-meta-item"><strong>Genre</strong> — Mobile puzzle game</span>
+            <span class="project-meta-item"><strong>Duration</strong> — 6 part time weeks</span>
+            <span class="project-meta-item"><strong>Team</strong> — 5 programmers, 4 artists, 2 procedural artists, 2 level designers</span>
+            <span class="project-meta-item"><strong>Engine</strong> — Unity</span>
+          </div>
           <div class="project-contributions" style="margin-top:0.8rem;">
             <span class="project-contributions-label">Contributions</span>
             <div class="project-contributions-list">
@@ -1819,6 +1866,12 @@
         <div class="other-project-info">
           <span class="project-title">Last Unit</span>
           <span class="project-category">C# · Unity</span>
+          <div class="project-meta" style="margin-top:0.5rem;">
+            <span class="project-meta-item"><strong>Genre</strong> — Endless runner</span>
+            <span class="project-meta-item"><strong>Duration</strong> — 6 part time weeks</span>
+            <span class="project-meta-item"><strong>Team</strong> — 5 programmers, 4 artists, 2 procedural artists, 2 level designers</span>
+            <span class="project-meta-item"><strong>Engine</strong> — Unity</span>
+          </div>
           <div class="project-contributions" style="margin-top:0.8rem;">
             <span class="project-contributions-label">Contributions</span>
             <div class="project-contributions-list">
@@ -3726,7 +3779,7 @@ graphicsStateStack.<span class="fn">Pop</span>();</pre></div>
       <video muted loop playsinline preload="none" data-src="videos/HornswaggleWeb.mp4" poster="images/hornswagllethumbnailimage.png" style="width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0;"></video>
       <div class="proj-hero-overlay">
         <span class="proj-hero-label">Project</span>
-        <h2>Captain Hornswaggle</h2>
+        <h2>The Misadventures of Captain Hornswaggle</h2>
         <a class="proj-trailer-btn" href="#" target="_blank">▶ Watch Trailer</a>
       </div>
     </div>
