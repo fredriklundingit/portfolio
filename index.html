@@ -4089,39 +4089,45 @@ graphicsStateStack.<span class="fn">Pop</span>();</pre></div>
   // Video observer — module-level so showPage can access it
   let videoObserver = null;
 
-  // Track all currently playing videos so we can pause on tab hide
-  const playingVideos = new Set();
-  const MAX_CONCURRENT_VIDEOS = 3;
-
-  function canPlayMore() {
-    return playingVideos.size < MAX_CONCURRENT_VIDEOS;
-  }
-
-  function tryPlay(vid) {
-    if (canPlayMore()) {
-      vid.play().catch(() => {});
-      playingVideos.add(vid);
-    }
+  function unloadPageVideos(page) {
+    // Fully release all videos on a page — strips src so the browser
+    // drops them from memory entirely
+    page.querySelectorAll('video').forEach(vid => {
+      vid.pause();
+      vid.src = '';
+      vid.load();
+      delete vid.dataset.wasPlaying;
+    });
   }
 
   function showPage(id, scrollTarget) {
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    // Unload videos on every page before switching
+    document.querySelectorAll('.page').forEach(p => {
+      if (p.classList.contains('active')) {
+        unloadPageVideos(p);
+      }
+      p.classList.remove('active');
+    });
+
     const page = document.getElementById('page-' + id);
     page.classList.add('active');
     window.scrollTo(0, 0);
+
     if (scrollTarget) {
       setTimeout(() => {
         const el = document.getElementById(scrollTarget);
         if (el) el.scrollIntoView({ behavior: 'smooth' });
       }, 80);
     }
-    // Stagger video observation on new page to avoid simultaneous loads
+
+    // Stagger observation so videos load one at a time as user scrolls
     const vids = [...page.querySelectorAll('video[data-src]')];
     vids.forEach((vid, i) => {
       setTimeout(() => {
         if (videoObserver) videoObserver.observe(vid);
-      }, i * 50);
+      }, i * 150);
     });
+
     initReveal();
   }
 
@@ -4139,7 +4145,6 @@ graphicsStateStack.<span class="fn">Pop</span>();</pre></div>
   }
 
   function setupProjectVideo(vid) {
-    // Project thumbnails: only load and play on hover, pause on leave
     vid.muted = true;
     const row = vid.closest('.project-row');
     if (row) {
@@ -4148,11 +4153,11 @@ graphicsStateStack.<span class="fn">Pop</span>();</pre></div>
           vid.src = vid.dataset.src;
         }
         vid.play().catch(() => {});
-        playingVideos.add(vid);
       });
       row.addEventListener('mouseleave', () => {
         vid.pause();
-        playingVideos.delete(vid);
+        vid.src = '';
+        vid.load();
       });
     }
   }
@@ -4163,23 +4168,13 @@ graphicsStateStack.<span class="fn">Pop</span>();</pre></div>
     if (vid.dataset.src && !vid.src) {
       vid.src = vid.dataset.src;
     }
-    tryPlay(vid);
+    vid.play().catch(() => {});
   }
 
-  // Pause all videos when tab is hidden, resume when visible again
+  // Pause all videos when tab is hidden
   document.addEventListener('visibilitychange', () => {
     if (document.hidden) {
-      document.querySelectorAll('video').forEach(v => {
-        if (!v.paused) {
-          v.pause();
-          v.dataset.wasPlaying = '1';
-        }
-      });
-    } else {
-      document.querySelectorAll('video[data-was-playing]').forEach(v => {
-        v.play().catch(() => {});
-        delete v.dataset.wasPlaying;
-      });
+      document.querySelectorAll('video').forEach(v => v.pause());
     }
   });
 
@@ -4204,11 +4199,7 @@ graphicsStateStack.<span class="fn">Pop</span>();</pre></div>
         const vid = entry.target;
 
         if (!entry.isIntersecting) {
-          // Free up a slot when video scrolls out of view
-          if (!vid.paused) {
-            vid.pause();
-            playingVideos.delete(vid);
-          }
+          if (!vid.paused) vid.pause();
           return;
         }
 
@@ -4225,7 +4216,7 @@ graphicsStateStack.<span class="fn">Pop</span>();</pre></div>
         if (vid.closest('.tool-card')) {
           setupToolVideo(vid);
         } else {
-          tryPlay(vid);
+          vid.play().catch(() => {});
         }
       });
     }, { threshold: 0.1, rootMargin: '50px' });
