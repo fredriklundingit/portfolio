@@ -4196,12 +4196,20 @@ graphicsStateStack.<span class="fn">Pop</span>();</pre></div>
     playingVideos.add(vid);
   }
 
-  // Pause all videos when tab is hidden
+  // Pause all videos when tab is hidden, restart tool cards when returning
   document.addEventListener('visibilitychange', () => {
     if (document.hidden) {
       document.querySelectorAll('video').forEach(v => {
         if (!v.paused) v.pause();
       });
+    } else {
+      // Restart tool card videos if we're on the home page
+      const homePage = document.getElementById('page-home');
+      if (homePage && homePage.classList.contains('active')) {
+        homePage.querySelectorAll('.tool-card video').forEach(vid => {
+          vid.play().catch(() => {});
+        });
+      }
     }
   });
 
