@@ -4092,10 +4092,29 @@ graphicsStateStack.<span class="fn">Pop</span>();</pre></div>
   // Track all currently playing videos so we can pause on tab hide
   const playingVideos = new Set();
 
+  // Attach hover-to-play behaviour to any element containing a video.
+  // hoverTarget = the element that receives mouseenter/mouseleave
+  function setupHoverVideo(vid, hoverTarget) {
+    vid.muted = true;
+    vid.loop  = true;
+    hoverTarget.addEventListener('mouseenter', () => {
+      if (vid.dataset.src && !vid.getAttribute('src')) {
+        vid.src = vid.dataset.src;
+      }
+      vid.play().catch(() => {});
+      playingVideos.add(vid);
+    });
+    hoverTarget.addEventListener('mouseleave', () => {
+      vid.pause();
+      playingVideos.delete(vid);
+    });
+  }
+
   function showPage(id, scrollTarget) {
-    // Pause all playing videos before switching page to free up decode resources
+    // Pause all playing videos before switching page
     document.querySelectorAll('video').forEach(v => {
       if (!v.paused) v.pause();
+      playingVideos.delete(v);
     });
 
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -4108,13 +4127,6 @@ graphicsStateStack.<span class="fn">Pop</span>();</pre></div>
         if (el) el.scrollIntoView({ behavior: 'smooth' });
       }, 80);
     }
-    // Stagger video observation — larger gap to avoid simultaneous decodes
-    const vids = [...page.querySelectorAll('video[data-src]')];
-    vids.forEach((vid, i) => {
-      setTimeout(() => {
-        if (videoObserver) videoObserver.observe(vid);
-      }, i * 150);
-    });
     initReveal();
   }
 
@@ -4132,29 +4144,15 @@ graphicsStateStack.<span class="fn">Pop</span>();</pre></div>
   }
 
   function setupProjectVideo(vid) {
-    // Project thumbnails: only load and play on hover, pause on leave
-    vid.muted = true;
     const row = vid.closest('.project-row');
-    if (row) {
-      row.addEventListener('mouseenter', () => {
-        if (vid.dataset.src && !vid.src) {
-          vid.src = vid.dataset.src;
-        }
-        vid.play().catch(() => {});
-        playingVideos.add(vid);
-      });
-      row.addEventListener('mouseleave', () => {
-        vid.pause();
-        playingVideos.delete(vid);
-      });
-    }
+    if (row) setupHoverVideo(vid, row);
   }
 
   function setupToolVideo(vid) {
-    // Tool card videos: autoplay silently on loop
+    // Tool cards on home page: autoplay immediately, no hover needed
     vid.muted = true;
     vid.loop  = true;
-    if (vid.dataset.src && !vid.src) {
+    if (vid.dataset.src && !vid.getAttribute('src')) {
       vid.src = vid.dataset.src;
     }
     vid.play().catch(() => {});
@@ -4168,8 +4166,6 @@ graphicsStateStack.<span class="fn">Pop</span>();</pre></div>
         if (!v.paused) v.pause();
       });
     }
-    // Note: we intentionally do NOT auto-resume on tab show —
-    // resuming many videos simultaneously was causing freezes.
   });
 
   document.addEventListener('DOMContentLoaded', () => {
@@ -4184,33 +4180,30 @@ graphicsStateStack.<span class="fn">Pop</span>();</pre></div>
       if (id) track.addEventListener('click', () => lbOpen(id));
     });
 
-    // ── Video lazy loader ─────────────────────────────────────────
-    // Videos use data-src. IntersectionObserver sets src only when
-    // the element is actually visible. Project thumbnails are hover-only.
-    // Tool cards autoplay when visible. Everything else plays when visible.
-    videoObserver = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (!entry.isIntersecting) { return; }
-        const vid = entry.target;
-        videoObserver.unobserve(vid);
-
-        if (vid.closest('.project-thumb')) {
-          // Project thumbnails: set up hover, don't load yet
-          setupProjectVideo(vid);
-          return;
-        }
-
-        // All other videos: load src and play
-        if (vid.dataset.src && !vid.src) {
-          vid.src = vid.dataset.src;
-        }
-        if (vid.closest('.tool-card')) {
-          setupToolVideo(vid);
-        } else {
-          vid.play().catch(() => {});
-        }
-      });
-    }, { threshold: 0.1, rootMargin: '50px' });
+    // ── Video setup ───────────────────────────────────────────────
+    // Tool cards on home page → autoplay
+    // Project thumbnails → hover on the row
+    // Everything else (detail page videos) → hover on nearest container
+    document.querySelectorAll('video[data-src]').forEach(vid => {
+      if (vid.closest('.tool-card')) {
+        setupToolVideo(vid);
+      } else if (vid.closest('.project-thumb')) {
+        setupProjectVideo(vid);
+      } else {
+        // Detail page videos: find the nearest hoverable container
+        const container = vid.closest('.tp-carousel-track')
+          || vid.closest('.tp-hero')
+          || vid.closest('.proj-hero')
+          || vid.closest('.tp-row-video')
+          || vid.closest('.proj-twocol-media')
+          || vid.closest('.proj-contribution-media')
+          || vid.closest('.proj-contribution-media-full')
+          || vid.closest('.proj-twocol-media')
+          || vid.closest('.other-project-thumb')
+          || vid.parentElement;
+        if (container) setupHoverVideo(vid, container);
+      }
+    });
 
     // Only observe videos on the currently active page (home)
     // Videos on hidden pages get observed when showPage is called
@@ -4219,8 +4212,6 @@ graphicsStateStack.<span class="fn">Pop</span>();</pre></div>
         videoObserver.observe(vid);
       });
     }
-
-    observePageVideos(document.querySelector('.page.active'));
 
     const dropZones = document.querySelectorAll('.tool-card, .project-thumb, .tp-carousel-track, .proj-hero, .proj-contribution-media, .proj-contribution-media-full, .proj-twocol-media');
 
