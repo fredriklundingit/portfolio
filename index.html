@@ -4090,24 +4090,21 @@ graphicsStateStack.<span class="fn">Pop</span>();</pre></div>
   let videoObserver = null;
 
   function unloadPageVideos(page) {
-    // Fully release all videos on a page — strips src so the browser
-    // drops them from memory entirely
     page.querySelectorAll('video').forEach(vid => {
       vid.pause();
-      vid.src = '';
-      vid.load();
+      if (vid.src) {
+        vid.removeAttribute('src');
+        vid.load();
+      }
       delete vid.dataset.wasPlaying;
     });
   }
 
   function showPage(id, scrollTarget) {
-    // Unload videos on every page before switching
-    document.querySelectorAll('.page').forEach(p => {
-      if (p.classList.contains('active')) {
-        unloadPageVideos(p);
-      }
-      p.classList.remove('active');
-    });
+    // Unload videos on current page before switching
+    document.querySelectorAll('.page.active').forEach(p => unloadPageVideos(p));
+
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
 
     const page = document.getElementById('page-' + id);
     page.classList.add('active');
@@ -4120,11 +4117,17 @@ graphicsStateStack.<span class="fn">Pop</span>();</pre></div>
       }, 80);
     }
 
-    // Stagger observation so videos load one at a time as user scrolls
+    // Stagger observation so videos load gradually as user scrolls
     const vids = [...page.querySelectorAll('video[data-src]')];
     vids.forEach((vid, i) => {
       setTimeout(() => {
-        if (videoObserver) videoObserver.observe(vid);
+        if (videoObserver) {
+          if (vid.closest('.project-thumb') && !vid.dataset.hoverSetup) {
+            setupProjectVideo(vid);
+            vid.dataset.hoverSetup = '1';
+          }
+          videoObserver.observe(vid);
+        }
       }, i * 150);
     });
 
@@ -4146,18 +4149,18 @@ graphicsStateStack.<span class="fn">Pop</span>();</pre></div>
 
   function setupProjectVideo(vid) {
     vid.muted = true;
+    vid.loop = true;
     const row = vid.closest('.project-row');
     if (row) {
       row.addEventListener('mouseenter', () => {
-        if (vid.dataset.src && !vid.src) {
-          vid.src = vid.dataset.src;
+        const src = vid.dataset.src;
+        if (src && !vid.src) {
+          vid.src = src;
         }
         vid.play().catch(() => {});
       });
       row.addEventListener('mouseleave', () => {
         vid.pause();
-        vid.src = '';
-        vid.load();
       });
     }
   }
@@ -4203,21 +4206,18 @@ graphicsStateStack.<span class="fn">Pop</span>();</pre></div>
           return;
         }
 
-        videoObserver.unobserve(vid);
+        // Load src from data-src if not already loaded
+        if (vid.dataset.src && vid.getAttribute('src') !== vid.dataset.src) {
+          vid.src = vid.dataset.src;
+        }
 
         if (vid.closest('.project-thumb')) {
-          setupProjectVideo(vid);
+          // project thumbs are hover-only, don't autoplay
+          videoObserver.unobserve(vid);
           return;
         }
 
-        if (vid.dataset.src && !vid.src) {
-          vid.src = vid.dataset.src;
-        }
-        if (vid.closest('.tool-card')) {
-          setupToolVideo(vid);
-        } else {
-          vid.play().catch(() => {});
-        }
+        vid.play().catch(() => {});
       });
     }, { threshold: 0.1, rootMargin: '50px' });
 
@@ -4225,6 +4225,11 @@ graphicsStateStack.<span class="fn">Pop</span>();</pre></div>
     // Videos on hidden pages get observed when showPage is called
     function observePageVideos(page) {
       page.querySelectorAll('video[data-src]').forEach(vid => {
+        // Set up hover for project thumbs if not already done
+        if (vid.closest('.project-thumb') && !vid.dataset.hoverSetup) {
+          setupProjectVideo(vid);
+          vid.dataset.hoverSetup = '1';
+        }
         videoObserver.observe(vid);
       });
     }
