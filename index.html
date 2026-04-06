@@ -2361,11 +2361,11 @@ uint64_t <span class="fn">AssetBrush::GetSpatialKey</span>(<span class="kw">int<
         <h3 class="chal-title">GBuffer Readback & Picking</h3>
         <div class="proj-compare" style="margin-bottom:2rem;">
           <div class="proj-compare-item">
-            <div class="proj-twocol-media" style="aspect-ratio:16/9;"><img src="images/vertexnormal.png" style="width:100%;height:100%;object-fit:cover;display:block;"></div>
+            <div class="proj-twocol-media" style="aspect-ratio:16/9;"><div class="tp-video-placeholder">[]</div></div>
             <span class="proj-compare-label">Vertex Normal Texture</span>
           </div>
           <div class="proj-compare-item">
-            <div class="proj-twocol-media" style="aspect-ratio:16/9;"><img src="images/Worldpos.png" style="width:100%;height:100%;object-fit:cover;display:block;"></div>
+            <div class="proj-twocol-media" style="aspect-ratio:16/9;"><div class="tp-video-placeholder">[]</div></div>
             <span class="proj-compare-label">World Position Texture</span>
           </div>
         </div>
@@ -4202,22 +4202,16 @@ graphicsStateStack.<span class="fn">Pop</span>();</pre></div>
   // Pause all videos when tab is hidden, resume when visible again
   document.addEventListener('visibilitychange', () => {
     if (document.hidden) {
-      // Pause all playing videos when tab is hidden
       document.querySelectorAll('video').forEach(v => {
         if (!v.paused) {
           v.pause();
-          v.dataset.wasp = '1';
+          v.dataset.wasPlaying = '1';
         }
       });
     } else {
-      // Only resume tool card videos — everything else reloads on scroll
-      document.querySelectorAll('.tool-card video[data-wasp]').forEach(v => {
+      document.querySelectorAll('video[data-was-playing]').forEach(v => {
         v.play().catch(() => {});
-        delete v.dataset.wasp;
-      });
-      // Clear flag on all others without replaying
-      document.querySelectorAll('video[data-wasp]').forEach(v => {
-        delete v.dataset.wasp;
+        delete v.dataset.wasPlaying;
       });
     }
   });
@@ -4260,16 +4254,13 @@ graphicsStateStack.<span class="fn">Pop</span>();</pre></div>
           vid.play().catch(() => {});
         }
       });
-    }, { threshold: 0.1 });
+    }, { threshold: 0.1, rootMargin: '200px' });
 
     // Only observe videos on the currently active page (home)
     // Videos on hidden pages get observed when showPage is called
     function observePageVideos(page) {
-      const vids = [...page.querySelectorAll('video[data-src]')];
-      vids.forEach((vid, i) => {
-        setTimeout(() => {
-          if (videoObserver) videoObserver.observe(vid);
-        }, i * 80);
+      page.querySelectorAll('video[data-src]').forEach(vid => {
+        videoObserver.observe(vid);
       });
     }
 
