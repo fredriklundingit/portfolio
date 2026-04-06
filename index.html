@@ -1539,7 +1539,13 @@
     color: var(--fg);
   }
 
-  /* Text-only contribution — accent left border */
+  /* Full-width code block under challenge text */
+  .chal-code-full {
+    max-width: 100%;
+    margin-top: 1.5rem;
+  }
+  .chal-code-full .proj-code-slides,
+  .chal-code-full .proj-code-block { max-width: 100%; }
   .proj-text-only {
     max-width: 760px;
     padding-left: 1.5rem;
@@ -2273,22 +2279,19 @@
       <!-- PERFORMANCE -->
       <div class="proj-contribution-border">
         <h3 class="chal-title">Performance</h3>
-        <div class="proj-twocol" style="align-items:start;">
-          <div class="proj-twocol-text">
-            <p class="proj-contribution-desc">I encountered several performance issues during the development of the tool. As a first iteration, I kept iterating over all previously placed assets by the brush when doing checks for object spacing, an O(n) operation, meaning every new placement had to check against every single previously placed object, growing slower the more objects existed. I noticed this quickly became a blocker which introduced the need to handle scaleable performance. A first solution was to create a spatial grid based on the minimum spacing allowed between objects, with the current object checking a 3D grid around itself for other objects placed. This effectively removed several unnecessary iterations during the check.</p>
-            <p class="proj-contribution-desc" style="margin-top:0.8rem;">Even with this improvement, performance was still an issue. After profiling, I found that the biggest bottleneck was our naming system in the editor, which iterated over all instances of the same asset to generate a unique name when adding an asset to the scene. After adding a simple counter system which names assets uniquely based on whether they are painted by the brush or not, and checking how many instances of one asset exist during startup, I effectively eliminated the lag that was previously caused.</p>
-            <div class="proj-compare" style="margin-top:1.5rem;">
-              <div class="proj-compare-item">
-                <div class="proj-twocol-media" style="aspect-ratio:16/9;"><video muted loop playsinline preload="none" data-src="videos/AssetBrushPage/StresstestbeforeWeb.mp4" style="width:100%;height:100%;object-fit:cover;display:block;"></video></div>
-                <span class="proj-compare-label">Before</span>
-              </div>
-              <div class="proj-compare-item">
-                <div class="proj-twocol-media" style="aspect-ratio:16/9;"><video muted loop playsinline preload="none" data-src="videos/AssetBrushPage/StresstestafterWeb.mp4" style="width:100%;height:100%;object-fit:cover;display:block;"></video></div>
-                <span class="proj-compare-label">After</span>
-              </div>
-            </div>
+        <div class="proj-compare" style="margin-bottom:2rem;">
+          <div class="proj-compare-item">
+            <div class="proj-twocol-media" style="aspect-ratio:16/9;"><video muted loop playsinline preload="none" data-src="videos/AssetBrushPage/StresstestbeforeWeb.mp4" style="width:100%;height:100%;object-fit:cover;display:block;"></video></div>
+            <span class="proj-compare-label">Before</span>
           </div>
-          <div class="proj-twocol-code"><div class="proj-code-slides">
+          <div class="proj-compare-item">
+            <div class="proj-twocol-media" style="aspect-ratio:16/9;"><video muted loop playsinline preload="none" data-src="videos/AssetBrushPage/StresstestafterWeb.mp4" style="width:100%;height:100%;object-fit:cover;display:block;"></video></div>
+            <span class="proj-compare-label">After</span>
+          </div>
+        </div>
+        <p class="proj-contribution-desc" style="max-width:820px; margin-bottom:0.9rem;">I encountered several performance issues during the development of the tool. As a first iteration, I kept iterating over all previously placed assets by the brush when doing checks for object spacing, an O(n) operation, meaning every new placement had to check against every single previously placed object, growing slower the more objects existed. I noticed this quickly became a blocker which introduced the need to handle scaleable performance. A first solution was to create a spatial grid based on the minimum spacing allowed between objects, with the current object checking a 3D grid around itself for other objects placed. This effectively removed several unnecessary iterations during the check.</p>
+        <p class="proj-contribution-desc" style="max-width:820px; margin-bottom:0.9rem;">Even with this improvement, performance was still an issue. After profiling, I found that the biggest bottleneck was our naming system in the editor, which iterated over all instances of the same asset to generate a unique name when adding an asset to the scene. After adding a simple counter system which names assets uniquely based on whether they are painted by the brush or not, and checking how many instances of one asset exist during startup, I effectively eliminated the lag that was previously caused.</p>
+        <div class="chal-code-full"><div class="proj-code-slides">
               <div class="proj-code-slides-bar">
                 <button class="proj-slide-arrow" onclick="projSlideNav(this,-1)">←</button>
                 <span class="proj-slide-counter">1 / 2</span>
@@ -2350,16 +2353,26 @@ uint64_t <span class="fn">AssetBrush::GetSpatialKey</span>(<span class="kw">int<
         }
     }
 }</pre></div></div>
-            </div>
-          </div>
-        </div>
+            </div></div>
       </div>
 
       <!-- GBUFFER READBACK -->
       <div class="proj-contribution-border">
         <h3 class="chal-title">GBuffer Readback & Picking</h3>
-        <div class="proj-twocol proj-twocol-reverse" style="align-items:start;">
-          <div class="proj-twocol-code"><div class="proj-code-slides">
+        <div class="proj-compare" style="margin-bottom:2rem;">
+          <div class="proj-compare-item">
+            <div class="proj-twocol-media" style="aspect-ratio:16/9;"><div class="tp-video-placeholder">[]</div></div>
+            <span class="proj-compare-label">Vertex Normal Texture</span>
+          </div>
+          <div class="proj-compare-item">
+            <div class="proj-twocol-media" style="aspect-ratio:16/9;"><div class="tp-video-placeholder">[]</div></div>
+            <span class="proj-compare-label">World Position Texture</span>
+          </div>
+        </div>
+        <p class="proj-contribution-desc" style="max-width:820px; margin-bottom:0.9rem;">Since we already had GBuffer textures in place, I decided to use those as a source for generating the textures I needed for the picking. Two staging textures were used for this, one containing the vertex normals and one containing the world position of the currently drawn scene. I created a component tag that could be added to any scene object, used to mark it as paintable terrain. Only objects carrying this tag were drawn to the staging textures, meaning the brush would only snap to intentionally marked surfaces. In the render pipeline, I then drew the terrain objects first. After these were drawn, we could fetch the textures.</p>
+        <p class="proj-contribution-desc" style="max-width:820px; margin-bottom:0.9rem;">The world position is drawn to a texture using the format DXGI_FORMAT_R32G32B32A32_FLOAT. Since the data is stored as 4 values of 32 bits and we use floats as a representation of our world position, reading the world position back is straightforward.</p>
+        <p class="proj-contribution-desc" style="max-width:820px; margin-bottom:0.9rem;">The normals however needed converting back to a -1 to 1 range, since when drawing to the GBuffer texture, we remap to 0-1 because the shader can't store negative values in a texture. The normals are saved to a texture with the format DXGI_FORMAT_R10G10B10A2_UNORM, using 10 bits for each channel. On readback, the 10-bit channels are unpacked and the encoding is reversed back to -1 to 1.</p>
+        <div class="chal-code-full"><div class="proj-code-slides">
               <div class="proj-code-slides-bar">
                 <button class="proj-slide-arrow" onclick="projSlideNav(this,-1)">←</button>
                 <span class="proj-slide-counter">1 / 2</span>
@@ -2415,24 +2428,7 @@ uint64_t <span class="fn">AssetBrush::GetSpatialKey</span>(<span class="kw">int<
     }
     Tga::DX11::Context-&gt;<span class="fn">Unmap</span>(source, <span class="num">0</span>);
 }</pre></div></div>
-            </div>
-          </div>
-          <div class="proj-twocol-text">
-            <p class="proj-contribution-desc">Since we already had GBuffer textures in place, I decided to use those as a source for generating the textures I needed for the picking. Two staging textures were used for this, one containing the vertex normals and one containing the world position of the currently drawn scene. I created a component tag that could be added to any scene object, used to mark it as paintable terrain. Only objects carrying this tag were drawn to the staging textures, meaning the brush would only snap to intentionally marked surfaces. In the render pipeline, I then drew the terrain objects first. After these were drawn, we could fetch the textures.</p>
-            <p class="proj-contribution-desc" style="margin-top:0.8rem;">The world position is drawn to a texture using the format DXGI_FORMAT_R32G32B32A32_FLOAT. Since the data is stored as 4 values of 32 bits and we use floats as a representation of our world position, reading the world position back is straightforward.</p>
-            <p class="proj-contribution-desc" style="margin-top:0.8rem;">The normals however needed converting back to a -1 to 1 range, since when drawing to the GBuffer texture, we remap to 0-1 because the shader can't store negative values in a texture. The normals are saved to a texture with the format DXGI_FORMAT_R10G10B10A2_UNORM, using 10 bits for each channel. On readback, the 10-bit channels are unpacked and the encoding is reversed back to -1 to 1.</p>
-            <div class="proj-compare" style="margin-top:1.5rem;">
-              <div class="proj-compare-item">
-                <div class="proj-twocol-media" style="aspect-ratio:16/9;"><div class="tp-video-placeholder">[]</div></div>
-                <span class="proj-compare-label">Vertex Normal Texture</span>
-              </div>
-              <div class="proj-compare-item">
-                <div class="proj-twocol-media" style="aspect-ratio:16/9;"><div class="tp-video-placeholder">[]</div></div>
-                <span class="proj-compare-label">World Position Texture</span>
-              </div>
-            </div>
-          </div>
-        </div>
+            </div></div>
       </div>
 
       <!-- PREVIEW MODE -->
@@ -2440,8 +2436,8 @@ uint64_t <span class="fn">AssetBrush::GetSpatialKey</span>(<span class="kw">int<
         <h3 class="chal-title">Preview Mode</h3>
         <div class="proj-twocol" style="align-items:start;">
           <div class="proj-twocol-text">
-            <p class="proj-contribution-desc">Preview mode came with a lot of challenges. We now needed to save a version of the object that could be updated manually by the user if they wished to do so. For my first iteration, I did not need to care since the assets got updated between each brush stroke in regards to the settings chosen by the user. Now, we needed to keep the position/rotation/scale for the object, or some combination of them, based on the settings.</p>
-            <p class="proj-contribution-desc" style="margin-top:0.8rem;">For this, I created a struct related to the already existing scene object. By caching the current previews of the current stroke and batch of that stroke, I was able to update it cleanly as the user dragged the mouse across the screen. This also introduced the "Update on move" and "Manual update on R" settings, since the need for more control arose as a product of the preview tool.</p>
+            <p class="proj-contribution-desc" style="max-width:820px; margin-bottom:0.9rem;">Preview mode came with a lot of challenges. We now needed to save a version of the object that could be updated manually by the user if they wished to do so. For my first iteration, I did not need to care since the assets got updated between each brush stroke in regards to the settings chosen by the user. Now, we needed to keep the position/rotation/scale for the object, or some combination of them, based on the settings.</p>
+            <p class="proj-contribution-desc" style="max-width:820px; margin-bottom:0.9rem;">For this, I created a struct related to the already existing scene object. By caching the current previews of the current stroke and batch of that stroke, I was able to update it cleanly as the user dragged the mouse across the screen. This also introduced the "Update on move" and "Manual update on R" settings, since the need for more control arose as a product of the preview tool.</p>
           </div>
           <div class="proj-twocol-code"><div class="proj-code-block" style="display:block; max-height:360px; overflow:auto;"><pre><span class="kw">struct</span> PreviewObject
 {
@@ -2462,8 +2458,16 @@ uint64_t <span class="fn">AssetBrush::GetSpatialKey</span>(<span class="kw">int<
       <!-- TANGENT & BITANGENT -->
       <div class="proj-contribution-border">
         <h3 class="chal-title">Tangent & Bitangent</h3>
-        <div class="proj-twocol has-video proj-twocol-reverse" style="align-items:start;">
-          <div class="proj-twocol-code"><div class="proj-code-block" style="display:block; max-height:360px; overflow:auto;"><pre><span class="kw">void</span> <span class="fn">AssetBrush::GetSurfaceTangentFrame</span>(
+        <div class="proj-twocol has-video" style="align-items:start;">
+          <div class="proj-twocol-media">
+            <video muted loop playsinline preload="none" data-src="videos/AssetBrushPage/PlaneplacementWeb.mp4" style="width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0;"></video>
+          </div>
+          <div class="proj-twocol-text">
+            <p class="proj-contribution-desc" style="max-width:820px; margin-bottom:0.9rem;">An interesting geometric problem arose from the fact that the brush uses a flat 2D disc as a representation of the area the assets can be placed in. Since the brush originally scattered objects in the XZ plane, it completely broke when trying to scatter on vertical or very steep surfaces, placing the objects in a line rather than spreading them out. This was solved by finding the tangent and bitangent of the surface normal and using those as the up/down and left/right directions for the position offset.</p>
+            <p class="proj-contribution-desc" style="max-width:820px; margin-bottom:0.9rem;">One problem that still persists is that the scatter area is in screen space, occasionally placing objects far away if the disc is outside the intended area but where valid terrain still exists. This can be solved by doing a simple world position check as well, so that the asset is not too far from the world position of the brush center — a feature I am looking to add.</p>
+          </div>
+        </div>
+        <div class="chal-code-full" style="margin-top:1.5rem;"><div class="proj-code-block" style="display:block; max-height:360px; overflow:auto;"><pre><span class="kw">void</span> <span class="fn">AssetBrush::GetSurfaceTangentFrame</span>(
     <span class="kw">const</span> Tga::Vector3f&amp; normal,
     Tga::Vector3f&amp; outTangent,
     Tga::Vector3f&amp; outBitangent)
@@ -2479,27 +2483,21 @@ uint64_t <span class="fn">AssetBrush::GetSpatialKey</span>(<span class="kw">int<
     outBitangent.<span class="fn">Normalize</span>();
 }</pre></div>
           </div>
-          <div class="proj-twocol-text">
-            <p class="proj-contribution-desc">An interesting geometric problem arose from the fact that the brush uses a flat 2D disc as a representation of the area the assets can be placed in. Since the brush originally scattered objects in the XZ plane, it completely broke when trying to scatter on vertical or very steep surfaces, placing the objects in a line rather than spreading them out. This was solved by finding the tangent and bitangent of the surface normal and using those as the up/down and left/right directions for the position offset.</p>
-            <p class="proj-contribution-desc" style="margin-top:0.8rem;">One problem that still persists is that the scatter area is in screen space, occasionally placing objects far away if the disc is outside the intended area but where valid terrain still exists. This can be solved by doing a simple world position check as well, so that the asset is not too far from the world position of the brush center — a feature I am looking to add.</p>
-            <div class="proj-twocol-media" style="aspect-ratio:16/9; margin-top:1.2rem;"><video muted loop playsinline preload="none" data-src="videos/AssetBrushPage/PlaneplacementWeb.mp4" style="width:100%;height:100%;object-fit:cover;display:block;"></video></div>
-          </div>
-        </div>
       </div>
 
       <!-- PIVOT -->
       <div class="proj-contribution-border">
-        <h3 class="chal-title">Pivot</h3>
-        <div class="proj-twocol-text" style="max-width:760px;">
-          <p class="proj-contribution-desc">Another problem that arose was the pivot of the object not always aligning with the actual surface we are placing our asset on. Some of our assets had their pivot in the center which made the object clip through the surface rather than sitting on top of it. This was solved by subtracting the difference between the object's Y boundary and the object's center if a difference was found. I made this feature a toggle as well, so that the artist was able to control the pivot offset themselves.</p>
+        <div class="proj-text-only">
+          <h3 class="chal-title" style="text-align:left; font-size:1.6rem; margin-bottom:0.7rem;">Pivot</h3>
+          <p class="proj-contribution-desc" style="max-width:820px; margin-bottom:0.9rem;">Another problem that arose was the pivot of the object not always aligning with the actual surface we are placing our asset on. Some of our assets had their pivot in the center which made the object clip through the surface rather than sitting on top of it. This was solved by subtracting the difference between the object's Y boundary and the object's center if a difference was found. I made this feature a toggle as well, so that the artist was able to control the pivot offset themselves.</p>
         </div>
       </div>
 
       <!-- UNDO -->
       <div class="proj-contribution-border">
-        <h3 class="chal-title">Undo Integration</h3>
-        <div class="proj-twocol-text" style="max-width:760px;">
-          <p class="proj-contribution-desc">One problem I encountered was that the undo action was a bit inconsistent. Every user expects a clean and functional undo action, which is easy to deprioritize during development since focus lies elsewhere. At first, the undo action in our editor meant undoing the previous command. When placing many assets this became tedious since one undo meant removing only one asset. I fixed this to undo by batch and brush stroke instead, by adding all assets painted in that stroke into one single command.</p>
+        <div class="proj-text-only">
+          <h3 class="chal-title" style="text-align:left; font-size:1.6rem; margin-bottom:0.7rem;">Undo Integration</h3>
+          <p class="proj-contribution-desc" style="max-width:820px; margin-bottom:0.9rem;">One problem I encountered was that the undo action was a bit inconsistent. Every user expects a clean and functional undo action, which is easy to deprioritize during development since focus lies elsewhere. At first, the undo action in our editor meant undoing the previous command. When placing many assets this became tedious since one undo meant removing only one asset. I fixed this to undo by batch and brush stroke instead, by adding all assets painted in that stroke into one single command.</p>
         </div>
       </div>
 
