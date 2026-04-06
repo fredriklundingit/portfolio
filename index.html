@@ -3267,32 +3267,61 @@ graphicsStateStack.<span class="fn">Pop</span>();</pre></div>
       <p>Continuation of the same custom engine from Cycles of Deluge. The focus shifted towards iteration and editor integration — refactoring the render pipeline and building new rendering features while making the editor actually usable for level designers.</p>
     </div>
     <span class="proj-section-label">Contributions</span>
-    <div class="proj-contributions">
-      <div class="proj-contribution-split">
-        <div class="proj-contribution-media">
-          <div class="tp-video-placeholder">[]</div>
+    <div class="proj-contributions proj-contributions-wide">
+
+      <!-- Render Pipeline Refactor — no video, text + code -->
+      <div class="proj-contribution-border">
+        <div class="proj-twocol">
+          <div class="proj-twocol-text">
+            <span class="proj-contribution-title">Render Pipeline Refactor</span>
+            <p class="proj-contribution-desc">Responsible for a full refactor of the render pipeline, introducing a command pattern with render data containing commands for each pass. This made it easier to add features and also brought the editor up to speed — level designers could now see changes without launching the game. New features added this project: spotlights, SSAO, line lights and a player flashlight.</p>
+            <button class="proj-code-toggle" onclick="projToggleCode(this)">View Code ↓</button><div class="proj-code-block"><pre><span class="cmt">// Add your render pipeline refactor code here</span></pre></div>
+          </div>
+          <div class="proj-twocol-code"></div>
         </div>
-        <div>
-          <span class="proj-contribution-title">Render Pipeline Refactor</span>
-          <p class="proj-contribution-desc">Responsible for a full refactor of the render pipeline, introducing a command pattern with render data containing commands for each pass. This made it easier to add features and also brought the editor up to speed — level designers could now see changes without launching the game. New features added this project: spotlights, SSAO, line lights and a player flashlight.</p>
-          <button class="proj-code-toggle" onclick="projToggleCode(this)">View Code ↓</button><div class="proj-code-block"><pre><span class="cmt">// Add your render pipeline refactor code here</span></pre></div>
+      </div>
+
+      <!-- Editor Integration — video left, text + code right -->
+      <div class="proj-contribution-border">
+        <div class="proj-twocol has-video">
+          <div class="proj-twocol-media">
+            <video muted loop playsinline preload="none" data-src="videos/HRPage/EditorRenderingWeb.mp4" style="width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0;"></video>
+          </div>
+          <div class="proj-twocol-text">
+            <span class="proj-contribution-title">Editor Integration</span>
+            <p class="proj-contribution-desc">Earlier the editor used actual scene object properties for rendering and had its own ID pass for outlining selected objects. With the removal of those passes, I built render commands — including ID commands — from the scene objects, feeding them into the same renderer the game uses.</p>
+            <button class="proj-code-toggle" onclick="projToggleCode(this)">View Code ↓</button><div class="proj-code-block"><pre><span class="cmt">// Add your editor integration code here</span></pre></div>
+          </div>
         </div>
       </div>
-      <div class="proj-contribution">
-        <span class="proj-contribution-title">Editor Integration</span>
-        <p class="proj-contribution-desc">Earlier the editor used actual scene object properties for rendering and had its own ID pass for outlining selected objects. With the removal of those passes, I built render commands — including ID commands — from the scene objects, feeding them into the same renderer the game uses.</p>
-        <button class="proj-code-toggle" onclick="projToggleCode(this)">View Code ↓</button><div class="proj-code-block"><pre><span class="cmt">// Add your editor integration code here</span></pre></div>
+
+      <!-- Single Asset Preview & VFX Live Editing — video left, text right -->
+      <div class="proj-contribution-border">
+        <div class="proj-twocol has-video proj-twocol-reverse">
+          <div class="proj-twocol-text">
+            <span class="proj-contribution-title">Single Asset Preview & VFX Live Editing</span>
+            <p class="proj-contribution-desc">A long-standing request from Cycles of Deluge. Added the ability to preview individual assets in the editor with live lighting, and to preview and live-edit VFX while viewing them.</p>
+          </div>
+          <div class="proj-twocol-media">
+            <video muted loop playsinline preload="none" data-src="videos/HRPage/VfxeditingWeb.mp4" style="width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0;"></video>
+          </div>
+        </div>
       </div>
-      <div class="proj-contribution">
-        <span class="proj-contribution-title">Single Asset & VFX Preview</span>
-        <p class="proj-contribution-desc">A long-standing request from Cycles of Deluge. Added the ability to preview individual assets in the editor with live lighting, and to preview and live-edit VFX while viewing them.</p>
-        
+
+      <!-- Enemy Behaviour — video left, text + code right -->
+      <div class="proj-contribution-border">
+        <div class="proj-twocol has-video">
+          <div class="proj-twocol-media">
+            <video muted loop playsinline preload="none" data-src="videos/HRPage/EnemybehaviorWeb.mp4" style="width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0;"></video>
+          </div>
+          <div class="proj-twocol-text">
+            <span class="proj-contribution-title">Enemy Behaviour</span>
+            <p class="proj-contribution-desc">Integrated enemy behaviour using third-party libraries for navmesh generation, pathfinding and agent separation. With limited time, I reused the state machine as a behaviour tree — creating nodes for each state with Enter, Update and Exit phases.</p>
+            <button class="proj-code-toggle" onclick="projToggleCode(this)">View Code ↓</button><div class="proj-code-block"><pre><span class="cmt">// Add your enemy behaviour code here</span></pre></div>
+          </div>
+        </div>
       </div>
-      <div class="proj-contribution">
-        <span class="proj-contribution-title">Enemy Behaviour</span>
-        <p class="proj-contribution-desc">Integrated enemy behaviour using third-party libraries for navmesh generation, pathfinding and agent separation. With limited time, I reused the state machine as a behaviour tree — creating nodes for each state with Enter, Update and Exit phases.</p>
-        <button class="proj-code-toggle" onclick="projToggleCode(this)">View Code ↓</button><div class="proj-code-block"><pre><span class="cmt">// Add your enemy behaviour code here</span></pre></div>
-      </div>
+
     </div>
   </div>
 </div>
