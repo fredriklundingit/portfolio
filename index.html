@@ -437,6 +437,29 @@
   }
   .project-row:hover .project-link-hint { opacity: 1; }
 
+  .project-title-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .unity-badge {
+    display: inline-flex;
+    align-items: center;
+    flex-shrink: 0;
+    opacity: 0.45;
+    transition: opacity 0.2s;
+  }
+
+  .project-row:hover .unity-badge { opacity: 0.8; }
+
+  .unity-badge img {
+    height: 18px;
+    width: auto;
+    filter: invert(1) sepia(1) saturate(0) brightness(0.3);
+  }
+
   /* OTHER PROJECTS GRID */
   .other-projects-grid {
     display: grid;
@@ -1749,7 +1772,7 @@
       </div>
       <div class="project-info">
         <span class="project-title">Human Resources</span>
-        <span class="project-category">C++ · HLSL · Custom Engine</span>
+        <span class="project-category">C++ · HLSL</span>
         <div class="project-meta">
           <span class="project-meta-item"><strong>Genre</strong> — First person shooter</span>
           <span class="project-meta-item"><strong>Duration</strong> — 17 part time weeks</span>
@@ -1771,7 +1794,7 @@
       </div>
       <div class="project-info">
         <span class="project-title">Cycles of Deluge</span>
-        <span class="project-category">C++ · HLSL · Custom Engine</span>
+        <span class="project-category">C++ · HLSL</span>
         <div class="project-meta">
           <span class="project-meta-item"><strong>Genre</strong> — Diablo-like adventure</span>
           <span class="project-meta-item"><strong>Duration</strong> — 14 part time weeks</span>
@@ -1792,7 +1815,7 @@
       </div>
       <div class="project-info">
         <span class="project-title">Cannibal Crossing</span>
-        <span class="project-category">C++ · Custom Engine</span>
+        <span class="project-category">C++</span>
         <div class="project-meta">
           <span class="project-meta-item"><strong>Genre</strong> — Top down adventure</span>
           <span class="project-meta-item"><strong>Duration</strong> — 8 part time weeks</span>
@@ -1813,7 +1836,7 @@
       </div>
       <div class="project-info">
         <span class="project-title">The Misadventures of Captain Hornswaggle</span>
-        <span class="project-category">C++ · Custom Engine</span>
+        <span class="project-category">C++</span>
         <div class="project-meta">
           <span class="project-meta-item"><strong>Genre</strong> — Platformer</span>
           <span class="project-meta-item"><strong>Duration</strong> — 12 part time weeks</span>
@@ -1840,8 +1863,12 @@
           <video muted loop playsinline preload="none" data-src="videos/FrogmentnoncroppedWeb.mp4" poster="images/Frogmentthumbnailimage.png" style="width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0;"></video>
         </div>
         <div class="other-project-info">
-          <span class="project-title">Frogment</span>
-          <span class="project-category">C# · Unity</span>
+          <div class="project-title-row">
+            <span class="project-title">Frogment</span>
+            <span class="unity-badge">
+              <img src="images/madewithunitytrans.png" alt="Made with Unity">
+            </span>
+          </div>
           <div class="project-meta" style="margin-top:0.5rem;">
             <span class="project-meta-item"><strong>Genre</strong> — Mobile puzzle game</span>
             <span class="project-meta-item"><strong>Duration</strong> — 6 part time weeks</span>
@@ -1864,8 +1891,12 @@
           <video muted loop playsinline preload="none" data-src="videos/LastunitWeb.mp4" poster="images/lastunitthumbnailimage.png" style="width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0;"></video>
         </div>
         <div class="other-project-info">
-          <span class="project-title">Last Unit</span>
-          <span class="project-category">C# · Unity</span>
+          <div class="project-title-row">
+            <span class="project-title">Last Unit</span>
+            <span class="unity-badge">
+              <img src="images/madewithunitytrans.png" alt="Made with Unity">
+            </span>
+          </div>
           <div class="project-meta" style="margin-top:0.5rem;">
             <span class="project-meta-item"><strong>Genre</strong> — Endless runner</span>
             <span class="project-meta-item"><strong>Duration</strong> — 6 part time weeks</span>
