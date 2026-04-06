@@ -317,6 +317,7 @@
     background: #e8e0d9;
     object-fit: contain; /* show bars instead of cropping */
   }
+  .project-thumb::after {
     content: '';
     position: absolute;
     inset: 0;
@@ -404,6 +405,7 @@
     background: rgba(26,17,24,0.12);
     border-color: rgba(26,17,24,0.5);
   }
+  .project-link-hint {
     font-family: var(--mono);
     font-size: 0.88rem;
     letter-spacing: 0.08em;
@@ -434,9 +436,7 @@
     position: relative;
   }
 
-  .other-project-info {
-    padding: 0;
-  }
+  .other-project-info { padding: 0; }
 
   @media (max-width: 680px) {
     .other-projects-grid { grid-template-columns: 1fr; }
@@ -1790,7 +1790,7 @@
   </section>
 
   <!-- OTHER PROJECTS -->
-  <section class="projects" id="other-projects" style="border-top: 1px solid rgba(26,17,24,0.15); padding-top: 5rem;">
+  <section class="projects" id="other-projects">
     <span class="section-label">Other Projects</span>
     <div class="other-projects-grid">
 
@@ -4091,20 +4091,13 @@ graphicsStateStack.<span class="fn">Pop</span>();</pre></div>
 
   // Track all currently playing videos so we can pause on tab hide
   const playingVideos = new Set();
-  const MAX_CONCURRENT_VIDEOS = 3;
-
-  function canPlayMore() {
-    return playingVideos.size < MAX_CONCURRENT_VIDEOS;
-  }
-
-  function tryPlay(vid) {
-    if (canPlayMore()) {
-      vid.play().catch(() => {});
-      playingVideos.add(vid);
-    }
-  }
 
   function showPage(id, scrollTarget) {
+    // Pause all playing videos before switching page to free up decode resources
+    document.querySelectorAll('video').forEach(v => {
+      if (!v.paused) v.pause();
+    });
+
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     const page = document.getElementById('page-' + id);
     page.classList.add('active');
@@ -4115,12 +4108,12 @@ graphicsStateStack.<span class="fn">Pop</span>();</pre></div>
         if (el) el.scrollIntoView({ behavior: 'smooth' });
       }, 80);
     }
-    // Stagger video observation on new page to avoid simultaneous loads
+    // Stagger video observation — larger gap to avoid simultaneous decodes
     const vids = [...page.querySelectorAll('video[data-src]')];
     vids.forEach((vid, i) => {
       setTimeout(() => {
         if (videoObserver) videoObserver.observe(vid);
-      }, i * 50);
+      }, i * 150);
     });
     initReveal();
   }
@@ -4158,29 +4151,25 @@ graphicsStateStack.<span class="fn">Pop</span>();</pre></div>
   }
 
   function setupToolVideo(vid) {
+    // Tool card videos: autoplay silently on loop
     vid.muted = true;
     vid.loop  = true;
     if (vid.dataset.src && !vid.src) {
       vid.src = vid.dataset.src;
     }
-    tryPlay(vid);
+    vid.play().catch(() => {});
+    playingVideos.add(vid);
   }
 
-  // Pause all videos when tab is hidden, resume when visible again
+  // Pause all videos when tab is hidden
   document.addEventListener('visibilitychange', () => {
     if (document.hidden) {
       document.querySelectorAll('video').forEach(v => {
-        if (!v.paused) {
-          v.pause();
-          v.dataset.wasPlaying = '1';
-        }
-      });
-    } else {
-      document.querySelectorAll('video[data-was-playing]').forEach(v => {
-        v.play().catch(() => {});
-        delete v.dataset.wasPlaying;
+        if (!v.paused) v.pause();
       });
     }
+    // Note: we intentionally do NOT auto-resume on tab show —
+    // resuming many videos simultaneously was causing freezes.
   });
 
   document.addEventListener('DOMContentLoaded', () => {
@@ -4201,31 +4190,24 @@ graphicsStateStack.<span class="fn">Pop</span>();</pre></div>
     // Tool cards autoplay when visible. Everything else plays when visible.
     videoObserver = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
+        if (!entry.isIntersecting) { return; }
         const vid = entry.target;
-
-        if (!entry.isIntersecting) {
-          // Free up a slot when video scrolls out of view
-          if (!vid.paused) {
-            vid.pause();
-            playingVideos.delete(vid);
-          }
-          return;
-        }
-
         videoObserver.unobserve(vid);
 
         if (vid.closest('.project-thumb')) {
+          // Project thumbnails: set up hover, don't load yet
           setupProjectVideo(vid);
           return;
         }
 
+        // All other videos: load src and play
         if (vid.dataset.src && !vid.src) {
           vid.src = vid.dataset.src;
         }
         if (vid.closest('.tool-card')) {
           setupToolVideo(vid);
         } else {
-          tryPlay(vid);
+          vid.play().catch(() => {});
         }
       });
     }, { threshold: 0.1, rootMargin: '50px' });
