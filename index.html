@@ -4089,48 +4089,39 @@ graphicsStateStack.<span class="fn">Pop</span>();</pre></div>
   // Video observer — module-level so showPage can access it
   let videoObserver = null;
 
-  function unloadPageVideos(page) {
-    page.querySelectorAll('video').forEach(vid => {
-      vid.pause();
-      if (vid.src) {
-        vid.removeAttribute('src');
-        vid.load();
-      }
-      delete vid.dataset.wasPlaying;
-    });
+  // Track all currently playing videos so we can pause on tab hide
+  const playingVideos = new Set();
+  const MAX_CONCURRENT_VIDEOS = 3;
+
+  function canPlayMore() {
+    return playingVideos.size < MAX_CONCURRENT_VIDEOS;
+  }
+
+  function tryPlay(vid) {
+    if (canPlayMore()) {
+      vid.play().catch(() => {});
+      playingVideos.add(vid);
+    }
   }
 
   function showPage(id, scrollTarget) {
-    // Unload videos on current page before switching
-    document.querySelectorAll('.page.active').forEach(p => unloadPageVideos(p));
-
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-
     const page = document.getElementById('page-' + id);
     page.classList.add('active');
     window.scrollTo(0, 0);
-
     if (scrollTarget) {
       setTimeout(() => {
         const el = document.getElementById(scrollTarget);
         if (el) el.scrollIntoView({ behavior: 'smooth' });
       }, 80);
     }
-
-    // Stagger observation so videos load gradually as user scrolls
+    // Stagger video observation on new page to avoid simultaneous loads
     const vids = [...page.querySelectorAll('video[data-src]')];
     vids.forEach((vid, i) => {
       setTimeout(() => {
-        if (videoObserver) {
-          if (vid.closest('.project-thumb') && !vid.dataset.hoverSetup) {
-            setupProjectVideo(vid);
-            vid.dataset.hoverSetup = '1';
-          }
-          videoObserver.observe(vid);
-        }
-      }, i * 150);
+        if (videoObserver) videoObserver.observe(vid);
+      }, i * 50);
     });
-
     initReveal();
   }
 
@@ -4148,19 +4139,20 @@ graphicsStateStack.<span class="fn">Pop</span>();</pre></div>
   }
 
   function setupProjectVideo(vid) {
+    // Project thumbnails: only load and play on hover, pause on leave
     vid.muted = true;
-    vid.loop = true;
     const row = vid.closest('.project-row');
     if (row) {
       row.addEventListener('mouseenter', () => {
-        const src = vid.dataset.src;
-        if (src && !vid.src) {
-          vid.src = src;
+        if (vid.dataset.src && !vid.src) {
+          vid.src = vid.dataset.src;
         }
         vid.play().catch(() => {});
+        playingVideos.add(vid);
       });
       row.addEventListener('mouseleave', () => {
         vid.pause();
+        playingVideos.delete(vid);
       });
     }
   }
@@ -4171,13 +4163,23 @@ graphicsStateStack.<span class="fn">Pop</span>();</pre></div>
     if (vid.dataset.src && !vid.src) {
       vid.src = vid.dataset.src;
     }
-    vid.play().catch(() => {});
+    tryPlay(vid);
   }
 
-  // Pause all videos when tab is hidden
+  // Pause all videos when tab is hidden, resume when visible again
   document.addEventListener('visibilitychange', () => {
     if (document.hidden) {
-      document.querySelectorAll('video').forEach(v => v.pause());
+      document.querySelectorAll('video').forEach(v => {
+        if (!v.paused) {
+          v.pause();
+          v.dataset.wasPlaying = '1';
+        }
+      });
+    } else {
+      document.querySelectorAll('video[data-was-playing]').forEach(v => {
+        v.play().catch(() => {});
+        delete v.dataset.wasPlaying;
+      });
     }
   });
 
@@ -4202,22 +4204,29 @@ graphicsStateStack.<span class="fn">Pop</span>();</pre></div>
         const vid = entry.target;
 
         if (!entry.isIntersecting) {
-          if (!vid.paused) vid.pause();
+          // Free up a slot when video scrolls out of view
+          if (!vid.paused) {
+            vid.pause();
+            playingVideos.delete(vid);
+          }
           return;
         }
 
-        // Load src from data-src if not already loaded
-        if (vid.dataset.src && vid.getAttribute('src') !== vid.dataset.src) {
-          vid.src = vid.dataset.src;
-        }
+        videoObserver.unobserve(vid);
 
         if (vid.closest('.project-thumb')) {
-          // project thumbs are hover-only, don't autoplay
-          videoObserver.unobserve(vid);
+          setupProjectVideo(vid);
           return;
         }
 
-        vid.play().catch(() => {});
+        if (vid.dataset.src && !vid.src) {
+          vid.src = vid.dataset.src;
+        }
+        if (vid.closest('.tool-card')) {
+          setupToolVideo(vid);
+        } else {
+          tryPlay(vid);
+        }
       });
     }, { threshold: 0.1, rootMargin: '50px' });
 
@@ -4225,11 +4234,6 @@ graphicsStateStack.<span class="fn">Pop</span>();</pre></div>
     // Videos on hidden pages get observed when showPage is called
     function observePageVideos(page) {
       page.querySelectorAll('video[data-src]').forEach(vid => {
-        // Set up hover for project thumbs if not already done
-        if (vid.closest('.project-thumb') && !vid.dataset.hoverSetup) {
-          setupProjectVideo(vid);
-          vid.dataset.hoverSetup = '1';
-        }
         videoObserver.observe(vid);
       });
     }
