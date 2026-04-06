@@ -4202,16 +4202,22 @@ graphicsStateStack.<span class="fn">Pop</span>();</pre></div>
   // Pause all videos when tab is hidden, resume when visible again
   document.addEventListener('visibilitychange', () => {
     if (document.hidden) {
+      // Pause all playing videos when tab is hidden
       document.querySelectorAll('video').forEach(v => {
         if (!v.paused) {
           v.pause();
-          v.dataset.wasPlaying = '1';
+          v.dataset.wasp = '1';
         }
       });
     } else {
-      document.querySelectorAll('video[data-was-playing]').forEach(v => {
+      // Only resume tool card videos — everything else reloads on scroll
+      document.querySelectorAll('.tool-card video[data-wasp]').forEach(v => {
         v.play().catch(() => {});
-        delete v.dataset.wasPlaying;
+        delete v.dataset.wasp;
+      });
+      // Clear flag on all others without replaying
+      document.querySelectorAll('video[data-wasp]').forEach(v => {
+        delete v.dataset.wasp;
       });
     }
   });
@@ -4254,13 +4260,16 @@ graphicsStateStack.<span class="fn">Pop</span>();</pre></div>
           vid.play().catch(() => {});
         }
       });
-    }, { threshold: 0.1, rootMargin: '200px' });
+    }, { threshold: 0.1 });
 
     // Only observe videos on the currently active page (home)
     // Videos on hidden pages get observed when showPage is called
     function observePageVideos(page) {
-      page.querySelectorAll('video[data-src]').forEach(vid => {
-        videoObserver.observe(vid);
+      const vids = [...page.querySelectorAll('video[data-src]')];
+      vids.forEach((vid, i) => {
+        setTimeout(() => {
+          if (videoObserver) videoObserver.observe(vid);
+        }, i * 80);
       });
     }
 
