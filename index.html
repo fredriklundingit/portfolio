@@ -321,6 +321,7 @@
     background: #e8e0d9;
     object-fit: contain; /* show bars instead of cropping */
   }
+  .project-thumb::after {
     content: '';
     position: absolute;
     inset: 0;
@@ -408,6 +409,7 @@
     background: rgba(26,17,24,0.12);
     border-color: rgba(26,17,24,0.5);
   }
+  .project-link-hint {
     font-family: var(--mono);
     font-size: 0.88rem;
     letter-spacing: 0.08em;
@@ -4136,6 +4138,11 @@ graphicsStateStack.<span class="fn">Pop</span>();</pre></div>
   const playingVideos = new Set();
 
   function showPage(id, scrollTarget) {
+    // Pause all playing videos before switching page to free up decode resources
+    document.querySelectorAll('video').forEach(v => {
+      if (!v.paused) v.pause();
+    });
+
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     const page = document.getElementById('page-' + id);
     page.classList.add('active');
@@ -4146,12 +4153,12 @@ graphicsStateStack.<span class="fn">Pop</span>();</pre></div>
         if (el) el.scrollIntoView({ behavior: 'smooth' });
       }, 80);
     }
-    // Stagger video observation on new page to avoid simultaneous loads
+    // Stagger video observation — larger gap to avoid simultaneous decodes
     const vids = [...page.querySelectorAll('video[data-src]')];
     vids.forEach((vid, i) => {
       setTimeout(() => {
         if (videoObserver) videoObserver.observe(vid);
-      }, i * 50);
+      }, i * 150);
     });
     initReveal();
   }
@@ -4199,21 +4206,15 @@ graphicsStateStack.<span class="fn">Pop</span>();</pre></div>
     playingVideos.add(vid);
   }
 
-  // Pause all videos when tab is hidden, resume when visible again
+  // Pause all videos when tab is hidden
   document.addEventListener('visibilitychange', () => {
     if (document.hidden) {
       document.querySelectorAll('video').forEach(v => {
-        if (!v.paused) {
-          v.pause();
-          v.dataset.wasPlaying = '1';
-        }
-      });
-    } else {
-      document.querySelectorAll('video[data-was-playing]').forEach(v => {
-        v.play().catch(() => {});
-        delete v.dataset.wasPlaying;
+        if (!v.paused) v.pause();
       });
     }
+    // Note: we intentionally do NOT auto-resume on tab show —
+    // resuming many videos simultaneously was causing freezes.
   });
 
   document.addEventListener('DOMContentLoaded', () => {
@@ -4254,7 +4255,7 @@ graphicsStateStack.<span class="fn">Pop</span>();</pre></div>
           vid.play().catch(() => {});
         }
       });
-    }, { threshold: 0.1, rootMargin: '200px' });
+    }, { threshold: 0.1, rootMargin: '50px' });
 
     // Only observe videos on the currently active page (home)
     // Videos on hidden pages get observed when showPage is called
