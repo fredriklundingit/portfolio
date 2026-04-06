@@ -2409,11 +2409,11 @@ uint64_t <span class="fn">AssetBrush::GetSpatialKey</span>(<span class="kw">int<
             <p class="proj-contribution-desc" style="margin-top:0.8rem;">The normals however needed converting back to a -1 to 1 range, since when drawing to the GBuffer texture, we remap to 0-1 because the shader can't store negative values in a texture. The normals are saved to a texture with the format DXGI_FORMAT_R10G10B10A2_UNORM, using 10 bits for each channel. On readback, the 10-bit channels are unpacked and the encoding is reversed back to -1 to 1.</p>
             <div class="proj-compare" style="margin-top:1.5rem;">
               <div class="proj-compare-item">
-                <div class="proj-twocol-media" style="aspect-ratio:16/9;"><video muted loop playsinline preload="none" data-src="videos/AssetBrushPage/StresstestbeforeWeb.mp4" style="width:100%;height:100%;object-fit:cover;display:block;"></video></div>
+                <div class="proj-twocol-media" style="aspect-ratio:16/9;"><div class="tp-video-placeholder">[]</div></div>
                 <span class="proj-compare-label">Vertex Normal Texture</span>
               </div>
               <div class="proj-compare-item">
-                <div class="proj-twocol-media" style="aspect-ratio:16/9;"><video muted loop playsinline preload="none" data-src="videos/AssetBrushPage/StresstestafterWeb.mp4" style="width:100%;height:100%;object-fit:cover;display:block;"></video></div>
+                <div class="proj-twocol-media" style="aspect-ratio:16/9;"><div class="tp-video-placeholder">[]</div></div>
                 <span class="proj-compare-label">World Position Texture</span>
               </div>
             </div>
@@ -4012,12 +4012,6 @@ graphicsStateStack.<span class="fn">Pop</span>();</pre></div>
   });
 
   // Attach click-to-open on all carousel tracks
-  document.addEventListener('DOMContentLoaded', () => {
-    document.querySelectorAll('.tp-carousel-track').forEach(track => {
-      const id = track.closest('[data-carousel]')?.dataset.carousel;
-      if (id) track.addEventListener('click', () => lbOpen(id));
-    });
-  });
   // ── END LIGHTBOX ─────────────────────────────────────────────
   function projSlideNav(btn, dir) {
     const bar    = btn.closest('.proj-code-slides-bar');
@@ -4162,6 +4156,12 @@ graphicsStateStack.<span class="fn">Pop</span>();</pre></div>
     // Prevent browser from opening files dropped anywhere on the page
     document.addEventListener('dragover',  e => e.preventDefault());
     document.addEventListener('drop',      e => e.preventDefault());
+
+    // Carousel track click → lightbox
+    document.querySelectorAll('.tp-carousel-track').forEach(track => {
+      const id = track.closest('[data-carousel]')?.dataset.carousel;
+      if (id) track.addEventListener('click', () => lbOpen(id));
+    });
 
     // ── Video lazy loader ─────────────────────────────────────────
     // Videos use data-src. IntersectionObserver sets src only when
