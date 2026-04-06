@@ -1650,7 +1650,7 @@
           Replace the .tool-placeholder div with:
           <video autoplay loop muted playsinline src="your-tool-video.mp4"></video>
         -->
-        <video autoplay loop muted playsinline preload="none" src="videos/AssetbrushWeb.mp4" style="width:100%;height:100%;object-fit:cover;display:block;"></video>
+        <video muted loop playsinline preload="none" data-src="videos/AssetbrushWeb.mp4" style="width:100%;height:100%;object-fit:cover;display:block;"></video>
         <div class="tool-card-overlay">
           <span class="tool-card-name">Asset Brush</span>
           <span class="tool-card-sub">Designer facing tool, custom engine</span>
@@ -1661,7 +1661,7 @@
       </a>
 
       <a class="tool-card" href="#" onclick="showPage('tool-editor'); return false;">
-        <video autoplay loop muted playsinline preload="none" src="videos/EditorWeb.mp4" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;"></video>
+        <video muted loop playsinline preload="none" data-src="videos/EditorWeb.mp4" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;"></video>
         <div class="tool-card-overlay">
           <span class="tool-card-name">UI Editor with Animator</span>
           <span class="tool-card-sub">Designer facing tool, custom engine</span>
@@ -2528,7 +2528,7 @@ uint64_t <span class="fn">AssetBrush::GetSpatialKey</span>(<span class="kw">int<
         <div class="tp-carousel" data-carousel="ui-feat-1">
           <div class="tp-carousel-track">
             <div class="tp-carousel-slide active">
-              <video autoplay loop muted playsinline preload="auto" src="videos/essentialscompressed.mp4" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;"></video>
+              <video muted loop playsinline preload="none" data-src="videos/UIEditorPage/uiessentialsWeb.mp4" style="width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0;"></video>
             </div>
           </div>
           <div class="tp-carousel-bar">
@@ -2561,7 +2561,7 @@ uint64_t <span class="fn">AssetBrush::GetSpatialKey</span>(<span class="kw">int<
         <div class="tp-carousel" data-carousel="ui-feat-2">
           <div class="tp-carousel-track">
             <div class="tp-carousel-slide active">
-              <video autoplay loop muted playsinline preload="auto" src="videos/ANiamtionsCpmpressed.mp4" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;"></video>
+              <video muted loop playsinline preload="none" data-src="videos/UIEditorPage/AnimationeditorWeb.mp4" style="width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0;"></video>
             </div>
           </div>
           <div class="tp-carousel-bar">
@@ -2594,7 +2594,7 @@ uint64_t <span class="fn">AssetBrush::GetSpatialKey</span>(<span class="kw">int<
         <div class="tp-carousel" data-carousel="ui-feat-3">
           <div class="tp-carousel-track">
             <div class="tp-carousel-slide active">
-              <video autoplay loop muted playsinline preload="auto" src="videos/parentingcompressed.mp4" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;"></video>
+              <video muted loop playsinline preload="none" data-src="videos/UIEditorPage/ParentingWeb.mp4" style="width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0;"></video>
             </div>
           </div>
           <div class="tp-carousel-bar">
@@ -2627,7 +2627,7 @@ uint64_t <span class="fn">AssetBrush::GetSpatialKey</span>(<span class="kw">int<
         <div class="tp-carousel" data-carousel="ui-feat-4">
           <div class="tp-carousel-track">
             <div class="tp-carousel-slide active">
-              <video autoplay loop muted playsinline preload="auto" src="videos/inactioncompressed.mp4" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;"></video>
+              <video muted loop playsinline preload="none" data-src="videos/UIEditorPage/BackgroundWeb.mp4" style="width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0;"></video>
             </div>
           </div>
           <div class="tp-carousel-bar">
@@ -4099,6 +4099,9 @@ graphicsStateStack.<span class="fn">Pop</span>();</pre></div>
     btn.classList.toggle('open', !isOpen);
   }
 
+  // Video observer — module-level so showPage can access it
+  let videoObserver = null;
+
   function showPage(id, scrollTarget) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     const page = document.getElementById('page-' + id);
@@ -4112,9 +4115,7 @@ graphicsStateStack.<span class="fn">Pop</span>();</pre></div>
     }
     // Play any static videos on the newly visible page
     page.querySelectorAll('video[data-src]').forEach(vid => {
-      if (!vid.src && vid.dataset.src) { vid.src = vid.dataset.src; }
-      if (vid.readyState === 0) { vid.load(); }
-      vid.play().catch(() => {});
+      videoObserver.observe(vid);
     });
     initReveal();
   }
@@ -4133,28 +4134,27 @@ graphicsStateStack.<span class="fn">Pop</span>();</pre></div>
   }
 
   function setupProjectVideo(vid) {
-    vid.pause();
+    // Project thumbnails: only load and play on hover, pause on leave
     vid.muted = true;
     const row = vid.closest('.project-row');
     if (row) {
       row.addEventListener('mouseenter', () => {
-        if (!vid.src && vid.dataset.src) { vid.src = vid.dataset.src; }
+        if (vid.dataset.src && !vid.src) {
+          vid.src = vid.dataset.src;
+        }
         vid.play().catch(() => {});
       });
-      row.addEventListener('mouseleave', () => { vid.pause(); });
+      row.addEventListener('mouseleave', () => {
+        vid.pause();
+      });
     }
   }
 
   function setupToolVideo(vid) {
-    // Tool videos: always autoplay silently, restart on end
+    // Tool card videos: autoplay silently on loop
     vid.muted = true;
-    vid.autoplay = true;
-    vid.loop = true;
-    vid.play();
-    vid.addEventListener('ended', () => {
-      vid.currentTime = 0;
-      vid.play();
-    });
+    vid.loop  = true;
+    vid.play().catch(() => {});
   }
 
   document.addEventListener('DOMContentLoaded', () => {
@@ -4163,41 +4163,43 @@ graphicsStateStack.<span class="fn">Pop</span>();</pre></div>
     document.addEventListener('dragover',  e => e.preventDefault());
     document.addEventListener('drop',      e => e.preventDefault());
 
-    // ── Lazy video loader ─────────────────────────────────────────
-    // All videos use data-src instead of src. This observer loads them
-    // only when they scroll into view, preventing crashes from too many
-    // simultaneous loads.
-    const videoObserver = new IntersectionObserver((entries) => {
+    // ── Video lazy loader ─────────────────────────────────────────
+    // Videos use data-src. IntersectionObserver sets src only when
+    // the element is actually visible. Project thumbnails are hover-only.
+    // Tool cards autoplay when visible. Everything else plays when visible.
+    videoObserver = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
+        if (!entry.isIntersecting) { return; }
         const vid = entry.target;
-        if (entry.isIntersecting) {
-          if (!vid.src && vid.dataset.src) {
-            vid.src = vid.dataset.src;
-          }
-          if (vid.closest('.tool-card')) {
-            setupToolVideo(vid);
-          } else if (vid.closest('.project-thumb')) {
-            setupProjectVideo(vid);
-          } else {
-            vid.play().catch(() => {});
-          }
-          videoObserver.unobserve(vid);
+        videoObserver.unobserve(vid);
+
+        if (vid.closest('.project-thumb')) {
+          // Project thumbnails: set up hover, don't load yet
+          setupProjectVideo(vid);
+          return;
+        }
+
+        // All other videos: load src and play
+        if (vid.dataset.src && !vid.src) {
+          vid.src = vid.dataset.src;
+        }
+        if (vid.closest('.tool-card')) {
+          setupToolVideo(vid);
+        } else {
+          vid.play().catch(() => {});
         }
       });
-    }, { threshold: 0.1 });
+    }, { threshold: 0.1, rootMargin: '200px' });
 
-    document.querySelectorAll('video[data-src]').forEach(vid => {
-      videoObserver.observe(vid);
-    });
-
-    // Hero videos on active page load immediately
-    function loadPageVideos(page) {
+    // Only observe videos on the currently active page (home)
+    // Videos on hidden pages get observed when showPage is called
+    function observePageVideos(page) {
       page.querySelectorAll('video[data-src]').forEach(vid => {
-        if (!vid.src && vid.dataset.src) { vid.src = vid.dataset.src; }
-        vid.play().catch(() => {});
+        videoObserver.observe(vid);
       });
     }
-    loadPageVideos(document.querySelector('.page.active'));
+
+    observePageVideos(document.querySelector('.page.active'));
 
     const dropZones = document.querySelectorAll('.tool-card, .project-thumb, .tp-carousel-track, .proj-hero, .proj-contribution-media, .proj-contribution-media-full, .proj-twocol-media');
 
