@@ -1225,10 +1225,37 @@ footer {
   .proj-meta-bar, .proj-intro, .proj-contributions, .proj-section-label { padding-left: 1.2rem; padding-right: 1.2rem; }
   .proj-hero-overlay { padding: 1.5rem 1.2rem; }
   .proj-compare { grid-template-columns: 1fr; }
+
+  /* Tool page mobile */
+  .tp-intro { padding: 1.5rem 1.2rem; }
+  .tp-desc { font-size: 0.95rem; }
+  .tp-section { padding: 2rem 1.2rem; }
+  .tp-row, .tp-row-reverse {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  .tp-row-reverse .tp-carousel { order: 0; }
+  .tp-row-reverse .tp-row-info  { order: 1; }
+  .tp-feature-title { font-size: 1.4rem; }
+  .tp-code-overlay { display: none; }
+  .tp-carousel-codes { display: none; }
+  .tp-contribution-border { padding: 1.5rem 1.2rem; }
+  .chal-title { font-size: 1.4rem; text-align: left; }
+  .proj-contribution-border { padding: 1.5rem 1.2rem; }
+  .proj-twocol, .proj-twocol.has-video { grid-template-columns: 1fr; gap: 1.2rem; }
 }
 
 @media (max-width: 900px) {
   .proj-twocol, .proj-twocol.has-video { grid-template-columns: 1fr; gap: 1.5rem; }
   .proj-twocol-reverse { direction: ltr; }
   .proj-contribution-border { padding: 2rem 1.2rem; }
+
+  /* Tool page tablet */
+  .tp-row, .tp-row-reverse {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  .tp-row-reverse .tp-carousel { order: 0; }
+  .tp-row-reverse .tp-row-info  { order: 1; }
+  .tp-code-overlay { display: none; }
 }
