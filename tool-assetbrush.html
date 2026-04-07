@@ -34,7 +34,7 @@
 
     <!-- DESCRIPTION + JUMP LINKS PROMINENT -->
     <div class="tp-intro">
-      <p class="tp-desc">[]</p>
+      <p class="tp-desc">The asset brush is a tool I made during our tools course at The Game Assembly. We had just completed our top down adventure project and I identified a huge time sink for our artists when set dressing the levels. They had to place each individual foliage asset by hand, meaning duplicating each asset, rotate/scale to their liking, and then placing it. I wanted to make a tool that made this job fast, easy to learn and fun to use. This way, we could save loads of time in our future projects.<br><br>I will refer to a "brush stroke" and a "batch" in my descriptions. They are essentially the same thing, meaning one single placement of a group of assets.</p>
       <div class="tp-jumplinks">
         <span class="tp-jump-label">Jump to section</span>
         <div class="tp-jump-buttons">
@@ -76,7 +76,7 @@
         </div>
         <div class="tp-row-info">
           <span class="tp-feature-title">Spacing & Draw Mode</span>
-          <p class="tp-feature-desc">Both draw and erase mode let the user choose between hold-and-drag or single click, giving fine-grained control over how assets are placed. Asset selection can be either random or sequential — useful when a more predictable outcome is wanted. The draw mode also supports preview and none preview mode, for even more control.<br><br>Spacing is handled in two ways. The user can control the distance between each brush stroke, so each batch is placed at a set interval from the previous one. On top of that, minimum spacing between individual objects can be enabled — either against all previously painted objects, or just within the current batch.
+          <p class="tp-feature-desc">Both draw and erase mode let the user choose between hold-and-drag or single click, giving fine-grained control over how assets are placed. Asset selection can be either random or sequential, with random selecting a random asset from the ones in the palette, and sequential placing them in the order they were added to the palette. The draw mode also supports preview and none preview mode, with preview mode showing green ghost assets representing the position and orientation the asset will be placed as. For more control, the user can select the option to freeze each brush stroke, effectively letting them move around the current batch of assets to place wherever they like, and then only generate a new batch if the user presses 'R'.<br><br>Spacing is handled in two ways. The user can control the distance between each brush stroke, so each batch is placed at a set interval from the previous one. On top of that, minimum spacing between individual objects can be enabled, either against all previously painted objects, or just within the current batch. One known issue with the current implementation is that the assets currently only check their absolute position against each other, which can make them overlap during certain circumstances — a problem that could be solved by instead checking their max bounds and computing the minimum distance that way. But for now, absolute position is more than enough for almost every case.<br><br>The user can also decide to scatter the positions relative to the brush size, meaning they can spread the assets around the edges of the brush, or concentrate the placement to the inner 20%, or in whatever combination they wish, all configurable under the "Position Scatter" option.
           </p>
         </div>
       <div class="tp-code-overlay" id="overlay-feat-1">
@@ -313,7 +313,7 @@
         </div>
         <div class="tp-row-info">
           <span class="tp-feature-title">Multi-Asset Drawing</span>
-          <p class="tp-feature-desc">As a first iteration I only allowed placement of one unique asset — this quickly became underwhelming. Multi asset drawing gives the user unlimited choices in how to design their clusters. With randomization per asset, spacing and the ability to tune how many assets to place, each brush stroke can generate something unique.</p>
+          <p class="tp-feature-desc">As a first iteration I only allowed placement of one unique asset — this quickly became underwhelming. Multi asset drawing gives the user unlimited choices in how to design their clusters. With randomization per asset, spacing and the ability to tune how many assets to place, each brush stroke can generate something unique. Users do so by adding slots to an "Asset Palette", a representation of which assets they are currently using in their brush stroke. This supports a large amount of assets, and for the time being, I set the maximum assets per stroke to 20.<br><br>As for now, a limitation to the system is if the brush size in combination with spacing makes the placement of a single asset within a batch fail because of the settings. I did implement a "Try Place" function, which tries placing the asset a maximum of 10 times before silently failing the placement, as you can see in the code snippet under "Spacing & Draw Mode".</p>
         </div>
       <div class="tp-code-overlay" id="overlay-feat-2">
         <div class="tp-overlay-header">
@@ -364,7 +364,7 @@
         </div>
         <div class="tp-row-info">
           <span class="tp-feature-title">Randomize</span>
-          <p class="tp-feature-desc">Randomization gives the user a tool for creating unique assets in each batch. I've chosen to divide it into yaw/pitch/roll and scale, to give the user an easy overview of what is available. I noticed that with the inclusion of previews and the ability to turn off auto generate, this was also very useful for more detailed work, such as single asset placement, when working in a concentrated area.</p>
+          <p class="tp-feature-desc">Randomization gives the user a tool for creating unique assets in each batch. I've chosen to divide it into yaw/pitch/roll and scale, to give the user an easy overview of what is available. I noticed that with the inclusion of previews and the ability to turn off auto generate (the freeze function described earlier), this became even more useful. The user can now generate a new randomized batch if they feel like the brush stroke is in a position they like. One thing I really would like to add is the ability to only regenerate the randomness of the current batch assets, without also switching out the current batch assets. But for now, this is more than enough, giving a lot of options.<br><br>I noticed this was also very useful for more detailed work, such as single asset placement, when working in a concentrated area. The user also has the ability to change yaw/pitch/roll and scale of the current batch manually, by certain key commands such as shift+scroll, x+scroll etc, for even more fine tuning.</p>
         </div>
       <div class="tp-code-overlay" id="overlay-feat-3">
         <div class="tp-overlay-header">
@@ -415,7 +415,7 @@
         </div>
         <div class="tp-row-info">
           <span class="tp-feature-title">Slope Filtering</span>
-          <p class="tp-feature-desc">Slope filtering works by sampling the normals in the terrain map, giving the user the ability to only target specific elevations in the terrain, without worrying about being careful around edges such as walls or steep cliffs. This also works the other way around, if the user only wants to work on cliff walls or paint along a cliff wall for example.</p>
+          <p class="tp-feature-desc">Slope filtering works by sampling the normals in the terrain map, giving the user the ability to only target specific elevations in the terrain, without worrying about being careful around edges such as walls or steep cliffs. This also works the other way around, if the user only wants to work on cliff walls or paint along a cliff wall for example. An easy implementation but one that made a huge impact on the end result!</p>
         </div>
       <div class="tp-code-overlay" id="overlay-feat-4">
         <div class="tp-overlay-header">
@@ -705,12 +705,5 @@ uint64_t <span class="fn">AssetBrush::GetSpatialKey</span>(<span class="kw">int<
   <ul class="footer-links">
     <li><a href="https://github.com/fredriklundingit" target="_blank">GitHub</a></li>
     <li><a href="https://www.linkedin.com/in/fredrik-lundin-917a391bb/" target="_blank">LinkedIn</a></li>
-    <li><a href="mailto:fredrik.r.lundin@gmail.com">fredrik.r.lundin@gmail.com</a></li>
-    <li><a href="tel:+46707760906">+46 70 776 09 06</a></li>
-  </ul>
-  <span class="footer-copy">© 2026</span>
-</footer>
-
-<script src="scripts.js"></script>
-</body>
-</html>
+    <li><a href="/cdn-cgi/l/email-protection#2244504746504b490c500c4e574c464b4c62454f434b4e0c414d4f"><span class="__cf_email__" data-cfemail="fc9a8e99988e9597d28ed2908992989592bc9b919d9590d29f9391">[email&#160;protected]</span></a></li>
+    <li><a href="tel:+467
