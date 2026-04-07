@@ -34,7 +34,7 @@
   </div>
 
   <div class="tp-intro">
-    <p class="tp-desc">[]</p>
+    <p class="tp-desc">The UI Editor was my specialization project during my time at The Game Assembly. I've always enjoyed working with UI, especially working close to the UI artists while also having a say in the first impression a game has on a person. I also enjoy the process of trying out how different interfaces appeal to my artists, making UX as an important part of the process as the actual functionality of the editor.</p>
     <div class="tp-jumplinks">
       <span class="tp-jump-label">Jump to section</span>
       <div class="tp-jump-buttons">
@@ -72,11 +72,88 @@
         <div class="tp-overlay-header">
           <span class="tp-overlay-label">Code</span>
           <div style="display:flex;align-items:center;gap:0.8rem;">
+            <div class="tp-overlay-arrows">
+              <button class="tp-overlay-arrow" onclick="overlayNav('ui-feat-1',-1)">←</button>
+              <span class="tp-overlay-counter" id="overlay-counter-ui-feat-1">1 / 2</span>
+              <button class="tp-overlay-arrow" onclick="overlayNav('ui-feat-1',1)">→</button>
+            </div>
             <button class="tp-overlay-close" onclick="carouselToggleCode('ui-feat-1')">✕ Close</button>
           </div>
         </div>
         <div class="tp-overlay-code active" data-slide="0">
-          <pre><code class="language-cpp">// Add your code here</code></pre>
+          <pre><code class="language-cpp">// Example of the toggle component
+class UIToggle_C : public Component, public InputObserver
+{
+public:
+    void Init() override;
+    void Update(float aDeltaTime) override;
+    void Setup(const Tga::UITransformData&amp; aTransform, const Tga::UIToggleData&amp; aToggle, Tga::Vector2f aRefRes);
+    void SetImages(const std::shared_ptr&lt;UIImage_C&gt;&amp; aBackground, const std::shared_ptr&lt;UIImage_C&gt;&amp; aCheckmark);
+    void ReceiveInput(InputEvent anEvent, const std::any&amp; someData) override;
+    void RegisterInput() override;
+    void UnregisterInput() override;
+    void SetOnValueChanged(const std::function&lt;void(bool)&gt;&amp; aCallback) { myOnValueChanged = aCallback; }
+    void SetValue(bool aValue);
+    void SetVisible(bool aVisible) { myTransformData.visible = aVisible; }
+    bool          GetValue()     const { return myValue; }
+    int           GetSortOrder() const { return myTransformData.sortOrder; }
+    bool          IsVisible()    const { return myTransformData.visible; }
+    Tga::Vector2f GetCenter()    const;
+    Tga::Vector2f GetSize()      const { return myTransformData.size; }
+    Tga::Vector2f GetHitSize()   const { return myHitSize; }
+    float         GetRotation()  const { return NCE::GetUIWorldRotationRad(myGameObject); }
+private:
+    void UpdateTransform() const;
+    void ApplyState() const;
+    Tga::UIToggleData    myData = {};
+    Tga::UITransformData myTransformData = {};
+    Tga::Vector2f        myHitSize = {};
+    Tga::Vector2f        myCheckmarkSize = {};
+    Tga::Vector2f        myRefRes = {};
+    bool                 myValue = false;
+    // Holds weak ptrs to the UI image components of the same game object, to manipulate them
+    std::weak_ptr&lt;UIImage_C&gt;  myBackgroundImage;
+    std::weak_ptr&lt;UIImage_C&gt;  myCheckmarkImage;
+    std::function&lt;void(bool)&gt; myOnValueChanged;
+}</code></pre>
+        </div>
+        <div class="tp-overlay-code" data-slide="1">
+          <pre><code class="language-cpp">// Example of adding image components of the same game object to slider and toggle:
+auto makeUIImage = [&amp;](const Tga::StringId&amp; aTexture,
+    const Tga::Color&amp; aColor, int aSortOffset,
+    Tga::Vector2f aSize) -&gt; std::shared_ptr&lt;UIImage_C&gt;
+    {
+        Tga::UIImageData imgData;
+        imgData.texture = aTexture;
+        imgData.color = aColor;
+        Tga::UITransformData transformOverride = *uiTransform;
+        transformOverride.size = aSize;
+        auto img = gameObject-&gt;AddComponent&lt;UIImage_C&gt;();
+        img-&gt;Setup(transformOverride, imgData);
+        img-&gt;SetSortOrder(uiTransform-&gt;sortOrder + aSortOffset);
+        return img;
+    };
+if (uiSlider &amp;&amp; uiTransform)
+{
+    auto trackImg  = makeUIImage(uiSlider-&gt;trackTexture,  uiSlider-&gt;trackColor,  0, uiTransform-&gt;size);
+    auto fillImg   = makeUIImage(uiSlider-&gt;fillTexture,   uiSlider-&gt;fillColor,   1, uiTransform-&gt;size);
+    auto handleImg = makeUIImage(uiSlider-&gt;handleTexture, uiSlider-&gt;handleColor, 2, uiSlider-&gt;handleSize);
+    auto sliderComp = gameObject-&gt;AddComponent&lt;UISlider_C&gt;();
+    sliderComp-&gt;SetImages(trackImg, fillImg, handleImg);
+    sliderComp-&gt;Setup(*uiTransform, *uiSlider, { refWidth, refHeight });
+    sliderComp-&gt;Init();
+}
+if (uiToggle &amp;&amp; uiTransform)
+{
+    Tga::Vector2f ckSize = (uiToggle-&gt;checkmarkSize.x &gt; 0.f &amp;&amp; uiToggle-&gt;checkmarkSize.y &gt; 0.f)
+        ? uiToggle-&gt;checkmarkSize : uiTransform-&gt;size;
+    auto bgImg = makeUIImage(uiToggle-&gt;backgroundOffTexture, uiToggle-&gt;backgroundOffColor, 0, uiTransform-&gt;size);
+    auto ckImg = makeUIImage(uiToggle-&gt;checkmarkTexture, { 0.f, 0.f, 0.f, 0.f }, 1, ckSize);
+    auto toggleComp = gameObject-&gt;AddComponent&lt;UIToggle_C&gt;();
+    toggleComp-&gt;SetImages(bgImg, ckImg);
+    toggleComp-&gt;Setup(*uiTransform, *uiToggle, { refWidth, refHeight });
+    toggleComp-&gt;Init();
+}</code></pre>
         </div>
       </div>
     </div>
@@ -105,11 +182,97 @@
         <div class="tp-overlay-header">
           <span class="tp-overlay-label">Code</span>
           <div style="display:flex;align-items:center;gap:0.8rem;">
+            <div class="tp-overlay-arrows">
+              <button class="tp-overlay-arrow" onclick="overlayNav('ui-feat-2',-1)">←</button>
+              <span class="tp-overlay-counter" id="overlay-counter-ui-feat-2">1 / 2</span>
+              <button class="tp-overlay-arrow" onclick="overlayNav('ui-feat-2',1)">→</button>
+            </div>
             <button class="tp-overlay-close" onclick="carouselToggleCode('ui-feat-2')">✕ Close</button>
           </div>
         </div>
         <div class="tp-overlay-code active" data-slide="0">
-          <pre><code class="language-cpp">// Add your code here</code></pre>
+          <pre><code class="language-cpp">void UIAnimator_C::Update(float aDeltaTime)
+{
+    if (!myIsPlaying) return;
+    const Tga::UIAnimationClip* clip = GetClip(myCurrentClip);
+    if (!clip)
+    {
+        return;
+    }
+    myCurrentTime += aDeltaTime;
+    const float clipEnd = clip-&gt;keyframes.empty() ? 0.f : clip-&gt;keyframes.back().time;
+    if (myCurrentTime &gt;= clipEnd)
+    {
+        if (clip-&gt;loop)
+        {
+            myCurrentTime = 0.f;
+        }
+        else
+        {
+            myCurrentTime = clipEnd;
+            myIsPlaying = false;
+            ApplyFrame(EvaluateClip(*clip, myCurrentTime), clip);
+            if (clip-&gt;trigger == Tga::UIAnimationTrigger::OnClick)
+            {
+                if (auto btn = GetComponent&lt;UIButton_C&gt;())
+                    btn-&gt;ReEvaluateState();
+            }
+            return;
+        }
+    }
+    ApplyFrame(EvaluateClip(*clip, myCurrentTime), clip);
+}</code></pre>
+        </div>
+        <div class="tp-overlay-code" data-slide="1">
+          <pre><code class="language-cpp">// Priority system to not let hover interrupt click for example.
+void UIAnimator_C::FireTrigger(Tga::UIAnimationTrigger aTrigger)
+{
+    auto GetPriority = [](Tga::UIAnimationTrigger t) -&gt; int
+        {
+            switch (t)
+            {
+            case Tga::UIAnimationTrigger::OnClick:
+            case Tga::UIAnimationTrigger::OnPress: return 2;
+            case Tga::UIAnimationTrigger::OnHover: return 1;
+            default:                               return 0;
+            }
+        };
+    const Tga::UIAnimationClip* target = nullptr;
+    for (const auto&amp; clip : myData.clips)
+    {
+        if (clip.trigger == aTrigger)
+        {
+            target = &amp;clip;
+            break;
+        }
+    }
+    if (!target)
+    {
+        return;
+    }
+    if (myIsPlaying)
+    {
+        const Tga::UIAnimationClip* current = GetClip(myCurrentClip);
+        if (current &amp;&amp; !current-&gt;loop)
+        {
+            if (aTrigger != Tga::UIAnimationTrigger::OnNormal)
+            {
+                if (GetPriority(aTrigger) &lt; GetPriority(myCurrentTrigger))
+                {
+                    return;
+                }
+            }
+            else
+            {
+                if (GetPriority(myCurrentTrigger) &gt;= 2)
+                {
+                    return;
+                }
+            }
+        }
+    }
+    Play(target-&gt;name);
+}</code></pre>
         </div>
       </div>
     </div>
@@ -138,11 +301,77 @@
         <div class="tp-overlay-header">
           <span class="tp-overlay-label">Code</span>
           <div style="display:flex;align-items:center;gap:0.8rem;">
+            <div class="tp-overlay-arrows">
+              <button class="tp-overlay-arrow" onclick="overlayNav('ui-feat-3',-1)">←</button>
+              <span class="tp-overlay-counter" id="overlay-counter-ui-feat-3">1 / 2</span>
+              <button class="tp-overlay-arrow" onclick="overlayNav('ui-feat-3',1)">→</button>
+            </div>
             <button class="tp-overlay-close" onclick="carouselToggleCode('ui-feat-3')">✕ Close</button>
           </div>
         </div>
         <div class="tp-overlay-code active" data-slide="0">
-          <pre><code class="language-cpp">// Add your code here</code></pre>
+          <pre><code class="language-cpp">#pragma once
+#include &lt;tge/components/Component.h&gt;
+#include &lt;memory&gt;
+#include &lt;vector&gt;
+class UIRelationship_C : public Component
+{
+public:
+    void SetParent(std::shared_ptr&lt;GameObject&gt; aParent) { myParent = aParent; }
+    GameObject* GetParent() const { return myParent.get(); }
+    void AddChild(std::shared_ptr&lt;GameObject&gt; aChild) { myChildren.push_back(aChild); }
+    const std::vector&lt;std::shared_ptr&lt;GameObject&gt;&gt;&amp; GetChildren() const { return myChildren; }
+private:
+    std::shared_ptr&lt;GameObject&gt; myParent;  // if this parent has a parent
+    std::vector&lt;std::shared_ptr&lt;GameObject&gt;&gt; myChildren;
+};</code></pre>
+        </div>
+        <div class="tp-overlay-code" data-slide="1">
+          <pre><code class="language-cpp">// Applying the relationship component during build:
+
+// Third pass — resolve parent relationships
+for (const auto&amp; object : objects | std::views::values)
+{
+    std::vector&lt;ScenePropertyDefinition&gt; properties;
+    object-&gt;CalculateCombinedPropertySet(aDefinitionManager, properties);
+    const UITransformData* uiTransform = nullptr;
+    for (auto&amp; property : properties)
+    {
+        if (property.type == GetPropertyType&lt;CopyOnWriteWrapper&lt;UITransformData&gt;&gt;())
+        {
+            uiTransform = &amp;property.value.Get&lt;CopyOnWriteWrapper&lt;UITransformData&gt;&gt;()-&gt;Get();
+        }
+    }
+    if (!uiTransform || uiTransform-&gt;parentName.IsEmpty())
+    {
+        continue;
+    }
+    auto child  = objectsByName.find(StringRegistry::RegisterOrGetString(object-&gt;GetName()));
+    auto parent = objectsByName.find(uiTransform-&gt;parentName);
+    if (child == objectsByName.end() || parent == objectsByName.end())
+    {
+        continue;
+    }
+    if (child-&gt;second.get() == parent-&gt;second.get())
+    {
+        printf(&quot;ERROR: Object is its own parent!\n&quot;);
+        continue;
+    }
+    // Add the parent to the child
+    auto childRelationshipComp = child-&gt;second-&gt;GetComponent&lt;UIRelationship_C&gt;();
+    if (!childRelationshipComp)
+    {
+        childRelationshipComp = child-&gt;second-&gt;AddComponent&lt;UIRelationship_C&gt;();
+    }
+    childRelationshipComp-&gt;SetParent(parent-&gt;second);
+    // Add the child to the parent
+    auto parentRelationshipComp = parent-&gt;second-&gt;GetComponent&lt;UIRelationship_C&gt;();
+    if (!parentRelationshipComp)
+    {
+        parentRelationshipComp = parent-&gt;second-&gt;AddComponent&lt;UIRelationship_C&gt;();
+    }
+    parentRelationshipComp-&gt;AddChild(child-&gt;second);
+}</code></pre>
         </div>
       </div>
     </div>
@@ -171,11 +400,55 @@
         <div class="tp-overlay-header">
           <span class="tp-overlay-label">Code</span>
           <div style="display:flex;align-items:center;gap:0.8rem;">
+            <div class="tp-overlay-arrows">
+              <button class="tp-overlay-arrow" onclick="overlayNav('ui-feat-4',-1)">←</button>
+              <span class="tp-overlay-counter" id="overlay-counter-ui-feat-4">1 / 2</span>
+              <button class="tp-overlay-arrow" onclick="overlayNav('ui-feat-4',1)">→</button>
+            </div>
             <button class="tp-overlay-close" onclick="carouselToggleCode('ui-feat-4')">✕ Close</button>
           </div>
         </div>
         <div class="tp-overlay-code active" data-slide="0">
-          <pre><code class="language-cpp">// Add your code here</code></pre>
+          <pre><code class="language-cpp">// First pass — find canvas and extract ref res
+for (const auto&amp; object : objects | std::views::values)
+{
+    std::vector&lt;ScenePropertyDefinition&gt; properties;
+    object-&gt;CalculateCombinedPropertySet(aDefinitionManager, properties);
+    for (auto&amp; property : properties)
+    {
+        if (property.type == GetPropertyType&lt;CopyOnWriteWrapper&lt;UICanvasData&gt;&gt;())
+        {
+            const UICanvasData&amp; canvasData = property.value.Get&lt;CopyOnWriteWrapper&lt;UICanvasData&gt;&gt;()-&gt;Get();
+            refWidth  = canvasData.referenceResolution.x;
+            refHeight = canvasData.referenceResolution.y;
+        }
+        if (property.type == GetPropertyType&lt;CopyOnWriteWrapper&lt;SceneReference&gt;&gt;())
+        {
+            const SceneReference&amp; backgroundScene = property.value.Get&lt;CopyOnWriteWrapper&lt;SceneReference&gt;&gt;()-&gt;Get();
+            if (backgroundScene.enabled)
+            {
+                scene-&gt;SetBackgroundScenePath(backgroundScene.path);
+            }
+        }
+    }
+}</code></pre>
+        </div>
+        <div class="tp-overlay-code" data-slide="1">
+          <pre><code class="language-cpp">// Setting the background scene during rebuilds of the UI scene when changed.
+if (!myLiveScene-&gt;GetBackgroundScenePath().IsEmpty())
+{
+    if (existingBackground)
+    {
+        // Reuse the existing background scene — no reload needed
+        myLiveScene-&gt;SetBackgroundScene(existingBackground);
+    }
+    else
+    {
+        aSceneManager.LoadScene(SceneID::UIMainMenuBackground, false);
+        auto bgScene = aSceneManager.GetRunTimeScene(SceneID::UIMainMenuBackground);
+        bgScene-&gt;SetupAsBackground();
+    }
+}</code></pre>
         </div>
       </div>
     </div>
