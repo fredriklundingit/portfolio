@@ -184,13 +184,17 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // Project/contribution videos click → video popup
-  document.querySelectorAll('.proj-twocol-media video, .proj-hero video, .proj-contribution-media video, .proj-contribution-media-full video, .proj-compare video, .proj-twocol-media video, .other-project-thumb video').forEach(vid => {
-    vid.style.cursor = 'pointer';
-    vid.addEventListener('click', () => {
-      const src = vid.getAttribute('src') || vid.dataset.src;
-      if (src) videoPopupOpen(src);
+  // Only on proj-page elements, not tool pages
+  const projPage = document.querySelector('.proj-page');
+  if (projPage) {
+    projPage.querySelectorAll('.proj-twocol-media video, .proj-hero video, .proj-contribution-media video, .proj-contribution-media-full video, .proj-compare video, .other-project-thumb video').forEach(vid => {
+      vid.style.cursor = 'pointer';
+      vid.addEventListener('click', () => {
+        const src = vid.getAttribute('src') || vid.dataset.src;
+        if (src) videoPopupOpen(src);
+      });
     });
-  });
+  }
 
   // ── Video setup ───────────────────────────────────────────────
   document.querySelectorAll('video[data-src]').forEach(vid => {
