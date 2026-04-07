@@ -207,6 +207,18 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // Click outside code overlay to close it
+  document.querySelectorAll('.tp-row').forEach(row => {
+    row.addEventListener('click', e => {
+      const overlay = row.querySelector('.tp-code-overlay');
+      if (!overlay || !overlay.classList.contains('visible')) return;
+      if (!overlay.contains(e.target)) {
+        const id = row.id;
+        if (id) carouselToggleCode(id);
+      }
+    });
+  });
+
   // Carousel track click → video popup (tool pages)
   document.querySelectorAll('.tp-carousel-track').forEach(track => {
     track.addEventListener('click', () => {
