@@ -779,28 +779,11 @@ uint64_t AssetBrush::GetSpatialKey(int cellX, int cellZ)
 
 </div>
 
-<!-- LIGHTBOX -->
-<div id="tp-lightbox" class="tp-lightbox" onclick="lbClickOutside(event)">
-  <div class="tp-lightbox-inner">
-    <div class="tp-lightbox-header">
-      <span class="tp-lightbox-title" id="lb-title"></span>
-      <div class="tp-lightbox-nav">
-        <button class="tp-lightbox-arrow" onclick="lbNav(-1)">←</button>
-        <span class="tp-lightbox-counter" id="lb-counter">1 / 1</span>
-        <button class="tp-lightbox-arrow" onclick="lbNav(1)">→</button>
-        <button class="tp-lightbox-close" onclick="lbClose()">close</button>
-      </div>
-    </div>
-    <div class="tp-lightbox-body">
-      <div class="tp-lightbox-video" id="lb-video"></div>
-      <div class="tp-lightbox-code">
-        <div class="tp-lightbox-code-header">CODE</div>
-        <div class="tp-lightbox-code-body" id="lb-code"></div>
-      </div>
-      <div class="tp-lightbox-footer">
-        <p class="tp-lightbox-desc" id="lb-desc"></p>
-      </div>
-    </div>
+<!-- VIDEO POPUP -->
+<div id="video-popup" class="video-popup">
+  <div class="video-popup-inner">
+    <button class="video-popup-close" onclick="videoPopupClose()">close ✕</button>
+    <video id="video-popup-vid" muted loop playsinline controls></video>
   </div>
 </div>
 

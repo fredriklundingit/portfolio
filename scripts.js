@@ -1,77 +1,26 @@
-// ── LIGHTBOX ─────────────────────────────────────────────────
-let lbCurrentId   = null;
-let lbCurrentSlide = 0;
-
-function lbOpen(carouselId) {
-  lbCurrentId = carouselId;
-  const carousel = document.querySelector(`[data-carousel="${carouselId}"]`);
-  const slides   = carousel.querySelectorAll('.tp-carousel-slide');
-  lbCurrentSlide = [...slides].findIndex(s => s.classList.contains('active'));
-
-  const row      = carousel.closest('.tp-row');
-  const title    = row.querySelector('.tp-feature-title')?.textContent || '';
-  const desc     = row.querySelector('.tp-feature-desc')?.textContent  || '';
-  const overlay  = document.getElementById(`overlay-${carouselId}`);
-  const oCodes   = overlay ? overlay.querySelectorAll('.tp-overlay-code') : [];
-
-  const videoEl = document.getElementById('lb-video');
-  videoEl.innerHTML = '';
-  slides.forEach((s, i) => {
-    const div = document.createElement('div');
-    div.className = 'tp-lightbox-slide' + (i === lbCurrentSlide ? ' active' : '');
-    div.innerHTML = s.innerHTML;
-    videoEl.appendChild(div);
-  });
-
-  const codeEl = document.getElementById('lb-code');
-  codeEl.innerHTML = '';
-  if (oCodes.length) {
-    oCodes.forEach((c, i) => {
-      const div = document.createElement('div');
-      div.className = 'tp-lightbox-code-slide' + (i === lbCurrentSlide ? ' active' : '');
-      div.innerHTML = c.innerHTML;
-      codeEl.appendChild(div);
-    });
-  } else {
-    codeEl.innerHTML = '<div class="tp-lightbox-code-slide active"><pre><span class="cmt">// Add your code here</span></pre></div>';
-  }
-
-  document.getElementById('lb-title').textContent   = title;
-  document.getElementById('lb-desc').textContent    = desc;
-  document.getElementById('lb-counter').textContent = `${lbCurrentSlide + 1} / ${slides.length}`;
-
-  document.getElementById('tp-lightbox').classList.add('open');
+// ── VIDEO POPUP ───────────────────────────────────────────────
+function videoPopupOpen(src) {
+  const popup = document.getElementById('video-popup');
+  const vid   = document.getElementById('video-popup-vid');
+  if (!popup || !vid) return;
+  vid.src = src;
+  vid.play().catch(() => {});
+  popup.classList.add('open');
   document.body.style.overflow = 'hidden';
 }
 
-function lbClose() {
-  document.getElementById('tp-lightbox').classList.remove('open');
+function videoPopupClose() {
+  const popup = document.getElementById('video-popup');
+  const vid   = document.getElementById('video-popup-vid');
+  if (!popup || !vid) return;
+  vid.pause();
+  vid.src = '';
+  popup.classList.remove('open');
   document.body.style.overflow = '';
 }
 
-function lbClickOutside(e) {
-  if (e.target === document.getElementById('tp-lightbox')) lbClose();
-}
-
-function lbNav(dir) {
-  const videoSlides = document.querySelectorAll('#lb-video .tp-lightbox-slide');
-  const codeSlides  = document.querySelectorAll('#lb-code .tp-lightbox-code-slide');
-  const total = videoSlides.length;
-
-  videoSlides[lbCurrentSlide].classList.remove('active');
-  codeSlides[lbCurrentSlide]?.classList.remove('active');
-
-  lbCurrentSlide = (lbCurrentSlide + dir + total) % total;
-
-  videoSlides[lbCurrentSlide].classList.add('active');
-  codeSlides[lbCurrentSlide]?.classList.add('active');
-  document.getElementById('lb-counter').textContent = `${lbCurrentSlide + 1} / ${total}`;
-}
-
 document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') lbClose();
-  if (e.key === 'ArrowLeft')  lbNav(-1);
-  if (e.key === 'ArrowRight') lbNav(1);
+  if (e.key === 'Escape') videoPopupClose();
 });
 
 // ── CAROUSEL / CODE ───────────────────────────────────────────
@@ -214,13 +163,36 @@ document.addEventListener('DOMContentLoaded', () => {
   document.addEventListener('dragover',  e => e.preventDefault());
   document.addEventListener('drop',      e => e.preventDefault());
 
-  // Carousel track click → lightbox (tool pages only)
+  // Click outside popup to close
+  const popup = document.getElementById('video-popup');
+  if (popup) {
+    popup.addEventListener('click', e => {
+      if (e.target === popup) videoPopupClose();
+    });
+  }
+
+  // Carousel track click → video popup (tool pages)
   document.querySelectorAll('.tp-carousel-track').forEach(track => {
-    const id = track.closest('[data-carousel]')?.dataset.carousel;
-    if (id) track.addEventListener('click', () => lbOpen(id));
+    track.addEventListener('click', () => {
+      const activeSlide = track.querySelector('.tp-carousel-slide.active');
+      if (!activeSlide) return;
+      const vid = activeSlide.querySelector('video');
+      if (!vid) return;
+      const src = vid.getAttribute('src') || vid.dataset.src;
+      if (src) videoPopupOpen(src);
+    });
   });
 
-  // Video setup
+  // Project/contribution videos click → video popup
+  document.querySelectorAll('.proj-twocol-media video, .proj-hero video, .proj-contribution-media video, .proj-contribution-media-full video, .proj-compare video, .proj-twocol-media video, .other-project-thumb video').forEach(vid => {
+    vid.style.cursor = 'pointer';
+    vid.addEventListener('click', () => {
+      const src = vid.getAttribute('src') || vid.dataset.src;
+      if (src) videoPopupOpen(src);
+    });
+  });
+
+  // ── Video setup ───────────────────────────────────────────────
   document.querySelectorAll('video[data-src]').forEach(vid => {
     if (vid.closest('.tool-card')) {
       setupToolVideo(vid);
