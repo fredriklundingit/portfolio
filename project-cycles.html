@@ -44,8 +44,8 @@
     </div>
 
     <!-- INTRO -->
-    <div class="proj-intro">
-      <p>A 3D action game built on a custom engine. I was responsible for several core systems — render pipeline, scene management, enemy AI and audio — working closely with other disciplines throughout.</p>
+    <div class="proj-intro" style="text-align:left; margin:0;">
+      <p>The first game created by Ashleep Studios. My focus was on being responsible for getting both the render pipeline and the workflow from editor to ingame working, including loading assets and managing the game state stack to handle the different game states. I also created the foundation for both the enemies and the VFX manager and VFX loading.</p>
     </div>
 
     <span class="proj-section-label">Contributions</span>
@@ -58,31 +58,31 @@
         </div>
         <div class="proj-twocol-text">
           <span class="proj-contribution-title">Render Pipeline</span>
-          <p class="proj-contribution-desc">Responsible for the full render pipeline. Had to balance requests from other disciplines while building something fast and maintainable. Collecting render data each frame and setting up all passes — shadows, GBuffer, lighting, bloom and post processing.</p>
-          <div class="proj-code-block" style="display:block; max-height:420px; overflow:auto;"><pre><code class="language-cpp"><span class="cmt">// ***** SHADOWS *****</span>
-graphicsStateStack.<span class="fn">Push</span>();
-graphicsStateStack.<span class="fn">SetRasterizerState</span>(RasterizerState::Shadow);
-graphicsStateStack.<span class="fn">SetCamera</span>(myShadowCamera);
+          <p class="proj-contribution-desc">I was responsible for the full render pipeline. One thing that was particularly challenging was managing requests from several disciplines at once, while also getting it up and running fast so my programming teammates could start doing their job as fast as possible. I built a system where I collected information from the game objects each frame resulting in different passes such as shadows, GBuffer, deferred lighting, water, bloom and post processing.</p>
+          <div class="proj-code-block" style="display:block; max-height:420px; overflow:auto;"><pre><code class="language-cpp">// ***** SHADOWS *****
+graphicsStateStack.Push();
+graphicsStateStack.SetRasterizerState(RasterizerState::Shadow);
+graphicsStateStack.SetCamera(myShadowCamera);
 
-myRenderData.shadowMap.<span class="fn">Clear</span>();
-myRenderData.shadowMap.<span class="fn">SetAsActiveTarget</span>();
-<span class="fn">DrawModelsToShadowMap</span>(shadowCasters, graphicsEngine, graphicsStateStack);
+myRenderData.shadowMap.Clear();
+myRenderData.shadowMap.SetAsActiveTarget();
+DrawModelsToShadowMap(shadowCasters, graphicsEngine, graphicsStateStack);
 
-graphicsStateStack.<span class="fn">Pop</span>();
+graphicsStateStack.Pop();
 
-<span class="cmt">// ***** GBUFFER PASS *****</span>
-graphicsStateStack.<span class="fn">Push</span>();
+// ***** GBUFFER PASS *****
+graphicsStateStack.Push();
 
-myGBuffer.<span class="fn">ClearTextures</span>();
+myGBuffer.ClearTextures();
 
-std::array&lt;ID3D11ShaderResourceView*, <span class="num">5</span>&gt; nullViews = {};
-Tga::DX11::Context-&gt;<span class="fn">PSSetShaderResources</span>(<span class="num">6</span>, <span class="num">5</span>, nullViews.<span class="fn">data</span>());
+std::array&lt;ID3D11ShaderResourceView*, 5&gt; nullViews = {};
+Tga::DX11::Context-&gt;PSSetShaderResources(6, 5, nullViews.data());
 
-graphicsStateStack.<span class="fn">SetBlendState</span>(BlendState::Disabled);
-myGBuffer.<span class="fn">SetAsActiveTarget</span>(DX11::DepthBuffer);
-<span class="fn">DrawModelsToGBuffer</span>(culledOpaqueModels, graphicsStateStack);
+graphicsStateStack.SetBlendState(BlendState::Disabled);
+myGBuffer.SetAsActiveTarget(DX11::DepthBuffer);
+DrawModelsToGBuffer(culledOpaqueModels, graphicsStateStack);
 
-graphicsStateStack.<span class="fn">Pop</span>();</code></pre></div>
+graphicsStateStack.Pop();</code></pre></div>
         </div>
       </div>
 
@@ -91,7 +91,7 @@ graphicsStateStack.<span class="fn">Pop</span>();</code></pre></div>
         <div class="proj-twocol">
           <div class="proj-twocol-text">
             <span class="proj-contribution-title">Scene & Game Object Management</span>
-            <p class="proj-contribution-desc">Responsible for loading and caching scenes and scene objects, including the full pipeline from engine to editor. Built a Game Object factory and a Property applier to keep it maintainable and readable — every programmer on the team was going to work with this the entire project. The registry pattern in the factory made adding new object types a one-liner.</p>
+            <p class="proj-contribution-desc">Responsible for loading and caching scenes and scene objects, including the full pipeline from engine to editor. I built a Game Object factory and a Property applier to keep it maintainable and readable since every programmer on the team was going to work with this the entire project. I created a registry pattern where all classes that were supposed to function as a game object were registered, making adding a new one basically a one-liner, which helped a lot.</p>
           </div>
           <div class="proj-twocol-code"><div class="proj-code-slides">
             <div class="proj-code-slides-bar">
@@ -99,66 +99,66 @@ graphicsStateStack.<span class="fn">Pop</span>();</code></pre></div>
               <span class="proj-slide-counter">1 / 2</span>
               <button class="proj-slide-arrow" onclick="projSlideNav(this,1)">→</button>
             </div>
-            <div class="proj-code-slide active"><div class="proj-code-block" style="display:block; max-height:420px; overflow:auto;"><pre><code class="language-cpp">std::weak_ptr&lt;GameObject&gt; <span class="fn">SceneManager::BuildGameObject</span>(
+            <div class="proj-code-slide active"><div class="proj-code-block" style="display:block; max-height:420px; overflow:auto;"><pre><code class="language-cpp">std::weak_ptr&lt;GameObject&gt; SceneManager::BuildGameObject(
     Tga::TextureManager&amp; aTextureManager,
-    <span class="kw">const</span> std::shared_ptr&lt;GameScene&gt;&amp; aGameScene,
+    const std::shared_ptr&lt;GameScene&gt;&amp; aGameScene,
     std::vector&lt;Tga::ScenePropertyDefinition&gt;&amp; someObjectProperties,
-    <span class="kw">const</span> Tga::Matrix4x4f&amp; anObjectTransform, <span class="kw">bool</span> aMarkForAdd)
+    const Tga::Matrix4x4f&amp; anObjectTransform, bool aMarkForAdd)
 {
-    <span class="kw">bool</span> isPlayer = <span class="kw">false</span>;
+    bool isPlayer = false;
     TagData objectTagData = { Tag::Other };
 
-    <span class="cmt">// Find tag in ObjectProperties</span>
-    <span class="kw">for</span> (<span class="kw">auto</span>&amp; property : someObjectProperties)
+    // Find tag in ObjectProperties
+    for (auto&amp; property : someObjectProperties)
     {
-        <span class="kw">if</span> (property.type == <span class="fn">GetPropertyType</span>&lt;CopyOnWriteWrapper&lt;TagData&gt;&gt;())
+        if (property.type == GetPropertyType&lt;CopyOnWriteWrapper&lt;TagData&gt;&gt;())
         {
-            objectTagData = property.value.<span class="fn">Get</span>&lt;CopyOnWriteWrapper&lt;TagData&gt;&gt;()-&gt;<span class="fn">Get</span>();
-            <span class="kw">break</span>;
+            objectTagData = property.value.Get&lt;CopyOnWriteWrapper&lt;TagData&gt;&gt;()-&gt;Get();
+            break;
         }
     }
 
-    GameObjectFactory <span class="fn">gameObjectFactory</span>(someObjectProperties);
-    std::shared_ptr&lt;GameObject&gt; gameObject = gameObjectFactory.<span class="fn">CreateGameObject</span>(objectTagData, isPlayer);
+    GameObjectFactory gameObjectFactory(someObjectProperties);
+    std::shared_ptr&lt;GameObject&gt; gameObject = gameObjectFactory.CreateGameObject(objectTagData, isPlayer);
 
-    PropertyApplier::<span class="fn">ApplyGeneralProperties</span>(aTextureManager, gameObject, someObjectProperties, anObjectTransform);
+    PropertyApplier::ApplyGeneralProperties(aTextureManager, gameObject, someObjectProperties, anObjectTransform);
 
-    gameObject-&gt;<span class="fn">Init</span>();
+    gameObject-&gt;Init();
 
-    <span class="kw">if</span> (<span class="kw">auto</span> actor = std::dynamic_pointer_cast&lt;Actor, GameObject&gt;(gameObject))
+    if (auto actor = std::dynamic_pointer_cast&lt;Actor, GameObject&gt;(gameObject))
     {
-        actor-&gt;<span class="fn">ApplyProps</span>(someObjectProperties);
+        actor-&gt;ApplyProps(someObjectProperties);
     }
 
-    aGameScene-&gt;<span class="fn">AddGameObject</span>(gameObject, aMarkForAdd);
-    <span class="kw">return</span> gameObject;
-}</code></pre></div></div><div class="proj-code-slide"><div class="proj-code-block" style="display:block; max-height:420px; overflow:auto;"><pre><code class="language-cpp"><span class="fn">GameObjectFactory::GameObjectFactory</span>(
-    <span class="kw">const</span> std::vector&lt;Tga::ScenePropertyDefinition&gt;&amp; aObjectProperties)
+    aGameScene-&gt;AddGameObject(gameObject, aMarkForAdd);
+    return gameObject;
+}</code></pre></div></div><div class="proj-code-slide"><div class="proj-code-block" style="display:block; max-height:420px; overflow:auto;"><pre><code class="language-cpp">GameObjectFactory::GameObjectFactory(
+    const std::vector&lt;Tga::ScenePropertyDefinition&gt;&amp; aObjectProperties)
     : myObjectProperties(aObjectProperties)
 {
-    <span class="cmt">// Register known game object types — add new types here</span>
+    // Register known game object types — add new types here
     myGameObjectRegistry =
     {
-        { Tga::Tag::Other,   [] { <span class="kw">return</span> std::make_shared&lt;GameObject&gt;(); } },
-        { Tga::Tag::Player,  [] { <span class="kw">return</span> std::make_shared&lt;Player&gt;(); } },
-        { Tga::Tag::Melee,   [] { <span class="kw">return</span> std::make_shared&lt;WickerMan&gt;(); } },
-        { Tga::Tag::Ranged,  [] { <span class="kw">return</span> std::make_shared&lt;BogHag&gt;(); } },
-        { Tga::Tag::Boss,    [] { <span class="kw">return</span> std::make_shared&lt;Boss&gt;(); } },
+        { Tga::Tag::Other,   [] { return std::make_shared&lt;GameObject&gt;(); } },
+        { Tga::Tag::Player,  [] { return std::make_shared&lt;Player&gt;(); } },
+        { Tga::Tag::Melee,   [] { return std::make_shared&lt;WickerMan&gt;(); } },
+        { Tga::Tag::Ranged,  [] { return std::make_shared&lt;BogHag&gt;(); } },
+        { Tga::Tag::Boss,    [] { return std::make_shared&lt;Boss&gt;(); } },
         { Tga::Tag::Attack,  [&amp;]() -&gt; std::shared_ptr&lt;GameObject&gt;
         {
-            <span class="kw">if</span> (<span class="kw">auto</span> property = PropertyApplier::<span class="fn">FindProperty</span>&lt;Tga::AttackProp&gt;(myObjectProperties))
+            if (auto property = PropertyApplier::FindProperty&lt;Tga::AttackProp&gt;(myObjectProperties))
             {
-                <span class="kw">switch</span> (property-&gt;<span class="fn">Get</span>().type)
+                switch (property-&gt;Get().type)
                 {
-                    <span class="kw">case</span> Tga::AttackProp::AttackType::StaticAttack:
-                        <span class="kw">return</span> std::make_shared&lt;Attack&gt;(property-&gt;<span class="fn">Get</span>());
-                    <span class="kw">case</span> Tga::AttackProp::AttackType::ProjectileAttack:
-                        <span class="kw">return</span> std::make_shared&lt;ProjectileAttack&gt;(property-&gt;<span class="fn">Get</span>());
-                    <span class="kw">default</span>:
-                        <span class="kw">return</span> std::make_shared&lt;Attack&gt;(property-&gt;<span class="fn">Get</span>());
+                    case Tga::AttackProp::AttackType::StaticAttack:
+                        return std::make_shared&lt;Attack&gt;(property-&gt;Get());
+                    case Tga::AttackProp::AttackType::ProjectileAttack:
+                        return std::make_shared&lt;ProjectileAttack&gt;(property-&gt;Get());
+                    default:
+                        return std::make_shared&lt;Attack&gt;(property-&gt;Get());
                 }
             }
-            <span class="kw">return</span> std::make_shared&lt;GameObject&gt;();
+            return std::make_shared&lt;GameObject&gt;();
         }},
     };
 }</code></pre></div></div>
@@ -169,27 +169,27 @@ graphicsStateStack.<span class="fn">Pop</span>();</code></pre></div>
       <!-- 3. VFX MANAGER — code left, text right -->
       <div class="proj-contribution-border">
         <div class="proj-twocol proj-twocol-reverse">
-          <div class="proj-twocol-code"><div class="proj-code-block" style="display:block; max-height:420px; overflow:auto;"><pre><code class="language-cpp"><span class="kw">class</span> <span class="fn">VFXManager</span>
+          <div class="proj-twocol-code"><div class="proj-code-block" style="display:block; max-height:420px; overflow:auto;"><pre><code class="language-cpp">class VFXManager
 {
-<span class="kw">public</span>:
-    VFXAsset <span class="fn">GetVFX</span>(Tga::StringId aVFX);
-    <span class="kw">const</span> std::unordered_map&lt;Tga::StringId, VFXAsset&gt;&amp; <span class="fn">GetCached3DVFX</span>();
+public:
+    VFXAsset GetVFX(Tga::StringId aVFX);
+    const std::unordered_map&lt;Tga::StringId, VFXAsset&gt;&amp; GetCached3DVFX();
 
-    <span class="kw">static</span> VFXManager* <span class="fn">GetInstance</span>();
-    <span class="kw">static void</span> <span class="fn">DestroyInstance</span>();
+    static VFXManager* GetInstance();
+    static void DestroyInstance();
 
-    <span class="kw">void</span> <span class="fn">CacheVfx</span>(std::vector&lt;Tga::ScenePropertyDefinition&gt;&amp; someProps, Tga::TextureManager&amp; aTextureManager);
-    <span class="kw">void</span> <span class="fn">PlayVFX</span>(Tga::StringId id, <span class="kw">const</span> Tga::Vector3f&amp; pos);
-    <span class="kw">void</span> <span class="fn">PlayVFX</span>(Tga::StringId id, <span class="kw">const</span> Tga::Matrix4x4f&amp; aTransform);
-    std::shared_ptr&lt;SpawnedObject&gt; <span class="fn">PlayVFXReturnObject</span>(Tga::StringId vfxName, <span class="kw">const</span> Tga::Matrix4x4f&amp; aTransform);
+    void CacheVfx(std::vector&lt;Tga::ScenePropertyDefinition&gt;&amp; someProps, Tga::TextureManager&amp; aTextureManager);
+    void PlayVFX(Tga::StringId id, const Tga::Vector3f&amp; pos);
+    void PlayVFX(Tga::StringId id, const Tga::Matrix4x4f&amp; aTransform);
+    std::shared_ptr&lt;SpawnedObject&gt; PlayVFXReturnObject(Tga::StringId vfxName, const Tga::Matrix4x4f&amp; aTransform);
 
-<span class="kw">private</span>:
-    <span class="kw">static</span> VFXManager* ourInstance;
+private:
+    static VFXManager* ourInstance;
     std::unordered_map&lt;Tga::StringId, VFXAsset&gt; myCachedVFXAssets;
 };</code></pre></div></div>
           <div class="proj-twocol-text">
             <span class="proj-contribution-title">VFX Manager</span>
-            <p class="proj-contribution-desc">Built a dedicated VFX Manager to cache and hold VFX assets, with a clean public interface for triggering them by ID from anywhere in the game.</p>
+            <p class="proj-contribution-desc">I built a dedicated VFX Manager to cache and hold VFX assets, with a clean public interface for triggering them by ID from anywhere in the game.</p>
           </div>
         </div>
       </div>
@@ -199,7 +199,7 @@ graphicsStateStack.<span class="fn">Pop</span>();</code></pre></div>
         <div class="proj-twocol">
           <div class="proj-twocol-text">
             <span class="proj-contribution-title">Enemy State Machine & Baseline Behaviour</span>
-            <p class="proj-contribution-desc">Built the enemy foundation for colleagues to iterate on — a state machine with shareable states across all enemy types, while still allowing custom unique states per enemy. Each controller registers its own states on startup, keeping things decoupled and easy to extend.</p>
+            <p class="proj-contribution-desc">I built the enemy foundation for colleagues to iterate on, this included a state machine with shareable states across all enemy types, while still allowing custom unique states per enemy. Each unique enemy registers its own states on startup, keeping things decoupled and easy to extend.</p>
           </div>
           <div class="proj-twocol-code"><div class="proj-code-slides">
             <div class="proj-code-slides-bar">
@@ -207,48 +207,48 @@ graphicsStateStack.<span class="fn">Pop</span>();</code></pre></div>
               <span class="proj-slide-counter">1 / 3</span>
               <button class="proj-slide-arrow" onclick="projSlideNav(this,1)">→</button>
             </div>
-            <div class="proj-code-slide active"><div class="proj-code-block" style="display:block; max-height:420px; overflow:auto;"><pre><code class="language-cpp"><span class="kw">void</span> <span class="fn">StateMachine::RegisterState</span>(EnemyStateID aStateID, std::unique_ptr&lt;EnemyState&gt; anEnemyState)
+            <div class="proj-code-slide active"><div class="proj-code-block" style="display:block; max-height:420px; overflow:auto;"><pre><code class="language-cpp">void StateMachine::RegisterState(EnemyStateID aStateID, std::unique_ptr&lt;EnemyState&gt; anEnemyState)
 {
-    anEnemyState-&gt;<span class="fn">SetOwner</span>(<span class="kw">this</span>);
-    myCachedStates.<span class="fn">try_emplace</span>(aStateID, std::move(anEnemyState));
+    anEnemyState-&gt;SetOwner(this);
+    myCachedStates.try_emplace(aStateID, std::move(anEnemyState));
 }
 
-<span class="kw">void</span> <span class="fn">StateMachine::ChangeState</span>(Enemy* anEnemy, EnemyStateID anEnemyStateID)
+void StateMachine::ChangeState(Enemy* anEnemy, EnemyStateID anEnemyStateID)
 {
-    <span class="kw">if</span> (myCachedStates.<span class="fn">contains</span>(anEnemyStateID))
+    if (myCachedStates.contains(anEnemyStateID))
     {
         myCurrentStateID = anEnemyStateID;
-        myCurrentState-&gt;<span class="fn">OnExit</span>(anEnemy);
-        myCurrentState = myCachedStates.<span class="fn">at</span>(anEnemyStateID).<span class="fn">get</span>();
-        anEnemy-&gt;<span class="fn">SetAnimation</span>(anEnemyStateID);
-        myCurrentState-&gt;<span class="fn">OnEnter</span>(anEnemy);
+        myCurrentState-&gt;OnExit(anEnemy);
+        myCurrentState = myCachedStates.at(anEnemyStateID).get();
+        anEnemy-&gt;SetAnimation(anEnemyStateID);
+        myCurrentState-&gt;OnEnter(anEnemy);
     }
-}</code></pre></div></div><div class="proj-code-slide"><div class="proj-code-block" style="display:block; max-height:420px; overflow:auto;"><pre><code class="language-cpp"><span class="kw">void</span> <span class="fn">BogZombieController::Init</span>()
+}</code></pre></div></div><div class="proj-code-slide"><div class="proj-code-block" style="display:block; max-height:420px; overflow:auto;"><pre><code class="language-cpp">void BogZombieController::Init()
 {
-    <span class="cmt">// Register all states for this enemy type</span>
-    myStateMachine.<span class="fn">RegisterState</span>(EnemyStateID::Idle,   std::make_unique&lt;IdleState&gt;());
-    myStateMachine.<span class="fn">RegisterState</span>(EnemyStateID::Wander, std::make_unique&lt;WanderState&gt;());
-    myStateMachine.<span class="fn">RegisterState</span>(EnemyStateID::Engage, std::make_unique&lt;EngageState&gt;());
-    myStateMachine.<span class="fn">RegisterState</span>(EnemyStateID::Attack, std::make_unique&lt;AttackState&gt;());
+    // Register all states for this enemy type
+    myStateMachine.RegisterState(EnemyStateID::Idle,   std::make_unique&lt;IdleState&gt;());
+    myStateMachine.RegisterState(EnemyStateID::Wander, std::make_unique&lt;WanderState&gt;());
+    myStateMachine.RegisterState(EnemyStateID::Engage, std::make_unique&lt;EngageState&gt;());
+    myStateMachine.RegisterState(EnemyStateID::Attack, std::make_unique&lt;AttackState&gt;());
 
-    myStateMachine.<span class="fn">SetInitialState</span>(EnemyStateID::Idle);
-}</code></pre></div></div><div class="proj-code-slide"><div class="proj-code-block" style="display:block; max-height:420px; overflow:auto;"><pre><code class="language-cpp"><span class="kw">void</span> <span class="fn">AttackState::Update</span>(Enemy* anEnemy, [[maybe_unused]] <span class="kw">float</span> aDeltaTime)
+    myStateMachine.SetInitialState(EnemyStateID::Idle);
+}</code></pre></div></div><div class="proj-code-slide"><div class="proj-code-block" style="display:block; max-height:420px; overflow:auto;"><pre><code class="language-cpp">void AttackState::Update(Enemy* anEnemy, [[maybe_unused]] float aDeltaTime)
 {
-    <span class="kw">const float</span> attackRange = anEnemy-&gt;<span class="fn">GetData</span>().attackRange;
-    <span class="kw">const</span> Tga::Vector3f playerPosition = Blackboard::<span class="fn">GetInstance</span>()-&gt;<span class="fn">GetVector3</span>(<span class="str">"playerPosition"</span>);
-    <span class="kw">const</span> Tga::Vector3f difference = playerPosition - anEnemy-&gt;<span class="fn">GetPosition</span>();
+    const float attackRange = anEnemy-&gt;GetData().attackRange;
+    const Tga::Vector3f playerPosition = Blackboard::GetInstance()-&gt;GetVector3("playerPosition");
+    const Tga::Vector3f difference = playerPosition - anEnemy-&gt;GetPosition();
 
-    <span class="kw">if</span> (difference.<span class="fn">Length</span>() &gt; attackRange)
+    if (difference.Length() &gt; attackRange)
     {
-        myStateMachine-&gt;<span class="fn">ChangeState</span>(anEnemy, EnemyStateID::Engage);
-        <span class="kw">return</span>;
+        myStateMachine-&gt;ChangeState(anEnemy, EnemyStateID::Engage);
+        return;
     }
 
-    anEnemy-&gt;<span class="fn">RotateTowardsVelocityOrDirection</span>(difference, aDeltaTime);
+    anEnemy-&gt;RotateTowardsVelocityOrDirection(difference, aDeltaTime);
 
-    <span class="kw">if</span> (anEnemy-&gt;<span class="fn">TryAttack</span>())
+    if (anEnemy-&gt;TryAttack())
     {
-        anEnemy-&gt;<span class="fn">SetAnimation</span>(EnemyStateID::Attack);
+        anEnemy-&gt;SetAnimation(EnemyStateID::Attack);
     }
 }</code></pre></div></div>
           </div></div>
@@ -258,28 +258,28 @@ graphicsStateStack.<span class="fn">Pop</span>();</code></pre></div>
       <!-- 5. AUDIO MANAGER — code left, text right -->
       <div class="proj-contribution-border">
         <div class="proj-twocol proj-twocol-reverse">
-          <div class="proj-twocol-code"><div class="proj-code-block" style="display:block; max-height:420px; overflow:auto;"><pre><code class="language-cpp"><span class="kw">bool</span> <span class="fn">AudioManager::Init</span>()
+          <div class="proj-twocol-code"><div class="proj-code-block" style="display:block; max-height:420px; overflow:auto;"><pre><code class="language-cpp">bool AudioManager::Init()
 {
     FMOD_RESULT result;
-    myStudioSystem = <span class="kw">nullptr</span>;
-    result = FMOD::Studio::System::<span class="fn">create</span>(&amp;myStudioSystem);
+    myStudioSystem = nullptr;
+    result = FMOD::Studio::System::create(&amp;myStudioSystem);
 
-    <span class="kw">if</span> (result != FMOD_OK)
+    if (result != FMOD_OK)
     {
-        <span class="kw">return</span> <span class="kw">false</span>;
+        return false;
     }
 
-    myStudioSystem-&gt;<span class="fn">initialize</span>(
-        <span class="num">1024</span>,
+    myStudioSystem-&gt;initialize(
+        1024,
         FMOD_STUDIO_INIT_LIVEUPDATE | FMOD_STUDIO_INIT_NORMAL,
         FMOD_INIT_NORMAL,
-        <span class="kw">nullptr</span>
+        nullptr
     );
 
-    myStudioSystem-&gt;<span class="fn">getCoreSystem</span>(&amp;myCoreSystem);
-    <span class="fn">PlayReverbEventAtStartUp</span>();
+    myStudioSystem-&gt;getCoreSystem(&amp;myCoreSystem);
+    PlayReverbEventAtStartUp();
 
-    <span class="kw">return</span> <span class="kw">true</span>;
+    return true;
 }</code></pre></div></div>
           <div class="proj-twocol-text">
             <span class="proj-contribution-title">Audio Manager & FMOD Integration</span>
@@ -304,7 +304,6 @@ graphicsStateStack.<span class="fn">Pop</span>();</code></pre></div>
 </footer>
 
 <script src="scripts.js"></script>
-<script>hljs.highlightAll();</script>
 <script>hljs.highlightAll();</script>
 </body>
 </html>
