@@ -2,9 +2,23 @@
 function videoPopupOpen(src) {
   const popup = document.getElementById('video-popup');
   const vid   = document.getElementById('video-popup-vid');
+  const img   = document.getElementById('video-popup-img');
   if (!popup || !vid) return;
   vid.src = src;
+  vid.style.display = 'block';
+  if (img) img.style.display = 'none';
   vid.play().catch(() => {});
+  popup.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function imagePopupOpen(src) {
+  const popup = document.getElementById('video-popup');
+  const vid   = document.getElementById('video-popup-vid');
+  const img   = document.getElementById('video-popup-img');
+  if (!popup) return;
+  if (vid) { vid.pause(); vid.src = ''; vid.style.display = 'none'; }
+  if (img) { img.src = src; img.style.display = 'block'; }
   popup.classList.add('open');
   document.body.style.overflow = 'hidden';
 }
@@ -12,9 +26,10 @@ function videoPopupOpen(src) {
 function videoPopupClose() {
   const popup = document.getElementById('video-popup');
   const vid   = document.getElementById('video-popup-vid');
-  if (!popup || !vid) return;
-  vid.pause();
-  vid.src = '';
+  const img   = document.getElementById('video-popup-img');
+  if (!popup) return;
+  if (vid) { vid.pause(); vid.src = ''; }
+  if (img) { img.src = ''; img.style.display = 'none'; }
   popup.classList.remove('open');
   document.body.style.overflow = '';
 }
@@ -183,8 +198,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Project/contribution videos click → video popup
-  // Only on proj-page elements, not tool pages
+  // Project page videos click → video popup
   const projPage = document.querySelector('.proj-page');
   if (projPage) {
     projPage.querySelectorAll('.proj-twocol-media video, .proj-hero video, .proj-contribution-media video, .proj-contribution-media-full video, .proj-compare video, .other-project-thumb video').forEach(vid => {
@@ -192,6 +206,26 @@ document.addEventListener('DOMContentLoaded', () => {
       vid.addEventListener('click', () => {
         const src = vid.getAttribute('src') || vid.dataset.src;
         if (src) videoPopupOpen(src);
+      });
+    });
+  }
+
+  // Tool page challenge videos and images click → popup
+  const toolPage = document.querySelector('.tool-page');
+  if (toolPage) {
+    // Videos in challenge sections
+    toolPage.querySelectorAll('.proj-twocol-media video, .proj-compare video, .proj-contribution-border video').forEach(vid => {
+      vid.style.cursor = 'pointer';
+      vid.addEventListener('click', () => {
+        const src = vid.getAttribute('src') || vid.dataset.src;
+        if (src) videoPopupOpen(src);
+      });
+    });
+    // Images in challenge sections
+    toolPage.querySelectorAll('.proj-twocol-media img, .proj-compare img, .proj-contribution-border img').forEach(img => {
+      img.style.cursor = 'pointer';
+      img.addEventListener('click', () => {
+        imagePopupOpen(img.src);
       });
     });
   }
