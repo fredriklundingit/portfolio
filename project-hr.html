@@ -25,77 +25,388 @@
 <div class="proj-page">
 <a class="back-btn" href="index.html" style="margin:0 3rem 0;">← Back</a>
 
-    <div class="proj-hero">
-      <video muted loop playsinline preload="none" data-src="videos/HumanResourcesWeb.mp4" poster="images/HRthumbnailImage.png" style="width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0;"></video>
-      <div class="proj-hero-overlay">
-        <span class="proj-hero-label">Project</span>
-        <h2>Human Resources</h2>
-        <span class="proj-trailer-btn" style="cursor:default;">Trailer Coming Soon</span>
-      </div>
+  <div class="proj-hero">
+    <video muted loop playsinline preload="none" data-src="videos/HumanResourcesWeb.mp4" poster="images/HRthumbnailImage.png" style="width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0;"></video>
+    <div class="proj-hero-overlay">
+      <span class="proj-hero-label">Project</span>
+      <h2>Human Resources</h2>
+      <span class="proj-trailer-btn" style="cursor:default;">Trailer Coming Soon</span>
     </div>
-    <div class="proj-meta-bar">
-      <span class="proj-meta-item">2026</span>
-      <span class="proj-meta-item">The Game Assembly</span>
-      <span class="proj-meta-item">C++ · HLSL</span>
-    </div>
-    <div class="proj-intro">
-      
-      <p>Continuation of the same custom engine from Cycles of Deluge. The focus shifted towards iteration and editor integration — refactoring the render pipeline and building new rendering features while making the editor actually usable for level designers.</p>
-    </div>
-    <span class="proj-section-label">Contributions</span>
-    <div class="proj-contributions proj-contributions-wide">
+  </div>
+  <div class="proj-meta-bar">
+    <span class="proj-meta-item">2026</span>
+    <span class="proj-meta-item">The Game Assembly</span>
+    <span class="proj-meta-item">C++ &middot; HLSL</span>
+  </div>
+  <div class="proj-intro" style="text-align:left; margin:0;">
+    <p>The latest project by Ashleep Studios at The Game Assembly. For this project, my focus lay on iterating the rendering pipeline, and most importantly, integrating the editor to use the same render pipeline as ingame, since our level designers and procedural artists had to start the game each time they wanted to see how it looked in game during our previous project.</p>
+  </div>
+  <span class="proj-section-label">Contributions</span>
+  <div class="proj-contributions proj-contributions-wide">
 
-      <!-- Render Pipeline Refactor — text only, centered with accent -->
-      <div class="proj-contribution-border">
-        <div class="proj-text-only">
-          <span class="proj-contribution-title">Render Pipeline Refactor</span>
-          <p class="proj-contribution-desc">Responsible for a full refactor of the render pipeline, introducing a command pattern with render data containing commands for each pass. This made it easier to add features and also brought the editor up to speed — level designers could now see changes without launching the game. New features added this project: spotlights, SSAO, line lights and a player flashlight.</p>
-          <button class="proj-code-toggle" onclick="projToggleCode(this)">View Code ↓</button><div class="proj-code-block"><pre><code class="language-cpp"><span class="cmt">// Add your render pipeline refactor code here</span></code></pre></div>
+    <!-- Render Pipeline Refactor -->
+    <div class="proj-contribution-border">
+      <div class="proj-text-only">
+        <span class="proj-contribution-title">Render Pipeline Refactor</span>
+        <p class="proj-contribution-desc">I was responsible for a full refactor of the render pipeline, introducing a command pattern with render data containing commands for each pass (GBuffer pass, shadow pass etc). This made it easier to add features and also brought the editor up to speed, level designers could now see changes without launching the game. New features added this project: spotlights, SSAO, line lights (shout out to my classmate Mattias Strand for letting me implement his version) and a player flashlight.</p>
+        <div class="proj-code-slides" style="margin-top:1rem;">
+          <div class="proj-code-slides-bar">
+            <button class="proj-slide-arrow" onclick="projSlideNav(this,-1)">←</button>
+            <span class="proj-slide-counter">1 / 2</span>
+            <button class="proj-slide-arrow" onclick="projSlideNav(this,1)">→</button>
+          </div>
+          <div class="proj-code-slide active">
+            <div class="proj-code-block" style="display:block; max-height:400px; overflow:auto;">
+              <pre><code class="language-cpp">// The function called by both ingame and editor in the end:
+void RenderManager::ExecuteRenderPipeline(const NCE::RenderData&amp; renderData, Tga::DepthBuffer* aDepthBuffer, bool aRenderToBackBuffer)
+{
+    auto&amp; engine = *Engine::GetInstance();
+    auto&amp; graphicsEngine = engine.GetGraphicsEngine();
+    auto&amp; graphicsStateStack = graphicsEngine.GetGraphicsStateStack();
+    Tga::DepthBuffer* depthBuffer = aDepthBuffer ? aDepthBuffer : Tga::DX11::DepthBuffer;
+    if (!renderData.camera || !renderData.directionalLight || !renderData.ambientLight)
+    {
+        ERROR_PRINT(&quot;RenderData missing required camera or lights!&quot;);
+        return;
+    }
+    // ***** DEFAULT VALUES *****
+    graphicsStateStack.SetPostProcessingValues(myRenderResources.postProcessingValues);
+    graphicsStateStack.SetRenderMode(myRenderMode);
+    graphicsStateStack.SetCamera(*renderData.camera);
+    graphicsStateStack.SetSamplerState(Tga::SamplerFilter::Trilinear, Tga::SamplerAddressMode::Wrap);
+    graphicsStateStack.SetRasterizerState(Tga::RasterizerState::BackfaceCulling);
+    graphicsStateStack.SetDepthStencilState(Tga::DepthStencilState::WriteLessOrEqual);
+    graphicsStateStack.SetBlendState(Tga::BlendState::Disabled);
+    graphicsStateStack.SetOrbValue(renderData.flashlightBatteryNormalized);
+    AI::PollingStation3D::Get().SetCameraPtr(renderData.camera);
+
+    RenderFlashlightShadowPass(renderData, graphicsStateStack);
+    RenderGBufferPass(renderData, graphicsStateStack, depthBuffer);
+    RenderSSAOPass(graphicsStateStack, graphicsEngine);
+    RenderDecalPass(renderData, graphicsStateStack, depthBuffer);
+    RenderLightPass(renderData, graphicsStateStack);
+    RenderTransparentPass(renderData, graphicsStateStack, depthBuffer);
+    RenderBloomPass(graphicsStateStack);
+
+    if (aRenderToBackBuffer)
+    {
+        RenderPostProcessing(renderData, graphicsStateStack);
+    }
+#ifndef _RETAIL
+    if (myDrawColliders || myDrawEnemyAggroRange || myDrawEnemyAlertRadius || myDrawEnemyPatrolRadius)
+    {
+        RenderDebugPass(renderData, graphicsStateStack, depthBuffer);
+    }
+#endif
+}</code></pre>
+            </div>
+          </div>
+          <div class="proj-code-slide">
+            <div class="proj-code-block" style="display:block; max-height:400px; overflow:auto;">
+              <pre><code class="language-cpp">// A render command
+struct RenderCommand
+{
+    RenderCommandType type = RenderCommandType::Mesh;
+    // === MESH DATA ===
+    const Tga::Model* model = nullptr;
+    int meshIndex = 0;
+    Tga::Matrix4x4f transform;
+    const Tga::TextureResource* textures[4] = { nullptr };
+    const Tga::ModelShader* shader = nullptr;
+    const Tga::Matrix4x4f* boneTransforms = nullptr;
+    // === SPRITE DATA ===
+    const Tga::SpriteSharedData* spriteSharedData = nullptr;
+    const Tga::SpriteShader* spriteShaderOverride = nullptr;
+    Tga::Sprite3DInstanceData spriteInstance;
+    Tga::Sprite2DInstanceData sprite2DInstance;
+    Tga::Vector4f   uiShaderParam = { 0.f, 0.f, 0.f, 0.f };
+    bool            hasUIShaderParam = false;
+    // === RENDER STATES ===
+    Tga::RasterizerState rasterizerState = Tga::RasterizerState::BackfaceCulling;
+    Tga::BlendState blendState = Tga::BlendState::Disabled;
+    Tga::DepthStencilState depthStencilState = Tga::DepthStencilState::WriteLess;
+    Tga::SamplerFilter samplerFilter = Tga::SamplerFilter::Trilinear;
+    Tga::SamplerAddressMode samplerAddressMode = Tga::SamplerAddressMode::Wrap;
+    // === OPTIONAL EXTRAS ===
+    EffectMaterial* effectMaterial = nullptr;
+    uint32_t texturesEnabled[4] = { false, false, false, false };
+    float startUV[2] = { 0.f, 0.f };
+    float endUV[2] = { 1.f, 1.f };
+    // === VFX DATA ===
+    bool isVFX = false;
+    VFXInstanceData vfxInstanceData;
+    // === SORTING/FILTERING ===
+    float sortKey = 0.f;
+    bool castsShadows = true;
+    bool shouldFade = false;
+    // === LAYER ===
+    Tga::LayerType layer = Tga::LayerType::Default;
+};</code></pre>
+            </div>
+          </div>
         </div>
       </div>
-
-      <!-- Editor Integration — video left, text + code right -->
-      <div class="proj-contribution-border">
-        <div class="proj-twocol has-video">
-          <div class="proj-twocol-media">
-            <video muted loop playsinline preload="none" data-src="videos/HRPage/EditorRenderingWeb.mp4" poster="images/HRimages/editorrenderingthumbnail.png" style="width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0;"></video>
-          </div>
-          <div class="proj-twocol-text">
-            <span class="proj-contribution-title">Editor Integration</span>
-            <p class="proj-contribution-desc">Earlier the editor used actual scene object properties for rendering and had its own ID pass for outlining selected objects. With the removal of those passes, I built render commands — including ID commands — from the scene objects, feeding them into the same renderer the game uses.</p>
-            <button class="proj-code-toggle" onclick="projToggleCode(this)">View Code ↓</button><div class="proj-code-block"><pre><code class="language-cpp"><span class="cmt">// Add your editor integration code here</span></code></pre></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Single Asset Preview & VFX Live Editing — text left, video right -->
-      <div class="proj-contribution-border">
-        <div class="proj-twocol has-video">
-          <div class="proj-twocol-text">
-            <span class="proj-contribution-title">Single Asset Preview & VFX Live Editing</span>
-            <p class="proj-contribution-desc">A long-standing request from Cycles of Deluge. Added the ability to preview individual assets in the editor with live lighting, and to preview and live-edit VFX while viewing them.</p>
-          </div>
-          <div class="proj-twocol-media">
-            <video muted loop playsinline preload="none" data-src="videos/HRPage/VfxeditingWeb.mp4" poster="images/HRimages/vfxeditingthumbnail.png" style="width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0;"></video>
-          </div>
-        </div>
-      </div>
-
-      <!-- Enemy Behaviour — video left, text + code right -->
-      <div class="proj-contribution-border">
-        <div class="proj-twocol has-video">
-          <div class="proj-twocol-media">
-            <video muted loop playsinline preload="none" data-src="videos/HRPage/EnemybehaviorWeb.mp4" poster="images/HRimages/enemybehaviorthumbnail.png" style="width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0;"></video>
-          </div>
-          <div class="proj-twocol-text">
-            <span class="proj-contribution-title">Enemy Behaviour</span>
-            <p class="proj-contribution-desc">Integrated enemy behaviour using third-party libraries for navmesh generation, pathfinding and agent separation. With limited time, I reused the state machine as a behaviour tree — creating nodes for each state with Enter, Update and Exit phases.</p>
-            <button class="proj-code-toggle" onclick="projToggleCode(this)">View Code ↓</button><div class="proj-code-block"><pre><code class="language-cpp"><span class="cmt">// Add your enemy behaviour code here</span></code></pre></div>
-          </div>
-        </div>
-      </div>
-
     </div>
+
+    <!-- Editor Integration -->
+    <div class="proj-contribution-border">
+      <div class="proj-twocol has-video">
+        <div class="proj-twocol-media">
+          <video muted loop playsinline preload="none" data-src="videos/HRPage/EditorRenderingWeb.mp4" poster="images/HRimages/editorrenderingthumbnail.png" style="width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0;"></video>
+        </div>
+        <div class="proj-twocol-text">
+          <span class="proj-contribution-title">Editor Integration</span>
+          <p class="proj-contribution-desc">Earlier the editor used its own system for rendering, completely decoupled from the game's way of rendering things. This made the task a pretty big refactor, since I wanted both instances to use the same render pipeline. With the removal of the old editor render passes, I built the same render commands out of the editor's representation of objects (we had different representations in game and in the editor). The editor also had an ID pass which I had to fit into the render pipeline somehow. Finally, I managed to merge the two, making it much easier to add new render features.</p>
+          <div class="proj-code-slides" style="margin-top:1rem;">
+            <div class="proj-code-slides-bar">
+              <button class="proj-slide-arrow" onclick="projSlideNav(this,-1)">←</button>
+              <span class="proj-slide-counter">1 / 1</span>
+              <button class="proj-slide-arrow" onclick="projSlideNav(this,1)">→</button>
+            </div>
+            <div class="proj-code-slide active">
+              <div class="proj-code-block" style="display:block; max-height:400px; overflow:auto;">
+                <pre><code class="language-cpp">// Example of building a render command in the Editor:
+for (const auto&amp; property : properties)
+{
+    // ***** REGULAR MODELS *****
+    if (property.type == Tga::GetPropertyType&lt;Tga::CopyOnWriteWrapper&lt;Tga::SceneModel&gt;&gt;())
+    {
+        const Tga::SceneModel&amp; sceneModel = property.value.Get&lt;Tga::CopyOnWriteWrapper&lt;Tga::SceneModel&gt;&gt;()-&gt;Get();
+        std::shared_ptr&lt;Tga::Model&gt; model = aDrawParams.cache.GetModelUsingCache(sceneModel.path);
+        if (!model) { continue; }
+        const size_t meshCount = model-&gt;GetMeshCount();
+        if (meshCount == 0) { continue; }
+        Tga::Vector3f scale = aSceneObject.GetScale();
+        float maxScale = std::max(scale.x, std::max(scale.y, scale.z));
+        if (!CheckBounds(aDrawParams.frustum, aSceneObject.GetTransform(), maxScale, *model))
+            continue;
+        commands.reserve(commands.size() + meshCount);
+        const Tga::ModelShader* shader = aDrawParams.viewport.GetOrCreateShader(sceneModel);
+        if (!shader) { continue; }
+        Tga::LayerType objectLayer = Tga::LayerType::Default;
+        for (const auto&amp; prop : properties)
+        {
+            if (prop.type == Tga::GetPropertyType&lt;Tga::CopyOnWriteWrapper&lt;Tga::Layer&gt;&gt;())
+            {
+                const Tga::Layer&amp; layer = prop.value.Get&lt;Tga::CopyOnWriteWrapper&lt;Tga::Layer&gt;&gt;()-&gt;Get();
+                objectLayer = layer.type;
+                break;
+            }
+        }
+        // Build command for each mesh
+        for (size_t i = 0; i &lt; meshCount &amp;&amp; i &lt; MAX_MESHES_PER_MODEL; ++i)
+        {
+            RenderCommand cmd = {};
+            cmd.type          = RenderCommandType::Mesh;
+            cmd.model         = model.get();
+            cmd.meshIndex     = static_cast&lt;int&gt;(i);
+            cmd.transform     = transform;
+            cmd.shader        = shader;
+            cmd.boneTransforms = nullptr;
+            cmd.rasterizerState   = sceneModel.rasterizerState;
+            cmd.blendState        = sceneModel.blendState;
+            cmd.depthStencilState = Tga::DepthStencilState::WriteLessOrEqual;
+            cmd.castsShadows  = sceneModel.castsShadow;
+            cmd.layer         = objectLayer;
+            cmd.shouldFade    = false;
+            for (int j = 0; j &lt; 4; ++j)
+            {
+                if (!sceneModel.textures[i][j].IsEmpty())
+                {
+                    Tga::TextureSrgbMode srgbMode = (j == 0) ? Tga::TextureSrgbMode::ForceSrgbFormat
+                        : Tga::TextureSrgbMode::ForceNoSrgbFormat;
+                    cmd.textures[j] = aDrawParams.cache.GetTextureUsingCache(sceneModel.textures[i][j], srgbMode);
+                }
+                else
+                {
+                    cmd.textures[j] = model-&gt;GetDefaultTextures(i)[j];
+                }
+            }
+            commands.push_back(cmd);
+        }
+    }
+}</code></pre>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Single Asset Preview & VFX Live Editing -->
+    <div class="proj-contribution-border">
+      <div class="proj-twocol has-video">
+        <div class="proj-twocol-text">
+          <span class="proj-contribution-title">Single Asset Preview &amp; VFX Live Editing</span>
+          <p class="proj-contribution-desc">A long-standing request from our first game was to preview VFXes and single assets with correct lighting. So I added the ability to preview individual assets in the editor with live lighting, and to preview and live-edit VFX while viewing them. The artist could for example change constant buffer parameters to see their changes apply live.</p>
+          <div class="proj-code-slides" style="margin-top:1rem;">
+            <div class="proj-code-slides-bar">
+              <button class="proj-slide-arrow" onclick="projSlideNav(this,-1)">←</button>
+              <span class="proj-slide-counter">1 / 2</span>
+              <button class="proj-slide-arrow" onclick="projSlideNav(this,1)">→</button>
+            </div>
+            <div class="proj-code-slide active">
+              <div class="proj-code-block" style="display:block; max-height:400px; overflow:auto;">
+                <pre><code class="language-cpp">void ObjectDefinitionDocument::Update(float aTimeDelta, InputManager&amp; inputManager)
+{
+    inputManager;
+    // ***** CLEAR CACHE *****
+    myCache.ClearCache(myPreviewIsAnimated);
+    // Mainly checks if it is a VFX and updates it accordingly,
+    // but also clears the spawned object if it is not a VFX
+    UpdatePreviewObject();
+    // Update VFX object
+    if (myPreviewIsVFX &amp;&amp; myPreviewVFX)
+    {
+        myPreviewVFX-&gt;Update(aTimeDelta);
+        if (myPreviewVFX-&gt;GetComponent&lt;VFXInstance&gt;()-&gt;IsExpired() &amp;&amp;
+            myPreviewVFX-&gt;GetComponent&lt;VFXInstance&gt;()-&gt;ShouldLoop())
+        {
+            myPreviewVFX-&gt;GetComponent&lt;VFXInstance&gt;()-&gt;SetSpawnedTime(
+                Tga::Engine::GetInstance()-&gt;GetTotalTime());
+        }
+    }
+}</code></pre>
+              </div>
+            </div>
+            <div class="proj-code-slide">
+              <div class="proj-code-block" style="display:block; max-height:400px; overflow:auto;">
+                <pre><code class="language-cpp">void ObjectDefinitionDocument::UpdatePreviewObject()
+{
+    myPreviewIsVFX      = false;
+    myPreviewIsAnimated = false;
+    myPreviewIsParticle = false;
+    const auto properties = myObjectDefinition-&gt;GetProperties();
+    for (const auto&amp; property : properties)
+    {
+        if (property.type == Tga::GetPropertyType&lt;Tga::CopyOnWriteWrapper&lt;Tga::TagData&gt;&gt;())
+        {
+            const Tga::TagData&amp; tag = property.value.Get&lt;Tga::CopyOnWriteWrapper&lt;Tga::TagData&gt;&gt;()-&gt;Get();
+            if (tag.tag == Tga::Tag::VFX)      { myPreviewIsVFX = true; }
+            if (tag.tag == Tga::Tag::Particle)  { myPreviewIsParticle = true; }
+        }
+        if (property.type == Tga::GetPropertyType&lt;Tga::CopyOnWriteWrapper&lt;Tga::SceneAnimatedModel&gt;&gt;())
+        {
+            myPreviewIsAnimated = true;
+        }
+        if (property.type == Tga::GetPropertyType&lt;Tga::CopyOnWriteWrapper&lt;ParticleEmitterData&gt;&gt;())
+        {
+            const ParticleEmitterData&amp; rootData =
+                property.value.Get&lt;Tga::CopyOnWriteWrapper&lt;ParticleEmitterData&gt;&gt;()-&gt;Get();
+            size_t needed = 1 + rootData.subEmitters.size();
+            if (myEmitters.size() != needed)
+            {
+                myEmitters.clear();
+                myEmitters.resize(needed);
+            }
+            myEmitters[0].data = rootData;
+            for (size_t i = 0; i &lt; rootData.subEmitters.size(); i++)
+                myEmitters[i + 1].data = rootData.subEmitters[i];
+        }
+    }
+    if (!myPreviewIsParticle) { myPreviewParticles.clear(); myEmitters.clear(); }
+    if (!myPreviewIsVFX)
+    {
+        myPreviewVFX.reset();
+        myLastBuiltDefinition = nullptr;
+        return;
+    }
+    // Build or update the properties depending on if we open a new tgo or not
+    if (!myPreviewVFX || myLastBuiltDefinition != myObjectDefinition)
+    {
+        myPreviewVFX = std::make_shared&lt;GameObject&gt;();
+        BuildSpawnedObjectFromProperties(properties, myCache, myViewport,
+            myViewport.GetRenderManager(), myPreviewVFX);
+        myLastBuiltDefinition = myObjectDefinition;
+    }
+    else
+    {
+        UpdateSpawnedObjectFromProperties(myPreviewVFX-&gt;GetComponent&lt;VFXInstance&gt;(),
+            properties, myCache, myViewport, myViewport.GetRenderManager());
+    }
+}</code></pre>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="proj-twocol-media">
+          <video muted loop playsinline preload="none" data-src="videos/HRPage/VfxeditingWeb.mp4" poster="images/HRimages/vfxeditingthumbnail.png" style="width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0;"></video>
+        </div>
+      </div>
+    </div>
+
+    <!-- Enemy Behaviour -->
+    <div class="proj-contribution-border">
+      <div class="proj-twocol has-video">
+        <div class="proj-twocol-media">
+          <video muted loop playsinline preload="none" data-src="videos/HRPage/EnemybehaviorWeb.mp4" poster="images/HRimages/enemybehaviorthumbnail.png" style="width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0;"></video>
+        </div>
+        <div class="proj-twocol-text">
+          <span class="proj-contribution-title">Enemy Behaviour</span>
+          <p class="proj-contribution-desc">Integrated enemy behaviour using third-party libraries for navmesh generation, pathfinding and agent separation. With limited time, since I hopped on the enemy task force pretty late, I reused the state machine as a behaviour tree since that was one of the requirements for this project. Each state represented a node in the tree, with different phases such as Enter/Exit/Update. I also implemented an alert system, with a ripple effect, to create a creepy spider-like reaction for the enemies.</p>
+          <div class="proj-code-slides" style="margin-top:1rem;">
+            <div class="proj-code-slides-bar">
+              <button class="proj-slide-arrow" onclick="projSlideNav(this,-1)">←</button>
+              <span class="proj-slide-counter">1 / 1</span>
+              <button class="proj-slide-arrow" onclick="projSlideNav(this,1)">→</button>
+            </div>
+            <div class="proj-code-slide active">
+              <div class="proj-code-block" style="display:block; max-height:400px; overflow:auto;">
+                <pre><code class="language-cpp">class EnemyAlertSystem
+{
+public:
+    static EnemyAlertSystem&amp; Get()
+    {
+        static EnemyAlertSystem instance;
+        return instance;
+    }
+    EnemyAlertSystem(const EnemyAlertSystem&amp;) = delete;
+    void operator=(const EnemyAlertSystem&amp;) = delete;
+    void RegisterEnemy(const std::shared_ptr&lt;Enemy&gt;&amp; anEnemy);
+    void UnregisterEnemy(const std::shared_ptr&lt;Enemy&gt;&amp; anEnemy);
+    void BroadcastAlert(const Tga::Vector3f&amp; aSourcePos, float aRadius, const std::shared_ptr&lt;Enemy&gt;&amp; aSourceEnemy);
+private:
+    EnemyAlertSystem() = default;
+    std::vector&lt;std::weak_ptr&lt;Enemy&gt;&gt; myEnemies;
+};
+
+void EnemyAlertSystem::BroadcastAlert(const Tga::Vector3f&amp; aSourcePos, float aRadius, const std::shared_ptr&lt;Enemy&gt;&amp; aSourceEnemy)
+{
+    const float radiusSq = aRadius * aRadius;
+    // Clean up expired weak_ptrs while iterating
+    myEnemies.erase(std::ranges::remove_if(myEnemies,
+        [](const std::weak_ptr&lt;Enemy&gt;&amp; aWeak) { return aWeak.expired(); }).begin(),
+        myEnemies.end());
+    for (auto&amp; weak : myEnemies)
+    {
+        auto enemy = weak.lock();
+        if (!enemy || enemy == aSourceEnemy) { continue; }
+        if ((enemy-&gt;GetPosition() - aSourcePos).LengthSqr() &lt;= radiusSq)
+        {
+            enemy-&gt;ReceiveAlert(aSourcePos);
+        }
+    }
+}
+
+void HumanBrainTree::OnAlert(const Tga::Vector3f&amp; aSourcePos)
+{
+    if (myContext.enemy-&gt;GetData().isPassive) { return; }
+    if (myContext.enemyState == EnemyStateID::Engage ||
+        myContext.enemyState == EnemyStateID::Attack) { return; }
+    const float distance = (myContext.enemy-&gt;GetPosition() - aSourcePos).Length();
+    myAlertDelay = distance / 500.f;
+    myIsAlerted = true;
+    myContext.enemyState = EnemyStateID::Engage;
+    AudioManager::GetInstance()-&gt;PlaySpatialisedAudio(
+        AudioConstExpr::ENEMY_3D_Engage, myContext.enemy-&gt;GetTransform());
+}</code></pre>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -107,11 +418,10 @@
     <li><a href="mailto:fredrik.r.lundin@gmail.com">fredrik.r.lundin@gmail.com</a></li>
     <li><a href="tel:+46707760906">+46 70 776 09 06</a></li>
   </ul>
-  <span class="footer-copy">© 2026</span>
+  <span class="footer-copy">&copy; 2026</span>
 </footer>
 
 <script src="scripts.js"></script>
-<script>hljs.highlightAll();</script>
 <script>hljs.highlightAll();</script>
 </body>
 </html>
