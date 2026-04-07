@@ -210,6 +210,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // Click outside code overlay to close it
   document.querySelectorAll('.tp-row').forEach(row => {
     row.addEventListener('click', e => {
+      if (e.target.closest('.tp-code-toggle')) return;
+      if (e.target.closest('.tp-carousel-bar')) return;
       const overlay = row.querySelector('.tp-code-overlay');
       if (!overlay || !overlay.classList.contains('visible')) return;
       if (!overlay.contains(e.target)) {
