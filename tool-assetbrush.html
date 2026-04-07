@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Asset Brush — Fredrik Lundin</title>
 <link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/monokai.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/cpp.min.js"></script>
 </head>
 <body>
 
@@ -67,10 +70,10 @@
           <button class="tp-code-toggle" onclick="carouselToggleCode('feat-1')">View Code ↓</button>
           <div class="tp-carousel-codes">
             <div class="tp-code-block tp-carousel-code active" style="display:none;">
-              <pre><span class="cmt">// Slide 1 — Add your spacing code here</span></pre>
+              <pre><code class="language-cpp">// Slide 1 — Add your spacing code here</code></pre>
             </div>
             <div class="tp-code-block tp-carousel-code" style="display:none;">
-              <pre><span class="cmt">// Slide 2 — Add your draw mode code here</span></pre>
+              <pre><code class="language-cpp">// Slide 2 — Add your draw mode code here</code></pre>
             </div>
           </div>
         </div>
@@ -92,195 +95,195 @@
           </div>
         </div>
         <div class="tp-overlay-code active" data-slide="0">
-          <pre><span class="kw">void</span> <span class="fn">AssetBrush::Update</span>(<span class="kw">bool</span> isLeftMouseDown)
+          <pre><code class="language-cpp">void AssetBrush::Update(bool isLeftMouseDown)
 {
-    <span class="fn">HandleInput</span>();
+    HandleInput();
 
-    <span class="kw">if</span> (!myIsActive || !myBrush.isValid)
+    if (!myIsActive || !myBrush.isValid)
     {
-        myWasMouseDownLastFrame = <span class="kw">false</span>;
-        <span class="kw">return</span>;
+        myWasMouseDownLastFrame = false;
+        return;
     }
 
-    <span class="kw">if</span> (myBrush.mode == BrushMode::Paint)
+    if (myBrush.mode == BrushMode::Paint)
     {
-        <span class="kw">const bool</span> hasAssets = !myAssetPalette.empty();
-        <span class="kw">if</span> (!hasAssets)
+        const bool hasAssets = !myAssetPalette.empty();
+        if (!hasAssets)
         {
-            myWasMouseDownLastFrame = <span class="kw">false</span>;
-            <span class="kw">return</span>;
+            myWasMouseDownLastFrame = false;
+            return;
         }
     }
 
-    <span class="cmt">// --- Hold and drag ---</span>
-    <span class="kw">if</span> (myPlacementMode == PlacementMode::HoldAndDrag)
+    // --- Hold and drag ---
+    if (myPlacementMode == PlacementMode::HoldAndDrag)
     {
-        <span class="kw">if</span> (isLeftMouseDown)
+        if (isLeftMouseDown)
         {
-            <span class="kw">bool</span> shouldAct = <span class="kw">false</span>;
+            bool shouldAct = false;
 
-            <span class="cmt">// First click - always act</span>
-            <span class="kw">if</span> (!myWasMouseDownLastFrame)
+            // First click - always act
+            if (!myWasMouseDownLastFrame)
             {
-                shouldAct = <span class="kw">true</span>;
+                shouldAct = true;
             }
-            <span class="cmt">// Holding - check distance from last action</span>
-            <span class="kw">else</span>
+            // Holding - check distance from last action
+            else
             {
-                <span class="kw">float</span> distanceFromLast = (myBrush.position - myLastPlacedPosition).<span class="fn">LengthSqr</span>();
-                <span class="kw">if</span> (distanceFromLast &gt;= FMath::<span class="fn">Sq</span>(myBrush.strokeSpacing))
+                float distanceFromLast = (myBrush.position - myLastPlacedPosition).LengthSqr();
+                if (distanceFromLast &gt;= FMath::Sq(myBrush.strokeSpacing))
                 {
-                    shouldAct = <span class="kw">true</span>;
+                    shouldAct = true;
                 }
             }
 
-            <span class="kw">if</span> (shouldAct)
+            if (shouldAct)
             {
-                <span class="kw">if</span> (myBrush.mode == BrushMode::Paint)
+                if (myBrush.mode == BrushMode::Paint)
                 {
-                    <span class="fn">PlaceObject</span>();
+                    PlaceObject();
                 }
-                <span class="kw">else if</span> (myBrush.mode == BrushMode::Erase)
+                else if (myBrush.mode == BrushMode::Erase)
                 {
-                    <span class="fn">EraseObjects</span>();
+                    EraseObjects();
                 }
                 myLastPlacedPosition = myBrush.position;
             }
         }
     }
-    <span class="cmt">// --- Single click ---</span>
-    <span class="kw">else if</span> (myPlacementMode == PlacementMode::SingleClick)
+    // --- Single click ---
+    else if (myPlacementMode == PlacementMode::SingleClick)
     {
-        <span class="kw">if</span> (isLeftMouseDown && !myWasMouseDownLastFrame)
+        if (isLeftMouseDown && !myWasMouseDownLastFrame)
         {
-            <span class="kw">if</span> (myBrush.mode == BrushMode::Paint)
+            if (myBrush.mode == BrushMode::Paint)
             {
-                <span class="fn">PlaceObject</span>();
+                PlaceObject();
             }
-            <span class="kw">else if</span> (myBrush.mode == BrushMode::Erase)
+            else if (myBrush.mode == BrushMode::Erase)
             {
-                <span class="fn">EraseObjects</span>();
+                EraseObjects();
             }
         }
     }
 
     myWasMouseDownLastFrame = isLeftMouseDown;
-}</pre>
+}</code></pre>
         </div>
         <div class="tp-overlay-code" data-slide="1">
-          <pre>std::shared_ptr&lt;Tga::SceneObject&gt; <span class="fn">AssetBrush::PlaceObjectWithAsset</span>(Tga::StringId aAssetPath, std::vector&lt;Tga::Vector3f&gt;&amp; someCurrentBatchPositions) <span class="kw">const</span>
+          <pre><code class="language-cpp">std::shared_ptr&lt;Tga::SceneObject&gt; AssetBrush::PlaceObjectWithAsset(Tga::StringId aAssetPath, std::vector&lt;Tga::Vector3f&gt;&amp; someCurrentBatchPositions) const
 {
-    <span class="kw">constexpr int</span> maxAttempts = <span class="num">10</span>;
-    <span class="kw">for</span> (<span class="kw">int</span> attempt = <span class="num">0</span>; attempt &lt; maxAttempts; attempt++)
+    constexpr int maxAttempts = 10;
+    for (int attempt = 0; attempt &lt; maxAttempts; attempt++)
     {
-        OffsetResult offsetResult = <span class="fn">CalculateOffsetPosition</span>();
-        <span class="kw">if</span> (!offsetResult.valid)
+        OffsetResult offsetResult = CalculateOffsetPosition();
+        if (!offsetResult.valid)
         {
-            <span class="kw">continue</span>;
+            continue;
         }
 
         Tga::Vector3f position = offsetResult.position;
         Tga::Vector3f surfaceNormal = offsetResult.normal;
 
-        <span class="kw">if</span> (!<span class="fn">IsSlopeValid</span>(surfaceNormal))
+        if (!IsSlopeValid(surfaceNormal))
         {
-            <span class="kw">continue</span>;
+            continue;
         }
 
-        <span class="kw">if</span> (myBrush.useMinimumSpacing)
+        if (myBrush.useMinimumSpacing)
         {
-            <span class="kw">if</span> (myBrush.checkOnlyCurrentBatch)
+            if (myBrush.checkOnlyCurrentBatch)
             {
-                <span class="kw">if</span> (<span class="fn">IsPositionTooCloseInBatch</span>(position, myBrush.minimumSpacing, someCurrentBatchPositions))
+                if (IsPositionTooCloseInBatch(position, myBrush.minimumSpacing, someCurrentBatchPositions))
                 {
-                    <span class="kw">continue</span>;
+                    continue;
                 }
             }
-            <span class="kw">else</span>
+            else
             {
-                <span class="kw">if</span> (<span class="fn">IsPositionTooClose</span>(position, myBrush.minimumSpacing))
+                if (IsPositionTooClose(position, myBrush.minimumSpacing))
                 {
-                    <span class="kw">continue</span>;
+                    continue;
                 }
             }
         }
 
-        someCurrentBatchPositions.<span class="fn">push_back</span>(position);
+        someCurrentBatchPositions.push_back(position);
 
-        Tga::Quaternionf finalRotation = <span class="fn">CalculateRandomRotation</span>(surfaceNormal);
-        Tga::Vector3f rotationEuler = finalRotation.<span class="fn">GetYawPitchRoll</span>();
-        Tga::Vector3f randomScale = <span class="fn">CalculateRandomScale</span>();
+        Tga::Quaternionf finalRotation = CalculateRandomRotation(surfaceNormal);
+        Tga::Vector3f rotationEuler = finalRotation.GetYawPitchRoll();
+        Tga::Vector3f randomScale = CalculateRandomScale();
 
-        <span class="kw">auto</span> object = std::make_shared&lt;Tga::SceneObject&gt;();
+        auto object = std::make_shared&lt;Tga::SceneObject&gt;();
 
-        std::filesystem::path assetFilePath(aAssetPath.<span class="fn">GetString</span>());
-        Tga::StringId objectDefinitionName = Tga::StringRegistry::<span class="fn">RegisterOrGetString</span>(assetFilePath.<span class="fn">stem</span>().<span class="fn">string</span>());
+        std::filesystem::path assetFilePath(aAssetPath.GetString());
+        Tga::StringId objectDefinitionName = Tga::StringRegistry::RegisterOrGetString(assetFilePath.stem().string());
 
-        object-&gt;<span class="fn">SetSceneObjectDefintionName</span>(objectDefinitionName);
-        object-&gt;<span class="fn">GetTRS</span>().translation = position;
-        object-&gt;<span class="fn">GetTRS</span>().rotation = rotationEuler;
-        object-&gt;<span class="fn">GetTRS</span>().scale = randomScale;
+        object-&gt;SetSceneObjectDefintionName(objectDefinitionName);
+        object-&gt;GetTRS().translation = position;
+        object-&gt;GetTRS().rotation = rotationEuler;
+        object-&gt;GetTRS().scale = randomScale;
 
-        <span class="kw">if</span> (myAdjustPivot)
+        if (myAdjustPivot)
         {
-            <span class="cmt">// Only used for preview objects</span>
-            <span class="kw">float</span> zeroOffset = <span class="num">0.f</span>;
-            <span class="fn">CalculateNewPivot</span>(object, zeroOffset);
+            // Only used for preview objects
+            float zeroOffset = 0.f;
+            CalculateNewPivot(object, zeroOffset);
         }
 
-        <span class="kw">return</span> object;
+        return object;
     }
-    <span class="kw">return</span> <span class="kw">nullptr</span>;
-}</pre>
+    return nullptr;
+}</code></pre>
         </div>
         <div class="tp-overlay-code" data-slide="2">
-          <pre><span class="kw">bool</span> <span class="fn">AssetBrush::IsPositionTooClose</span>(<span class="kw">const</span> Tga::Vector3f&amp; aNewPos, <span class="kw">float</span> aMinDistance) <span class="kw">const</span>
+          <pre><code class="language-cpp">bool AssetBrush::IsPositionTooClose(const Tga::Vector3f&amp; aNewPos, float aMinDistance) const
 {
-    <span class="kw">int</span> cellX = <span class="kw">static_cast</span>&lt;<span class="kw">int</span>&gt;(<span class="fn">floorf</span>(aNewPos.x / mySpatialCellSize));
-    <span class="kw">int</span> cellY = <span class="kw">static_cast</span>&lt;<span class="kw">int</span>&gt;(<span class="fn">floorf</span>(aNewPos.y / mySpatialCellSize));
-    <span class="kw">int</span> cellZ = <span class="kw">static_cast</span>&lt;<span class="kw">int</span>&gt;(<span class="fn">floorf</span>(aNewPos.z / mySpatialCellSize));
+    int cellX = static_cast&lt;int&gt;(floorf(aNewPos.x / mySpatialCellSize));
+    int cellY = static_cast&lt;int&gt;(floorf(aNewPos.y / mySpatialCellSize));
+    int cellZ = static_cast&lt;int&gt;(floorf(aNewPos.z / mySpatialCellSize));
 
-    <span class="kw">for</span> (<span class="kw">int</span> dx = <span class="num">-1</span>; dx &lt;= <span class="num">1</span>; dx++)
+    for (int dx = -1; dx &lt;= 1; dx++)
     {
-        <span class="kw">for</span> (<span class="kw">int</span> dy = <span class="num">-1</span>; dy &lt;= <span class="num">1</span>; dy++)
+        for (int dy = -1; dy &lt;= 1; dy++)
         {
-            <span class="kw">for</span> (<span class="kw">int</span> dz = <span class="num">-1</span>; dz &lt;= <span class="num">1</span>; dz++)
+            for (int dz = -1; dz &lt;= 1; dz++)
             {
-                <span class="kw">auto</span> it = mySpatialGrid.<span class="fn">find</span>({ cellX + dx, cellY + dy, cellZ + dz });
-                <span class="kw">if</span> (it == mySpatialGrid.<span class="fn">end</span>())
+                auto it = mySpatialGrid.find({ cellX + dx, cellY + dy, cellZ + dz });
+                if (it == mySpatialGrid.end())
                 {
-                    <span class="kw">continue</span>;
+                    continue;
                 }
 
-                <span class="kw">for</span> (<span class="kw">const</span> Tga::Vector3f&amp; pos : it-&gt;second)
+                for (const Tga::Vector3f&amp; pos : it-&gt;second)
                 {
-                    <span class="kw">if</span> ((pos - aNewPos).<span class="fn">LengthSqr</span>() &lt; FMath::<span class="fn">Sq</span>(aMinDistance))
+                    if ((pos - aNewPos).LengthSqr() &lt; FMath::Sq(aMinDistance))
                     {
-                        <span class="kw">return</span> <span class="kw">true</span>;
+                        return true;
                     }
                 }
             }
         }
     }
 
-    <span class="kw">return</span> <span class="kw">false</span>;
+    return false;
 }
 
-<span class="kw">bool</span> <span class="fn">AssetBrush::IsPositionTooCloseInBatch</span>(<span class="kw">const</span> Tga::Vector3f&amp; aNewPos, <span class="kw">float</span> aMinDistance, <span class="kw">const</span> std::vector&lt;Tga::Vector3f&gt;&amp; someBatchPositions)
+bool AssetBrush::IsPositionTooCloseInBatch(const Tga::Vector3f&amp; aNewPos, float aMinDistance, const std::vector&lt;Tga::Vector3f&gt;&amp; someBatchPositions)
 {
-    <span class="cmt">// Check against all objects in the current placement batch,</span>
-    <span class="cmt">// does not check against other batches placed by brush this session</span>
-    <span class="kw">for</span> (<span class="kw">const auto</span>&amp; pos : someBatchPositions)
+    // Check against all objects in the current placement batch,
+    // does not check against other batches placed by brush this session
+    for (const auto&amp; pos : someBatchPositions)
     {
-        <span class="kw">float</span> distance = (pos - aNewPos).<span class="fn">LengthSqr</span>();
-        <span class="kw">if</span> (distance &lt; FMath::<span class="fn">Sq</span>(aMinDistance))
+        float distance = (pos - aNewPos).LengthSqr();
+        if (distance &lt; FMath::Sq(aMinDistance))
         {
-            <span class="kw">return</span> <span class="kw">true</span>;
+            return true;
         }
     }
 
-    <span class="kw">return</span> <span class="kw">false</span>;
-}</pre>
+    return false;
+}</code></pre>
         </div>
       </div>
       </div>
@@ -301,10 +304,10 @@
           <button class="tp-code-toggle" onclick="carouselToggleCode('feat-2')">View Code ↓</button>
           <div class="tp-carousel-codes">
             <div class="tp-code-block tp-carousel-code active" style="display:none;">
-              <pre><span class="cmt">// Slide 1 — Add your multi-asset code here</span></pre>
+              <pre><code class="language-cpp">// Slide 1 — Add your multi-asset code here</code></pre>
             </div>
             <div class="tp-code-block tp-carousel-code" style="display:none;">
-              <pre><span class="cmt">// Slide 2 — Add your code here</span></pre>
+              <pre><code class="language-cpp">// Slide 2 — Add your code here</code></pre>
             </div>
           </div>
         </div>
@@ -325,72 +328,72 @@
           </div>
         </div>
         <div class="tp-overlay-code active" data-slide="0">
-          <pre><span class="cmt">// Using ImGui to add an asset to our palette:</span>
-<span class="kw">if</span> (ImGui::BeginChild("AssetListFrame", listSize, <span class="kw">true</span>, ImGuiWindowFlags_HorizontalScrollbar))
+          <pre><code class="language-cpp">// Using ImGui to add an asset to our palette:
+if (ImGui::BeginChild("AssetListFrame", listSize, true, ImGuiWindowFlags_HorizontalScrollbar))
 {
-    <span class="kw">int</span> itemToDelete = -<span class="num">1</span>;
-    <span class="kw">for</span> (<span class="kw">int</span> i = <span class="num">0</span>; i &lt; myAssetPalette.size(); i++)
+    int itemToDelete = -1;
+    for (int i = 0; i &lt; myAssetPalette.size(); i++)
     {
         ImGui::PushID(i);
-        <span class="kw">bool</span> isSelected = (i == mySelectedPaletteIndex);
-        <span class="kw">const</span> char* displayName = myAssetPalette[i].IsEmpty()
+        bool isSelected = (i == mySelectedPaletteIndex);
+        const char* displayName = myAssetPalette[i].IsEmpty()
             ? "[ Empty Slot ]"
             : myAssetPalette[i].GetString();
-        ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(<span class="num">0.8f</span>, <span class="num">0.2f</span>, <span class="num">0.2f</span>, <span class="num">1.0f</span>));
-        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(<span class="num">1.0f</span>, <span class="num">0.3f</span>, <span class="num">0.3f</span>, <span class="num">1.0f</span>));
-        ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(<span class="num">0.7f</span>, <span class="num">0.1f</span>, <span class="num">0.1f</span>, <span class="num">1.0f</span>));
-        <span class="kw">if</span> (ImGui::SmallButton("X"))
+        ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.8f, 0.2f, 0.2f, 1.0f));
+        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1.0f, 0.3f, 0.3f, 1.0f));
+        ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.7f, 0.1f, 0.1f, 1.0f));
+        if (ImGui::SmallButton("X"))
         {
             itemToDelete = i;
         }
-        ImGui::PopStyleColor(<span class="num">3</span>);
+        ImGui::PopStyleColor(3);
         ImGui::SameLine();
-        <span class="kw">if</span> (ImGui::Selectable(displayName, isSelected, ImGuiSelectableFlags_AllowDoubleClick))
+        if (ImGui::Selectable(displayName, isSelected, ImGuiSelectableFlags_AllowDoubleClick))
         {
             mySelectedPaletteIndex = i;
         }
-        <span class="kw">if</span> (ImGui::BeginDragDropTarget())
+        if (ImGui::BeginDragDropTarget())
         {
-            <span class="kw">if</span> (<span class="kw">const</span> ImGuiPayload* payload = ImGui::AcceptDragDropPayload(".tgo"))
+            if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(".tgo"))
             {
-                <span class="kw">const</span> char* dropped = <span class="kw">static_cast</span>&lt;<span class="kw">const</span> char*&gt;(payload-&gt;Data);
+                const char* dropped = static_cast&lt;const char*&gt;(payload-&gt;Data);
                 myAssetPalette[i] = Tga::StringRegistry::RegisterOrGetString(dropped);
             }
             ImGui::EndDragDropTarget();
         }
         ImGui::PopID();
     }
-<span class="cmt">// Then using the asset palette with placement count when placing objects, here Random as an example:</span>
-    <span class="kw">if</span> (myPaletteMode == PaletteMode::Random)
+// Then using the asset palette with placement count when placing objects, here Random as an example:
+    if (myPaletteMode == PaletteMode::Random)
     {
         std::vector&lt;Tga::StringId&gt; validAssets;
-        <span class="kw">for</span> (<span class="kw">const</span> <span class="kw">auto</span>&amp; asset : myAssetPalette)
+        for (const auto&amp; asset : myAssetPalette)
         {
-            <span class="kw">if</span> (!asset.IsEmpty())
+            if (!asset.IsEmpty())
             {
                 validAssets.push_back(asset);
             }
         }
-        <span class="kw">if</span> (!validAssets.empty())
+        if (!validAssets.empty())
         {
-            <span class="kw">for</span> (<span class="kw">int</span> i = <span class="num">0</span>; i &lt; myPlacementCount; i++)
+            for (int i = 0; i &lt; myPlacementCount; i++)
             {
-                <span class="kw">const</span> <span class="kw">int</span> randomIndex = rand() % validAssets.size();
-                <span class="kw">auto</span> object = PlaceObjectWithAsset(validAssets[randomIndex], currentBatchPositions);
-                <span class="kw">if</span> (object)
+                const int randomIndex = rand() % validAssets.size();
+                auto object = PlaceObjectWithAsset(validAssets[randomIndex], currentBatchPositions);
+                if (object)
                 {
                     objectsToPlace.push_back(object);
                 }
             }
         }
     }
-<span class="cmt">// Using the position scatter to decide where to place it inside the brush circle:</span>
-<span class="kw">float</span> distance = RandomGenerator::GetFloat(myBrush.randomOffsetRadiusMin, myBrush.randomOffsetRadiusMax);
+// Using the position scatter to decide where to place it inside the brush circle:
+float distance = RandomGenerator::GetFloat(myBrush.randomOffsetRadiusMin, myBrush.randomOffsetRadiusMax);
 distance = FMath::Min(distance, myBrush.size);
 Tga::Vector3f tangent;
 Tga::Vector3f bitangent;
 GetSurfaceTangentFrame(myBrush.normal, tangent, bitangent);
-Tga::Vector3f offset = (tangent * cosf(angle) + bitangent * sinf(angle)) * distance;</pre>
+Tga::Vector3f offset = (tangent * cosf(angle) + bitangent * sinf(angle)) * distance;</code></pre>
         </div>
       </div>
       </div>
@@ -411,10 +414,10 @@ Tga::Vector3f offset = (tangent * cosf(angle) + bitangent * sinf(angle)) * dista
           <button class="tp-code-toggle" onclick="carouselToggleCode('feat-3')">View Code ↓</button>
           <div class="tp-carousel-codes">
             <div class="tp-code-block tp-carousel-code active" style="display:none;">
-              <pre><span class="cmt">// Slide 1 — Add your randomization code here</span></pre>
+              <pre><code class="language-cpp">// Slide 1 — Add your randomization code here</code></pre>
             </div>
             <div class="tp-code-block tp-carousel-code" style="display:none;">
-              <pre><span class="cmt">// Slide 2 — Add your code here</span></pre>
+              <pre><code class="language-cpp">// Slide 2 — Add your code here</code></pre>
             </div>
           </div>
         </div>
@@ -435,52 +438,52 @@ Tga::Vector3f offset = (tangent * cosf(angle) + bitangent * sinf(angle)) * dista
           </div>
         </div>
         <div class="tp-overlay-code active" data-slide="0">
-          <pre><span class="cmt">// First calculate the base rotation using the normal, then add the rotations as implied by the user:</span>
-Tga::Quaternionf AssetBrush::CalculateRandomRotation(<span class="kw">const</span> Tga::Vector3f&amp; aSurfaceNormal) <span class="kw">const</span>
+          <pre><code class="language-cpp">// First calculate the base rotation using the normal, then add the rotations as implied by the user:
+Tga::Quaternionf AssetBrush::CalculateRandomRotation(const Tga::Vector3f&amp; aSurfaceNormal) const
 {
     Tga::Quaternionf baseRotation = Tga::Quaternionf::CreateFromUpDirection(aSurfaceNormal);
     Tga::Quaternionf finalRotation = baseRotation;
-    <span class="kw">if</span> (myBrush.useRandomRotation)
+    if (myBrush.useRandomRotation)
     {
-        <span class="kw">float</span> randomYaw = RandomGenerator::GetFloat(myBrush.randomRotationMin, myBrush.randomRotationMax);
+        float randomYaw = RandomGenerator::GetFloat(myBrush.randomRotationMin, myBrush.randomRotationMax);
         Tga::Vector3f localUp = finalRotation.GetUp();
         Tga::Quaternionf yawRotation(localUp, randomYaw);
         finalRotation = baseRotation * yawRotation;
     }
-    <span class="kw">if</span> (myBrush.useRandomPitch)
+    if (myBrush.useRandomPitch)
     {
-        <span class="kw">float</span> randomPitch = RandomGenerator::GetFloat(myBrush.randomPitchMin, myBrush.randomPitchMax);
+        float randomPitch = RandomGenerator::GetFloat(myBrush.randomPitchMin, myBrush.randomPitchMax);
         Tga::Vector3f localRight = finalRotation.GetRight();
         Tga::Quaternionf pitchRotation(localRight, randomPitch);
         finalRotation = pitchRotation * finalRotation;
     }
-    <span class="kw">if</span> (myBrush.useRandomRoll)
+    if (myBrush.useRandomRoll)
     {
-        <span class="kw">float</span> randomRoll = RandomGenerator::GetFloat(myBrush.randomRollMin, myBrush.randomRollMax);
+        float randomRoll = RandomGenerator::GetFloat(myBrush.randomRollMin, myBrush.randomRollMax);
         Tga::Vector3f localForward = finalRotation.GetForward();
         Tga::Quaternionf rollRotation(localForward, randomRoll);
         finalRotation = rollRotation * finalRotation;
     }
-    <span class="kw">return</span> finalRotation;
+    return finalRotation;
 }
-<span class="cmt">// Calculate scale</span>
-Tga::Vector3f AssetBrush::CalculateRandomScale() <span class="kw">const</span>
+// Calculate scale
+Tga::Vector3f AssetBrush::CalculateRandomScale() const
 {
-    <span class="kw">if</span> (!myBrush.useRandomScale)
+    if (!myBrush.useRandomScale)
     {
-        <span class="kw">return</span> Tga::Vector3f(<span class="num">1.0f</span>, <span class="num">1.0f</span>, <span class="num">1.0f</span>);
+        return Tga::Vector3f(1.0f, 1.0f, 1.0f);
     }
-    <span class="kw">if</span> (myBrush.uniformScale)
+    if (myBrush.uniformScale)
     {
-        <span class="kw">const</span> <span class="kw">float</span> scale = RandomGenerator::GetFloat(myBrush.randomScaleMin, myBrush.randomScaleMax);
-        <span class="kw">return</span> Tga::Vector3f(scale, scale, scale);
+        const float scale = RandomGenerator::GetFloat(myBrush.randomScaleMin, myBrush.randomScaleMax);
+        return Tga::Vector3f(scale, scale, scale);
     }
-    <span class="kw">return</span> Tga::Vector3f(
+    return Tga::Vector3f(
         RandomGenerator::GetFloat(myBrush.randomScaleMin, myBrush.randomScaleMax),
         RandomGenerator::GetFloat(myBrush.randomScaleMin, myBrush.randomScaleMax),
         RandomGenerator::GetFloat(myBrush.randomScaleMin, myBrush.randomScaleMax)
     );
-}</pre>
+}</code></pre>
         </div>
       </div>
       </div>
@@ -501,10 +504,10 @@ Tga::Vector3f AssetBrush::CalculateRandomScale() <span class="kw">const</span>
           <button class="tp-code-toggle" onclick="carouselToggleCode('feat-4')">View Code ↓</button>
           <div class="tp-carousel-codes">
             <div class="tp-code-block tp-carousel-code active" style="display:none;">
-              <pre><span class="cmt">// Slide 1 — Add your slope filtering code here</span></pre>
+              <pre><code class="language-cpp">// Slide 1 — Add your slope filtering code here</code></pre>
             </div>
             <div class="tp-code-block tp-carousel-code" style="display:none;">
-              <pre><span class="cmt">// Slide 2 — Add your code here</span></pre>
+              <pre><code class="language-cpp">// Slide 2 — Add your code here</code></pre>
             </div>
           </div>
         </div>
@@ -525,33 +528,33 @@ Tga::Vector3f AssetBrush::CalculateRandomScale() <span class="kw">const</span>
           </div>
         </div>
         <div class="tp-overlay-code active" data-slide="0">
-          <pre><span class="cmt">// By using the normal of the position we got from doing the placement calculations, we now check <span class="kw">if</span> the slope is valid:</span>
-<span class="kw">const</span> OffsetResult offsetResult = CalculateOffsetPosition();
-<span class="kw">if</span> (!offsetResult.valid)
+          <pre><code class="language-cpp">// By using the normal of the position we got from doing the placement calculations, we now check if the slope is valid:
+const OffsetResult offsetResult = CalculateOffsetPosition();
+if (!offsetResult.valid)
 {
-    <span class="kw">continue</span>;
+    continue;
 }
-<span class="kw">const</span> Tga::Vector3f position = offsetResult.position;
-<span class="kw">const</span> Tga::Vector3f surfaceNormal = offsetResult.normal;
-<span class="kw">if</span> (!IsSlopeValid(surfaceNormal))
+const Tga::Vector3f position = offsetResult.position;
+const Tga::Vector3f surfaceNormal = offsetResult.normal;
+if (!IsSlopeValid(surfaceNormal))
 {
-    <span class="kw">continue</span>;
+    continue;
 }
-<span class="kw">bool</span> AssetBrush::IsSlopeValid(<span class="kw">const</span> Tga::Vector3f&amp; aNormal) <span class="kw">const</span>
+bool AssetBrush::IsSlopeValid(const Tga::Vector3f&amp; aNormal) const
 {
-    <span class="kw">if</span> (!myBrush.useSlopeFilter)
+    if (!myBrush.useSlopeFilter)
     {
-        <span class="kw">return</span> <span class="kw">true</span>;
+        return true;
     }
-    <span class="cmt">// Calculate slope angle from normal</span>
-    <span class="kw">float</span> normalY = std::abs(aNormal.y);
-    <span class="kw">float</span> slopeDegrees = acosf(std::clamp(normalY, <span class="num">0.0f</span>, <span class="num">1.0f</span>)) * (<span class="num">180.0f</span> / FMath::Pi);
-    <span class="kw">if</span> (slopeDegrees &lt; myBrush.minSlope || slopeDegrees &gt; myBrush.maxSlope)
+    // Calculate slope angle from normal
+    float normalY = std::abs(aNormal.y);
+    float slopeDegrees = acosf(std::clamp(normalY, 0.0f, 1.0f)) * (180.0f / FMath::Pi);
+    if (slopeDegrees &lt; myBrush.minSlope || slopeDegrees &gt; myBrush.maxSlope)
     {
-        <span class="kw">return</span> <span class="kw">false</span>;
+        return false;
     }
-    <span class="kw">return</span> <span class="kw">true</span>;
-}</pre>
+    return true;
+}</code></pre>
         </div>
       </div>
       </div>
@@ -584,62 +587,62 @@ Tga::Vector3f AssetBrush::CalculateRandomScale() <span class="kw">const</span>
                 <span class="proj-slide-counter">1 / 2</span>
                 <button class="proj-slide-arrow" onclick="projSlideNav(this,1)">→</button>
               </div>
-              <div class="proj-code-slide active"><div class="proj-code-block" style="display:block; max-height:360px; overflow:auto;"><pre><span class="kw">struct</span> CellKey
+              <div class="proj-code-slide active"><div class="proj-code-block" style="display:block; max-height:360px; overflow:auto;"><pre><code class="language-cpp">struct CellKey
 {
-    <span class="kw">int</span> x, y, z;
-    <span class="kw">bool</span> <span class="kw">operator</span>==(<span class="kw">const</span> CellKey&amp; other) <span class="kw">const</span>
+    int x, y, z;
+    bool operator==(const CellKey&amp; other) const
     {
-        <span class="kw">return</span> x == other.x && y == other.y && z == other.z;
+        return x == other.x && y == other.y && z == other.z;
     }
 };
 
-<span class="kw">struct</span> CellKeyHash
+struct CellKeyHash
 {
-    size_t <span class="kw">operator</span>()(<span class="kw">const</span> CellKey&amp; key) <span class="kw">const</span>
+    size_t operator()(const CellKey&amp; key) const
     {
-        size_t h1 = std::hash&lt;<span class="kw">int</span>&gt;{}(key.x);
-        size_t h2 = std::hash&lt;<span class="kw">int</span>&gt;{}(key.y);
-        size_t h3 = std::hash&lt;<span class="kw">int</span>&gt;{}(key.z);
-        <span class="kw">return</span> h1 ^ (h2 &lt;&lt; <span class="num">1</span>) ^ (h3 &lt;&lt; <span class="num">2</span>);
+        size_t h1 = std::hash&lt;int&gt;{}(key.x);
+        size_t h2 = std::hash&lt;int&gt;{}(key.y);
+        size_t h3 = std::hash&lt;int&gt;{}(key.z);
+        return h1 ^ (h2 &lt;&lt; 1) ^ (h3 &lt;&lt; 2);
     }
 };
 
-uint64_t <span class="fn">AssetBrush::GetSpatialKey</span>(<span class="kw">int</span> cellX, <span class="kw">int</span> cellZ)
+uint64_t AssetBrush::GetSpatialKey(int cellX, int cellZ)
 {
-    <span class="kw">return</span> (<span class="kw">static_cast</span>&lt;uint64_t&gt;(<span class="kw">static_cast</span>&lt;uint32_t&gt;(cellX)) &lt;&lt; <span class="num">32</span>)
-        | (<span class="kw">static_cast</span>&lt;uint64_t&gt;(<span class="kw">static_cast</span>&lt;uint32_t&gt;(cellZ)));
-}</pre></div></div><div class="proj-code-slide"><div class="proj-code-block" style="display:block; max-height:360px; overflow:auto;"><pre><span class="kw">void</span> <span class="fn">AssetBrush::InitNameCounters</span>()
+    return (static_cast&lt;uint64_t&gt;(static_cast&lt;uint32_t&gt;(cellX)) &lt;&lt; 32)
+        | (static_cast&lt;uint64_t&gt;(static_cast&lt;uint32_t&gt;(cellZ)));
+}</code></pre></div></div><div class="proj-code-slide"><div class="proj-code-block" style="display:block; max-height:360px; overflow:auto;"><pre><code class="language-cpp">void AssetBrush::InitNameCounters()
 {
-    myAssetNameCounters.<span class="fn">clear</span>();
+    myAssetNameCounters.clear();
 
-    Tga::Scene* scene = Tga::<span class="fn">GetActiveScene</span>();
-    <span class="kw">for</span> (<span class="kw">const auto</span>&amp; [id, obj] : scene-&gt;<span class="fn">GetSceneObjects</span>())
+    Tga::Scene* scene = Tga::GetActiveScene();
+    for (const auto&amp; [id, obj] : scene-&gt;GetSceneObjects())
     {
-        std::string name = obj-&gt;<span class="fn">GetName</span>();
+        std::string name = obj-&gt;GetName();
 
-        <span class="cmt">// Brush-placed assets are named "AssetName_b#"</span>
-        size_t separatorPos = name.<span class="fn">rfind</span>(<span class="str">"_b"</span>);
-        <span class="kw">if</span> (separatorPos == std::string::npos)
+        // Brush-placed assets are named "AssetName_b#"
+        size_t separatorPos = name.rfind("_b");
+        if (separatorPos == std::string::npos)
         {
-            <span class="kw">continue</span>;
+            continue;
         }
 
-        std::string baseName = name.<span class="fn">substr</span>(<span class="num">0</span>, separatorPos);
-        std::string indexStr = name.<span class="fn">substr</span>(separatorPos + <span class="num">2</span>);
+        std::string baseName = name.substr(0, separatorPos);
+        std::string indexStr = name.substr(separatorPos + 2);
 
-        <span class="kw">if</span> (indexStr.<span class="fn">empty</span>() || !std::<span class="fn">all_of</span>(indexStr.<span class="fn">begin</span>(), indexStr.<span class="fn">end</span>(), ::isdigit))
+        if (indexStr.empty() || !std::all_of(indexStr.begin(), indexStr.end(), ::isdigit))
         {
-            <span class="kw">continue</span>;
+            continue;
         }
 
-        <span class="kw">int</span> index = std::<span class="fn">stoi</span>(indexStr);
-        <span class="kw">int</span>&amp; counter = myAssetNameCounters[baseName];
-        <span class="kw">if</span> (index &gt;= counter)
+        int index = std::stoi(indexStr);
+        int&amp; counter = myAssetNameCounters[baseName];
+        if (index &gt;= counter)
         {
-            counter = index + <span class="num">1</span>;
+            counter = index + 1;
         }
     }
-}</pre></div></div>
+}</code></pre></div></div>
             </div></div>
       </div>
 
@@ -665,56 +668,56 @@ uint64_t <span class="fn">AssetBrush::GetSpatialKey</span>(<span class="kw">int<
                 <span class="proj-slide-counter">1 / 2</span>
                 <button class="proj-slide-arrow" onclick="projSlideNav(this,1)">→</button>
               </div>
-              <div class="proj-code-slide active"><div class="proj-code-block" style="display:block; max-height:360px; overflow:auto;"><pre><span class="kw">void</span> <span class="fn">TerrainMap::ReadPositions</span>(ID3D11Texture2D* source)
+              <div class="proj-code-slide active"><div class="proj-code-block" style="display:block; max-height:360px; overflow:auto;"><pre><code class="language-cpp">void TerrainMap::ReadPositions(ID3D11Texture2D* source)
 {
     D3D11_MAPPED_SUBRESOURCE mapped;
-    HRESULT hr = Tga::DX11::Context-&gt;<span class="fn">Map</span>(source, <span class="num">0</span>, D3D11_MAP_READ, <span class="num">0</span>, &amp;mapped);
+    HRESULT hr = Tga::DX11::Context-&gt;Map(source, 0, D3D11_MAP_READ, 0, &amp;mapped);
 
-    <span class="cmt">// Position is R32G32B32A32_FLOAT — 4 floats per pixel, read directly</span>
-    <span class="kw">const float</span>* srcData = <span class="kw">static_cast</span>&lt;<span class="kw">const float</span>*&gt;(mapped.pData);
+    // Position is R32G32B32A32_FLOAT — 4 floats per pixel, read directly
+    const float* srcData = static_cast&lt;const float*&gt;(mapped.pData);
 
-    <span class="kw">for</span> (<span class="kw">int</span> y = <span class="num">0</span>; y &lt; myViewportSize.y; y++)
+    for (int y = 0; y &lt; myViewportSize.y; y++)
     {
-        <span class="kw">for</span> (<span class="kw">int</span> x = <span class="num">0</span>; x &lt; myViewportSize.x; x++)
+        for (int x = 0; x &lt; myViewportSize.x; x++)
         {
-            <span class="kw">int</span> index    = y * myViewportSize.x + x;
-            <span class="kw">int</span> srcIndex = (y * (mapped.RowPitch / <span class="kw">sizeof</span>(<span class="kw">float</span>))) + (x * <span class="num">4</span>);
+            int index    = y * myViewportSize.x + x;
+            int srcIndex = (y * (mapped.RowPitch / sizeof(float))) + (x * 4);
             myCachedPositions[index] = Tga::Vector3f(
-                srcData[srcIndex + <span class="num">0</span>],
-                srcData[srcIndex + <span class="num">1</span>],
-                srcData[srcIndex + <span class="num">2</span>]
+                srcData[srcIndex + 0],
+                srcData[srcIndex + 1],
+                srcData[srcIndex + 2]
             );
         }
     }
-    Tga::DX11::Context-&gt;<span class="fn">Unmap</span>(source, <span class="num">0</span>);
-}</pre></div></div><div class="proj-code-slide"><div class="proj-code-block" style="display:block; max-height:360px; overflow:auto;"><pre><span class="kw">void</span> <span class="fn">TerrainMap::ReadNormals</span>(ID3D11Texture2D* source)
+    Tga::DX11::Context-&gt;Unmap(source, 0);
+}</code></pre></div></div><div class="proj-code-slide"><div class="proj-code-block" style="display:block; max-height:360px; overflow:auto;"><pre><code class="language-cpp">void TerrainMap::ReadNormals(ID3D11Texture2D* source)
 {
     D3D11_MAPPED_SUBRESOURCE mapped;
-    Tga::DX11::Context-&gt;<span class="fn">Map</span>(source, <span class="num">0</span>, D3D11_MAP_READ, <span class="num">0</span>, &amp;mapped);
+    Tga::DX11::Context-&gt;Map(source, 0, D3D11_MAP_READ, 0, &amp;mapped);
 
-    <span class="cmt">// Normal is R10G10B10A2_UNORM — packed into a single 32-bit uint</span>
-    <span class="kw">const</span> uint32_t* srcData = <span class="kw">static_cast</span>&lt;<span class="kw">const</span> uint32_t*&gt;(mapped.pData);
+    // Normal is R10G10B10A2_UNORM — packed into a single 32-bit uint
+    const uint32_t* srcData = static_cast&lt;const uint32_t*&gt;(mapped.pData);
 
-    <span class="kw">for</span> (<span class="kw">int</span> y = <span class="num">0</span>; y &lt; myViewportSize.y; y++)
+    for (int y = 0; y &lt; myViewportSize.y; y++)
     {
-        <span class="kw">for</span> (<span class="kw">int</span> x = <span class="num">0</span>; x &lt; myViewportSize.x; x++)
+        for (int x = 0; x &lt; myViewportSize.x; x++)
         {
-            uint32_t packed = srcData[(y * (mapped.RowPitch / <span class="kw">sizeof</span>(uint32_t))) + x];
+            uint32_t packed = srcData[(y * (mapped.RowPitch / sizeof(uint32_t))) + x];
 
-            <span class="cmt">// Unpack 10 bits per channel</span>
-            float nx = ((packed &gt;&gt;  <span class="num">0</span>) &amp; <span class="num">0x3FF</span>) / <span class="num">1023.0f</span>;
-            float ny = ((packed &gt;&gt; <span class="num">10</span>) &amp; <span class="num">0x3FF</span>) / <span class="num">1023.0f</span>;
-            float nz = ((packed &gt;&gt; <span class="num">20</span>) &amp; <span class="num">0x3FF</span>) / <span class="num">1023.0f</span>;
+            // Unpack 10 bits per channel
+            float nx = ((packed &gt;&gt;  0) &amp; 0x3FF) / 1023.0f;
+            float ny = ((packed &gt;&gt; 10) &amp; 0x3FF) / 1023.0f;
+            float nz = ((packed &gt;&gt; 20) &amp; 0x3FF) / 1023.0f;
 
-            <span class="cmt">// GBuffer stores normals as (n * 0.5 + 0.5), reverse that:</span>
-            nx = (nx * <span class="num">2.0f</span>) - <span class="num">1.0f</span>;
-            ny = (ny * <span class="num">2.0f</span>) - <span class="num">1.0f</span>;
-            nz = (nz * <span class="num">2.0f</span>) - <span class="num">1.0f</span>;
+            // GBuffer stores normals as (n * 0.5 + 0.5), reverse that:
+            nx = (nx * 2.0f) - 1.0f;
+            ny = (ny * 2.0f) - 1.0f;
+            nz = (nz * 2.0f) - 1.0f;
             myCachedNormals[y * myViewportSize.x + x] = Tga::Vector3f(nx, ny, nz);
         }
     }
-    Tga::DX11::Context-&gt;<span class="fn">Unmap</span>(source, <span class="num">0</span>);
-}</pre></div></div>
+    Tga::DX11::Context-&gt;Unmap(source, 0);
+}</code></pre></div></div>
             </div></div>
       </div>
 
@@ -726,18 +729,18 @@ uint64_t <span class="fn">AssetBrush::GetSpatialKey</span>(<span class="kw">int<
             <p class="proj-contribution-desc" style="max-width:820px; margin-bottom:0.9rem;">Preview mode came with a lot of challenges. We now needed to save a version of the object that could be updated manually by the user if they wished to do so. For my first iteration, I did not need to care since the assets got updated between each brush stroke in regards to the settings chosen by the user. Now, we needed to keep the position/rotation/scale for the object, or some combination of them, based on the settings.</p>
             <p class="proj-contribution-desc" style="max-width:820px; margin-bottom:0.9rem;">For this, I created a struct related to the already existing scene object. By caching the current previews of the current stroke and batch of that stroke, I was able to update it cleanly as the user dragged the mouse across the screen. This also introduced the "Update on move" and "Manual update on R" settings, since the need for more control arose as a product of the preview tool.</p>
           </div>
-          <div class="proj-twocol-code"><div class="proj-code-block" style="display:block; max-height:360px; overflow:auto;"><pre><span class="kw">struct</span> PreviewObject
+          <div class="proj-twocol-code"><div class="proj-code-block" style="display:block; max-height:360px; overflow:auto;"><pre><code class="language-cpp">struct PreviewObject
 {
     std::shared_ptr&lt;Tga::SceneObject&gt; sceneObject;
-    <span class="kw">bool</span> isValid;
+    bool isValid;
 
     Tga::Vector2f cachedOffsetTangent;
     Tga::Quaternionf cachedRotation;
     Tga::Vector3f currentTerrainNormal;
     Tga::Vector3f cachedScale;
     Tga::StringId assetPath;
-    <span class="kw">float</span> pivotOffset = <span class="num">0.f</span>;
-};</pre></div>
+    float pivotOffset = 0.f;
+};</code></pre></div>
           </div>
         </div>
       </div>
@@ -754,21 +757,21 @@ uint64_t <span class="fn">AssetBrush::GetSpatialKey</span>(<span class="kw">int<
             <p class="proj-contribution-desc" style="max-width:820px; margin-bottom:0.9rem;">One problem that still persists is that the scatter area is in screen space, occasionally placing objects far away if the disc is outside the intended area but where valid terrain still exists. This can be solved by doing a simple world position check as well, so that the asset is not too far from the world position of the brush center — a feature I am looking to add.</p>
           </div>
         </div>
-        <div class="chal-code-full" style="margin-top:1.5rem;"><div class="proj-code-block" style="display:block; max-height:360px; overflow:auto;"><pre><span class="kw">void</span> <span class="fn">AssetBrush::GetSurfaceTangentFrame</span>(
-    <span class="kw">const</span> Tga::Vector3f&amp; normal,
+        <div class="chal-code-full" style="margin-top:1.5rem;"><div class="proj-code-block" style="display:block; max-height:360px; overflow:auto;"><pre><code class="language-cpp">void AssetBrush::GetSurfaceTangentFrame(
+    const Tga::Vector3f&amp; normal,
     Tga::Vector3f&amp; outTangent,
     Tga::Vector3f&amp; outBitangent)
 {
-    <span class="cmt">// Pick a reference vector that isn't parallel to the normal</span>
-    Tga::Vector3f reference = (<span class="fn">fabsf</span>(normal.y) &lt; <span class="num">0.99f</span>)
-        ? Tga::Vector3f(<span class="num">0</span>, <span class="num">1</span>, <span class="num">0</span>)
-        : Tga::Vector3f(<span class="num">1</span>, <span class="num">0</span>, <span class="num">0</span>);
+    // Pick a reference vector that isn't parallel to the normal
+    Tga::Vector3f reference = (fabsf(normal.y) &lt; 0.99f)
+        ? Tga::Vector3f(0, 1, 0)
+        : Tga::Vector3f(1, 0, 0);
 
-    outTangent = reference.<span class="fn">Cross</span>(normal);
-    outTangent.<span class="fn">Normalize</span>();
-    outBitangent = normal.<span class="fn">Cross</span>(outTangent);
-    outBitangent.<span class="fn">Normalize</span>();
-}</pre></div>
+    outTangent = reference.Cross(normal);
+    outTangent.Normalize();
+    outBitangent = normal.Cross(outTangent);
+    outBitangent.Normalize();
+}</code></pre></div>
           </div>
       </div>
 
@@ -831,5 +834,6 @@ uint64_t <span class="fn">AssetBrush::GetSpatialKey</span>(<span class="kw">int<
 </footer>
 
 <script src="scripts.js"></script>
+<script>hljs.highlightAll();</script>
 </body>
 </html>
