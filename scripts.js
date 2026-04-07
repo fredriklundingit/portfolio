@@ -123,15 +123,19 @@ const playingVideos = new Set();
 function setupHoverVideo(vid, hoverTarget) {
   vid.muted = true;
   vid.loop  = true;
+  vid.style.opacity = '0';
+  vid.style.transition = 'opacity 0.6s ease';
   hoverTarget.addEventListener('mouseenter', () => {
     if (vid.dataset.src && !vid.getAttribute('src')) {
       vid.src = vid.dataset.src;
     }
     vid.play().catch(() => {});
+    vid.style.opacity = '1';
     playingVideos.add(vid);
   });
   hoverTarget.addEventListener('mouseleave', () => {
     vid.pause();
+    vid.style.opacity = '0';
     playingVideos.delete(vid);
   });
 }
