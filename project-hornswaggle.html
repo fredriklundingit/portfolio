@@ -40,9 +40,9 @@
       <span class="proj-meta-item">C++</span>
     </div>
 
-    <div class="proj-intro">
+    <div class="proj-intro" style="text-align:left; margin:0;">
       <span class="proj-award">★ Game of the Year — The Game Assembly</span>
-      <p>A pirate adventure game that won Game of the Year. I wore a few hats — custom audio from scratch, cinematics, and project management across the team.</p>
+      <p>A platformer where I was mainly responsible for the audio and cinematic cutscenes, as well as being the project manager. During this project, we also worked closely with 4 sound designers from the Audio Production Academy. An experience I really enjoyed and which gave a lot of experience when it comes to collaborating with people who are not on location with you, such as the other disciplines. Winner of GOTY at The Game Assembly!</p>
     </div>
 
     <span class="proj-section-label">Contributions</span>
@@ -52,7 +52,7 @@
       <div class="proj-contribution-border">
         <div class="proj-twocol"><div class="proj-twocol-text">
             <span class="proj-contribution-title">Custom Audio Manager</span>
-            <p class="proj-contribution-desc">First time working on game audio. Built the manager from scratch without any third-party libraries — spatial audio, surface-type audio, loading and caching SFX and music, full master/ambient/SFX volume control, mixing based on APA feedback, sound variants and continuous collaboration with APA throughout.</p>
+            <p class="proj-contribution-desc">First time working on game audio. I built the manager from scratch without any third-party libraries such as FMOD or WWISE. I integrated spatial audio, surface-type audio, loading and caching SFX and music, full master/ambient/SFX volume control, mixing based on the feedback from our sound designers and sound variants based on different materials.</p>
           </div>
           <div class="proj-twocol-code"><div class="proj-code-slides">
             <div class="proj-code-slides-bar">
@@ -60,73 +60,73 @@
               <span class="proj-slide-counter">1 / 3</span>
               <button class="proj-slide-arrow" onclick="projSlideNav(this,1)">→</button>
             </div>
-            <div class="proj-code-slide active"><div class="proj-code-block" style="display:block; max-height:380px; overflow:auto;"><pre><code class="language-cpp"><span class="kw">void</span> WASD::<span class="fn">AudioManager::PlaySfx</span>(<span class="kw">const</span> SoundData aSoundData, <span class="kw">const</span> Tga::Vector3f aPosition)
+            <div class="proj-code-slide active"><div class="proj-code-block" style="display:block; max-height:380px; overflow:auto;"><pre><code class="language-cpp">void WASD::AudioManager::PlaySfx(const SoundData aSoundData, const Tga::Vector3f aPosition)
 {
-    <span class="kw">if</span> (!<span class="fn">GetSfxIsMuted</span>())
+    if (!GetSfxIsMuted())
     {
-        SoundID soundID = <span class="fn">CreateSoundID</span>(aSoundData);
+        SoundID soundID = CreateSoundID(aSoundData);
 
-        <span class="kw">const int</span> variantToPlay          = <span class="fn">GetRandomVariant</span>(mySfx.<span class="fn">at</span>(soundID).<span class="fn">size</span>(), myLastVariantsPlayed.<span class="fn">at</span>(soundID));
-        myLastVariantsPlayed.<span class="fn">at</span>(soundID) = variantToPlay;
+        const int variantToPlay          = GetRandomVariant(mySfx.at(soundID).size(), myLastVariantsPlayed.at(soundID));
+        myLastVariantsPlayed.at(soundID) = variantToPlay;
 
-        <span class="kw">const float</span> volume = <span class="fn">AdjustProximityVolume</span>(aPosition, mySfx.<span class="fn">at</span>(soundID)[variantToPlay]);
+        const float volume = AdjustProximityVolume(aPosition, mySfx.at(soundID)[variantToPlay]);
 
-        <span class="kw">if</span> (volume &gt; <span class="num">0.f</span>)
+        if (volume &gt; 0.f)
         {
             Tga::Vector3f soundDistanceToPlayer;
 
-            <span class="kw">if</span> (aPosition.x != <span class="num">0.f</span> && aPosition.y != <span class="num">0.f</span>)
+            if (aPosition.x != 0.f && aPosition.y != 0.f)
             {
                 soundDistanceToPlayer   = aPosition - globalPlayerPosition;
-                soundDistanceToPlayer.x = std::<span class="fn">clamp</span>(soundDistanceToPlayer.x / mySfxMaxPanDistance, <span class="num">-1.0f</span>, <span class="num">1.0f</span>);
-                soundDistanceToPlayer.y = std::<span class="fn">clamp</span>(soundDistanceToPlayer.y / mySfxMaxPanDistance, <span class="num">-1.0f</span>, <span class="num">1.0f</span>);
+                soundDistanceToPlayer.x = std::clamp(soundDistanceToPlayer.x / mySfxMaxPanDistance, -1.0f, 1.0f);
+                soundDistanceToPlayer.y = std::clamp(soundDistanceToPlayer.y / mySfxMaxPanDistance, -1.0f, 1.0f);
             }
 
-            mySfx.<span class="fn">at</span>(soundID)[variantToPlay].<span class="fn">SetVolume</span>(volume);
-            mySfx.<span class="fn">at</span>(soundID)[variantToPlay].<span class="fn">Play</span>();
-            mySfx.<span class="fn">at</span>(soundID)[variantToPlay].<span class="fn">SetPosition</span>(soundDistanceToPlayer);
+            mySfx.at(soundID)[variantToPlay].SetVolume(volume);
+            mySfx.at(soundID)[variantToPlay].Play();
+            mySfx.at(soundID)[variantToPlay].SetPosition(soundDistanceToPlayer);
         }
     }
-}</code></pre></div></div><div class="proj-code-slide"><div class="proj-code-block" style="display:block; max-height:380px; overflow:auto;"><pre><code class="language-cpp"><span class="kw">float</span> WASD::<span class="fn">AudioManager::AdjustProximityVolume</span>(
-    <span class="kw">const</span> Tga::Vector3f&amp; aObjectPosition, <span class="kw">const</span> Tga::Audio&amp; aAudioInstance) <span class="kw">const</span>
+}</code></pre></div></div><div class="proj-code-slide"><div class="proj-code-block" style="display:block; max-height:380px; overflow:auto;"><pre><code class="language-cpp">float WASD::AudioManager::AdjustProximityVolume(
+    const Tga::Vector3f&amp; aObjectPosition, const Tga::Audio&amp; aAudioInstance) const
 {
-    <span class="kw">const</span> Tga::Vector3f soundDistanceToPlayer = aObjectPosition - globalPlayerPosition;
-    <span class="kw">const float</span> volume = (<span class="num">1.f</span> - (soundDistanceToPlayer.<span class="fn">Length</span>() / mySfxMaxDistance))
-                        * <span class="fn">GetSfxVolumeOfInstance</span>(aAudioInstance);
-    <span class="kw">return</span> std::<span class="fn">clamp</span>(volume, <span class="num">0.f</span>, aAudioInstance.<span class="fn">GetMaxVolume</span>());
+    const Tga::Vector3f soundDistanceToPlayer = aObjectPosition - globalPlayerPosition;
+    const float volume = (1.f - (soundDistanceToPlayer.Length() / mySfxMaxDistance))
+                        * GetSfxVolumeOfInstance(aAudioInstance);
+    return std::clamp(volume, 0.f, aAudioInstance.GetMaxVolume());
 }
 
-<span class="kw">void</span> WASD::<span class="fn">AudioManager::LoadSound</span>(
-    <span class="kw">const</span> SoundType aSoundType, <span class="kw">const</span> MaterialType aMaterialType,
-    <span class="kw">const</span> SubSoundType aSubSoundType, <span class="kw">const</span> std::string_view aPath,
-    <span class="kw">const float</span> aBaseMaxVolume, <span class="kw">const bool</span> aShouldLoop)
+void WASD::AudioManager::LoadSound(
+    const SoundType aSoundType, const MaterialType aMaterialType,
+    const SubSoundType aSubSoundType, const std::string_view aPath,
+    const float aBaseMaxVolume, const bool aShouldLoop)
 {
     SoundData soundData;
     soundData.soundType    = aSoundType;
     soundData.materialType = aMaterialType;
     soundData.subSoundType = aSubSoundType;
 
-    <span class="kw">const</span> std::string fullFilePath = <span class="str">"audio/sfx/"</span> + std::string(aPath);
-    mySfx[<span class="fn">CreateSoundID</span>(soundData)].<span class="fn">emplace_back</span>().<span class="fn">Init</span>(fullFilePath.<span class="fn">c_str</span>(), aBaseMaxVolume, aShouldLoop);
-    myLastVariantsPlayed[<span class="fn">CreateSoundID</span>(soundData)] = <span class="num">0</span>;
-}</code></pre></div></div><div class="proj-code-slide"><div class="proj-code-block" style="display:block; max-height:380px; overflow:auto;"><pre><code class="language-cpp"><span class="cmt">// Packs SoundType, MaterialType and SubSoundType into a single integer ID
+    const std::string fullFilePath = "audio/sfx/" + std::string(aPath);
+    mySfx[CreateSoundID(soundData)].emplace_back().Init(fullFilePath.c_str(), aBaseMaxVolume, aShouldLoop);
+    myLastVariantsPlayed[CreateSoundID(soundData)] = 0;
+}</code></pre></div></div><div class="proj-code-slide"><div class="proj-code-block" style="display:block; max-height:380px; overflow:auto;"><pre><code class="language-cpp">// Packs SoundType, MaterialType and SubSoundType into a single integer ID
 // by bit-shifting each enum value into its own lane.
 // This lets us use one flat map lookup instead of nested maps,
-// and guarantees a unique key for every (type, material, sub) combination.</span>
-<span class="kw">constexpr</span> WASD::SoundID <span class="fn">CreateSoundID</span>(<span class="kw">const</span> WASD::SoundData aSoundData)
+// and guarantees a unique key for every (type, material, sub) combination.
+constexpr WASD::SoundID CreateSoundID(const WASD::SoundData aSoundData)
 {
-    WASD::SoundID soundID = WASD::<span class="fn">EVal</span>(aSoundData.soundType);
+    WASD::SoundID soundID = WASD::EVal(aSoundData.soundType);
     soundID &lt;&lt;= std::numeric_limits&lt;std::underlying_type_t&lt;MaterialType&gt;&gt;::digits;
-    soundID |= WASD::<span class="fn">EVal</span>(aSoundData.materialType);
+    soundID |= WASD::EVal(aSoundData.materialType);
     soundID &lt;&lt;= std::numeric_limits&lt;std::underlying_type_t&lt;SubSoundType&gt;&gt;::digits;
-    soundID |= WASD::<span class="fn">EVal</span>(aSoundData.subSoundType);
-    <span class="kw">return</span> soundID;
+    soundID |= WASD::EVal(aSoundData.subSoundType);
+    return soundID;
 }
 
-<span class="cmt">// The three enums that combine to form a SoundID:</span>
-<span class="kw">enum class</span> MaterialType : uint8 { Wood, Stone, Crate, TentacleSkin, Cannon, SkeletonHead, PirateHead, ParrotHead, Player, None, Count };
-<span class="kw">enum class</span> SubSoundType  : uint8 { Player, Pirate, Parrot, Skeleton, Tentacle, Cannon, UI, None, Count };
-<span class="kw">enum class</span> SoundType     : uint8 { Landed, Attacking, Moving, Jumping, Exploding, DoubleJumping, Died, LevelComplete, CheckpointEntered, WallSliding, Breaking, Hovering, None, Count };</code></pre></div></div>
+// The three enums that combine to form a SoundID:
+enum class MaterialType : uint8 { Wood, Stone, Crate, TentacleSkin, Cannon, SkeletonHead, PirateHead, ParrotHead, Player, None, Count };
+enum class SubSoundType  : uint8 { Player, Pirate, Parrot, Skeleton, Tentacle, Cannon, UI, None, Count };
+enum class SoundType     : uint8 { Landed, Attacking, Moving, Jumping, Exploding, DoubleJumping, Died, LevelComplete, CheckpointEntered, WallSliding, Breaking, Hovering, None, Count };</code></pre></div></div>
           </div></div></div>
       </div>
 
@@ -138,73 +138,73 @@
           </div>
           <div class="proj-twocol-text">
             <span class="proj-contribution-title">Cinematic Handler</span>
-            <p class="proj-contribution-desc">Built the system handling all cutscenes — image indexing, sound queues and the game outro. Working closely with APA on this gave the cinematics a lot of character.</p>
+            <p class="proj-contribution-desc">I built the system handling all cutscenes, including image indexing, sound queues and the game outro. I took the opportunity to really work closely with our sound designers on this one, since the cutscenes gave the game a lot of character, and I do think the result is a product of great collaboration and open-mindedness.</p>
             <div class="proj-code-slides">
             <div class="proj-code-slides-bar">
               <button class="proj-slide-arrow" onclick="projSlideNav(this,-1)">←</button>
               <span class="proj-slide-counter">1 / 2</span>
               <button class="proj-slide-arrow" onclick="projSlideNav(this,1)">→</button>
             </div>
-            <div class="proj-code-slide active"><div class="proj-code-block" style="display:block; max-height:380px; overflow:auto;"><pre><code class="language-cpp"><span class="kw">void</span> <span class="fn">CinematicPlayer::Update</span>(<span class="kw">const float</span>&amp; aDeltaTime)
+            <div class="proj-code-slide active"><div class="proj-code-block" style="display:block; max-height:380px; overflow:auto;"><pre><code class="language-cpp">void CinematicPlayer::Update(const float&amp; aDeltaTime)
 {
     myCinematicData.firstSoundTimer += aDeltaTime;
 
-    <span class="kw">if</span> (myCinematicData.firstSoundTimer &gt; myCinematicData.timeToPlayFirstSound
+    if (myCinematicData.firstSoundTimer &gt; myCinematicData.timeToPlayFirstSound
         && !myCinematicData.firstSoundPlayed)
     {
-        Locator::<span class="fn">GetAudioManager</span>()-&gt;<span class="fn">PlayCinematicSfx</span>(myCinematicData.myCinematicID, myCinematicData.sfxIndex);
+        Locator::GetAudioManager()-&gt;PlayCinematicSfx(myCinematicData.myCinematicID, myCinematicData.sfxIndex);
         myCinematicData.sfxIndex++;
-        myCinematicData.firstSoundPlayed = <span class="kw">true</span>;
+        myCinematicData.firstSoundPlayed = true;
     }
 
-    <span class="kw">if</span> (myCinematicData.imageIsSwapping)
+    if (myCinematicData.imageIsSwapping)
     {
-        <span class="fn">ChangeImage</span>(aDeltaTime);
-        myCinematicData.showing          = <span class="kw">false</span>;
-        myCinematicData.instructionTimer = <span class="num">2.5f</span>;
-        myCinematicData.fadeValue        = <span class="num">0.f</span>;
+        ChangeImage(aDeltaTime);
+        myCinematicData.showing          = false;
+        myCinematicData.instructionTimer = 2.5f;
+        myCinematicData.fadeValue        = 0.f;
     }
 
     myCinematicData.instructionTimer -= aDeltaTime;
 
-    <span class="kw">if</span> (myCinematicData.instructionTimer &lt;= <span class="num">0.f</span>)
+    if (myCinematicData.instructionTimer &lt;= 0.f)
     {
-        myCinematicData.showing = <span class="kw">true</span>;
-        <span class="fn">FadeInstructions</span>(aDeltaTime);
+        myCinematicData.showing = true;
+        FadeInstructions(aDeltaTime);
     }
-}</code></pre></div></div><div class="proj-code-slide"><div class="proj-code-block" style="display:block; max-height:380px; overflow:auto;"><pre><code class="language-cpp"><span class="kw">void</span> <span class="fn">CinematicPlayer::ChangeImage</span>(<span class="kw">const float</span>&amp; aDeltaTime)
+}</code></pre></div></div><div class="proj-code-slide"><div class="proj-code-block" style="display:block; max-height:380px; overflow:auto;"><pre><code class="language-cpp">void CinematicPlayer::ChangeImage(const float&amp; aDeltaTime)
 {
-    <span class="kw">if</span> (myCinematicData.startIndex == myCinematicData.maxIndex)
+    if (myCinematicData.startIndex == myCinematicData.maxIndex)
     {
-        myCinematicData.imageIsSwapping = <span class="kw">false</span>;
-        <span class="fn">SkipCinematic</span>();
-        <span class="kw">return</span>;
+        myCinematicData.imageIsSwapping = false;
+        SkipCinematic();
+        return;
     }
 
-    <span class="kw">float</span> spriteMoveSpeed = myCinematicData.spriteMoveSpeed * myCinematicData.resolutionScaleFactor;
-    Tga::Vector2f targetPos = myCinematicData.spriteWayPoints[myCinematicData.startIndex + <span class="num">1</span>];
+    float spriteMoveSpeed = myCinematicData.spriteMoveSpeed * myCinematicData.resolutionScaleFactor;
+    Tga::Vector2f targetPos = myCinematicData.spriteWayPoints[myCinematicData.startIndex + 1];
 
-    <span class="kw">const float</span> movement = spriteMoveSpeed * aDeltaTime;
-    <span class="kw">const</span> Tga::Vector2f step = myCinematicData.movementDirection * movement;
+    const float movement = spriteMoveSpeed * aDeltaTime;
+    const Tga::Vector2f step = myCinematicData.movementDirection * movement;
     myCinematicData.currentProgressToNextFrame += movement;
     myCinematicData.instance.myPosition += step;
 
-    <span class="kw">if</span> (myCinematicData.currentProgressToNextFrame &gt; myCinematicData.totalDistanceToNextFrame)
+    if (myCinematicData.currentProgressToNextFrame &gt; myCinematicData.totalDistanceToNextFrame)
     {
         myCinematicData.instance.myPosition = targetPos;
         myCinematicData.startIndex++;
-        myCinematicData.imageIsSwapping = <span class="kw">false</span>;
+        myCinematicData.imageIsSwapping = false;
 
-        <span class="cmt">// Trigger outro sequence on final image</span>
-        <span class="kw">if</span> (myCinematicData.startIndex == outroStartIndex
+        // Trigger outro sequence on final image
+        if (myCinematicData.startIndex == outroStartIndex
             && myCinematicData.myCinematicID == WASD::SceneID::CinematicOutro)
         {
-            myCinematicData.outroTimer   = <span class="num">0.f</span>;
-            myCinematicData.outroPlaying = <span class="kw">true</span>;
-            myCinematicData.targetPos    = myCinematicData.spriteWayPoints.<span class="fn">back</span>();
+            myCinematicData.outroTimer   = 0.f;
+            myCinematicData.outroPlaying = true;
+            myCinematicData.targetPos    = myCinematicData.spriteWayPoints.back();
             myCinematicData.movementDirection = myCinematicData.targetPos - myCinematicData.instance.myPosition;
-            myCinematicData.totalDistanceToNextFrame = myCinematicData.movementDirection.<span class="fn">Length</span>();
-            myCinematicData.movementDirection.<span class="fn">Normalize</span>();
+            myCinematicData.totalDistanceToNextFrame = myCinematicData.movementDirection.Length();
+            myCinematicData.movementDirection.Normalize();
         }
     }
 }</code></pre></div></div>
@@ -217,7 +217,7 @@
       <div class="proj-contribution-border">
         <div class="proj-twocol-text" style="max-width:700px;">
           <span class="proj-contribution-title">Project Manager</span>
-          <p class="proj-contribution-desc">Handled communication gaps across disciplines, booked meetings and tracked attendance. Main responsibility for sprint reviews and presenting them. Always on the lookout for opportunities to improve how the team was working together.</p>
+          <p class="proj-contribution-desc">For this project I was also the project manager, handling communication gaps across disciplines, booking meetings and tracking attendance. I had the main responsibility for sprint reviews and for presenting them. A role I really enjoyed having, and I was always on the lookout for opportunities to improve how the team was working together.</p>
         </div>
       </div>
 
