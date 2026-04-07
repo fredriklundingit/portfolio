@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Misadventures of Captain Hornswaggle — Fredrik Lundin</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="index.html">Home</a>
+  <ul class="nav-links">
+    <li><a href="about.html">About</a></li>
+    <li><a href="index.html#tools">Tools</a></li>
+    <li><a href="index.html#projects">Projects</a></li>
+    <li><a href="contact.html">Contact</a></li>
+    <li><a href="CV_Fredrik_Lundin.pdf" download class="nav-cv">Download CV</a></li>
+  </ul>
+</nav>
+
+<div class="proj-page">
+<a class="back-btn" href="index.html" style="margin:0 3rem 0;">← Back</a>
+
+    <div class="proj-hero">
+      <video muted loop playsinline preload="none" data-src="videos/HornswaggleWeb.mp4" poster="images/hornswagllethumbnailimage.png" style="width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0;"></video>
+      <div class="proj-hero-overlay">
+        <span class="proj-hero-label">Project</span>
+        <h2>The Misadventures of Captain Hornswaggle</h2>
+        <a class="proj-trailer-btn" href="#" target="_blank">▶ Watch Trailer</a>
+      </div>
+    </div>
+
+    <div class="proj-meta-bar">
+      <span class="proj-meta-item">2023</span>
+      <span class="proj-meta-item">The Game Assembly</span>
+      <span class="proj-meta-item">Engine Programmer · Project Manager</span>
+      <span class="proj-meta-item">C++ · Custom Audio · Custom Engine</span>
+    </div>
+
+    <div class="proj-intro">
+      <span class="proj-award">★ Game of the Year — The Game Assembly</span>
+      <p>A pirate adventure game that won Game of the Year. I wore a few hats — custom audio from scratch, cinematics, and project management across the team.</p>
+    </div>
+
+    <span class="proj-section-label">Contributions</span>
+    <div class="proj-contributions proj-contributions-wide">
+
+      <!-- 1. CUSTOM AUDIO — text left, code right -->
+      <div class="proj-contribution-border">
+        <div class="proj-twocol"><div class="proj-twocol-text">
+            <span class="proj-contribution-title">Custom Audio Manager</span>
+            <p class="proj-contribution-desc">First time working on game audio. Built the manager from scratch without any third-party libraries — spatial audio, surface-type audio, loading and caching SFX and music, full master/ambient/SFX volume control, mixing based on APA feedback, sound variants and continuous collaboration with APA throughout.</p>
+          </div>
+          <div class="proj-twocol-code"><div class="proj-code-slides">
+            <div class="proj-code-slides-bar">
+              <button class="proj-slide-arrow" onclick="projSlideNav(this,-1)">←</button>
+              <span class="proj-slide-counter">1 / 3</span>
+              <button class="proj-slide-arrow" onclick="projSlideNav(this,1)">→</button>
+            </div>
+            <div class="proj-code-slide active"><div class="proj-code-block" style="display:block; max-height:380px; overflow:auto;"><pre><span class="kw">void</span> WASD::<span class="fn">AudioManager::PlaySfx</span>(<span class="kw">const</span> SoundData aSoundData, <span class="kw">const</span> Tga::Vector3f aPosition)
+{
+    <span class="kw">if</span> (!<span class="fn">GetSfxIsMuted</span>())
+    {
+        SoundID soundID = <span class="fn">CreateSoundID</span>(aSoundData);
+
+        <span class="kw">const int</span> variantToPlay          = <span class="fn">GetRandomVariant</span>(mySfx.<span class="fn">at</span>(soundID).<span class="fn">size</span>(), myLastVariantsPlayed.<span class="fn">at</span>(soundID));
+        myLastVariantsPlayed.<span class="fn">at</span>(soundID) = variantToPlay;
+
+        <span class="kw">const float</span> volume = <span class="fn">AdjustProximityVolume</span>(aPosition, mySfx.<span class="fn">at</span>(soundID)[variantToPlay]);
+
+        <span class="kw">if</span> (volume &gt; <span class="num">0.f</span>)
+        {
+            Tga::Vector3f soundDistanceToPlayer;
+
+            <span class="kw">if</span> (aPosition.x != <span class="num">0.f</span> && aPosition.y != <span class="num">0.f</span>)
+            {
+                soundDistanceToPlayer   = aPosition - globalPlayerPosition;
+                soundDistanceToPlayer.x = std::<span class="fn">clamp</span>(soundDistanceToPlayer.x / mySfxMaxPanDistance, <span class="num">-1.0f</span>, <span class="num">1.0f</span>);
+                soundDistanceToPlayer.y = std::<span class="fn">clamp</span>(soundDistanceToPlayer.y / mySfxMaxPanDistance, <span class="num">-1.0f</span>, <span class="num">1.0f</span>);
+            }
+
+            mySfx.<span class="fn">at</span>(soundID)[variantToPlay].<span class="fn">SetVolume</span>(volume);
+            mySfx.<span class="fn">at</span>(soundID)[variantToPlay].<span class="fn">Play</span>();
+            mySfx.<span class="fn">at</span>(soundID)[variantToPlay].<span class="fn">SetPosition</span>(soundDistanceToPlayer);
+        }
+    }
+}</pre></div></div><div class="proj-code-slide"><div class="proj-code-block" style="display:block; max-height:380px; overflow:auto;"><pre><span class="kw">float</span> WASD::<span class="fn">AudioManager::AdjustProximityVolume</span>(
+    <span class="kw">const</span> Tga::Vector3f&amp; aObjectPosition, <span class="kw">const</span> Tga::Audio&amp; aAudioInstance) <span class="kw">const</span>
+{
+    <span class="kw">const</span> Tga::Vector3f soundDistanceToPlayer = aObjectPosition - globalPlayerPosition;
+    <span class="kw">const float</span> volume = (<span class="num">1.f</span> - (soundDistanceToPlayer.<span class="fn">Length</span>() / mySfxMaxDistance))
+                        * <span class="fn">GetSfxVolumeOfInstance</span>(aAudioInstance);
+    <span class="kw">return</span> std::<span class="fn">clamp</span>(volume, <span class="num">0.f</span>, aAudioInstance.<span class="fn">GetMaxVolume</span>());
+}
+
+<span class="kw">void</span> WASD::<span class="fn">AudioManager::LoadSound</span>(
+    <span class="kw">const</span> SoundType aSoundType, <span class="kw">const</span> MaterialType aMaterialType,
+    <span class="kw">const</span> SubSoundType aSubSoundType, <span class="kw">const</span> std::string_view aPath,
+    <span class="kw">const float</span> aBaseMaxVolume, <span class="kw">const bool</span> aShouldLoop)
+{
+    SoundData soundData;
+    soundData.soundType    = aSoundType;
+    soundData.materialType = aMaterialType;
+    soundData.subSoundType = aSubSoundType;
+
+    <span class="kw">const</span> std::string fullFilePath = <span class="str">"audio/sfx/"</span> + std::string(aPath);
+    mySfx[<span class="fn">CreateSoundID</span>(soundData)].<span class="fn">emplace_back</span>().<span class="fn">Init</span>(fullFilePath.<span class="fn">c_str</span>(), aBaseMaxVolume, aShouldLoop);
+    myLastVariantsPlayed[<span class="fn">CreateSoundID</span>(soundData)] = <span class="num">0</span>;
+}</pre></div></div><div class="proj-code-slide"><div class="proj-code-block" style="display:block; max-height:380px; overflow:auto;"><pre><span class="cmt">// Packs SoundType, MaterialType and SubSoundType into a single integer ID
+// by bit-shifting each enum value into its own lane.
+// This lets us use one flat map lookup instead of nested maps,
+// and guarantees a unique key for every (type, material, sub) combination.</span>
+<span class="kw">constexpr</span> WASD::SoundID <span class="fn">CreateSoundID</span>(<span class="kw">const</span> WASD::SoundData aSoundData)
+{
+    WASD::SoundID soundID = WASD::<span class="fn">EVal</span>(aSoundData.soundType);
+    soundID &lt;&lt;= std::numeric_limits&lt;std::underlying_type_t&lt;MaterialType&gt;&gt;::digits;
+    soundID |= WASD::<span class="fn">EVal</span>(aSoundData.materialType);
+    soundID &lt;&lt;= std::numeric_limits&lt;std::underlying_type_t&lt;SubSoundType&gt;&gt;::digits;
+    soundID |= WASD::<span class="fn">EVal</span>(aSoundData.subSoundType);
+    <span class="kw">return</span> soundID;
+}
+
+<span class="cmt">// The three enums that combine to form a SoundID:</span>
+<span class="kw">enum class</span> MaterialType : uint8 { Wood, Stone, Crate, TentacleSkin, Cannon, SkeletonHead, PirateHead, ParrotHead, Player, None, Count };
+<span class="kw">enum class</span> SubSoundType  : uint8 { Player, Pirate, Parrot, Skeleton, Tentacle, Cannon, UI, None, Count };
+<span class="kw">enum class</span> SoundType     : uint8 { Landed, Attacking, Moving, Jumping, Exploding, DoubleJumping, Died, LevelComplete, CheckpointEntered, WallSliding, Breaking, Hovering, None, Count };</pre></div></div>
+          </div></div></div>
+      </div>
+
+      <!-- 2. CINEMATIC HANDLER — video left, text + code right -->
+      <div class="proj-contribution-border">
+        <div class="proj-twocol has-video">
+          <div class="proj-twocol-media">
+            <video muted loop playsinline preload="none" data-src="videos/HornSwagglePage/Hornswagglepagecinematicsfinal.mp4" poster="images/hornswaggleimages/cutscenethumbnail.png" style="width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0;"></video>
+          </div>
+          <div class="proj-twocol-text">
+            <span class="proj-contribution-title">Cinematic Handler</span>
+            <p class="proj-contribution-desc">Built the system handling all cutscenes — image indexing, sound queues and the game outro. Working closely with APA on this gave the cinematics a lot of character.</p>
+            <div class="proj-code-slides">
+            <div class="proj-code-slides-bar">
+              <button class="proj-slide-arrow" onclick="projSlideNav(this,-1)">←</button>
+              <span class="proj-slide-counter">1 / 2</span>
+              <button class="proj-slide-arrow" onclick="projSlideNav(this,1)">→</button>
+            </div>
+            <div class="proj-code-slide active"><div class="proj-code-block" style="display:block; max-height:380px; overflow:auto;"><pre><span class="kw">void</span> <span class="fn">CinematicPlayer::Update</span>(<span class="kw">const float</span>&amp; aDeltaTime)
+{
+    myCinematicData.firstSoundTimer += aDeltaTime;
+
+    <span class="kw">if</span> (myCinematicData.firstSoundTimer &gt; myCinematicData.timeToPlayFirstSound
+        && !myCinematicData.firstSoundPlayed)
+    {
+        Locator::<span class="fn">GetAudioManager</span>()-&gt;<span class="fn">PlayCinematicSfx</span>(myCinematicData.myCinematicID, myCinematicData.sfxIndex);
+        myCinematicData.sfxIndex++;
+        myCinematicData.firstSoundPlayed = <span class="kw">true</span>;
+    }
+
+    <span class="kw">if</span> (myCinematicData.imageIsSwapping)
+    {
+        <span class="fn">ChangeImage</span>(aDeltaTime);
+        myCinematicData.showing          = <span class="kw">false</span>;
+        myCinematicData.instructionTimer = <span class="num">2.5f</span>;
+        myCinematicData.fadeValue        = <span class="num">0.f</span>;
+    }
+
+    myCinematicData.instructionTimer -= aDeltaTime;
+
+    <span class="kw">if</span> (myCinematicData.instructionTimer &lt;= <span class="num">0.f</span>)
+    {
+        myCinematicData.showing = <span class="kw">true</span>;
+        <span class="fn">FadeInstructions</span>(aDeltaTime);
+    }
+}</pre></div></div><div class="proj-code-slide"><div class="proj-code-block" style="display:block; max-height:380px; overflow:auto;"><pre><span class="kw">void</span> <span class="fn">CinematicPlayer::ChangeImage</span>(<span class="kw">const float</span>&amp; aDeltaTime)
+{
+    <span class="kw">if</span> (myCinematicData.startIndex == myCinematicData.maxIndex)
+    {
+        myCinematicData.imageIsSwapping = <span class="kw">false</span>;
+        <span class="fn">SkipCinematic</span>();
+        <span class="kw">return</span>;
+    }
+
+    <span class="kw">float</span> spriteMoveSpeed = myCinematicData.spriteMoveSpeed * myCinematicData.resolutionScaleFactor;
+    Tga::Vector2f targetPos = myCinematicData.spriteWayPoints[myCinematicData.startIndex + <span class="num">1</span>];
+
+    <span class="kw">const float</span> movement = spriteMoveSpeed * aDeltaTime;
+    <span class="kw">const</span> Tga::Vector2f step = myCinematicData.movementDirection * movement;
+    myCinematicData.currentProgressToNextFrame += movement;
+    myCinematicData.instance.myPosition += step;
+
+    <span class="kw">if</span> (myCinematicData.currentProgressToNextFrame &gt; myCinematicData.totalDistanceToNextFrame)
+    {
+        myCinematicData.instance.myPosition = targetPos;
+        myCinematicData.startIndex++;
+        myCinematicData.imageIsSwapping = <span class="kw">false</span>;
+
+        <span class="cmt">// Trigger outro sequence on final image</span>
+        <span class="kw">if</span> (myCinematicData.startIndex == outroStartIndex
+            && myCinematicData.myCinematicID == WASD::SceneID::CinematicOutro)
+        {
+            myCinematicData.outroTimer   = <span class="num">0.f</span>;
+            myCinematicData.outroPlaying = <span class="kw">true</span>;
+            myCinematicData.targetPos    = myCinematicData.spriteWayPoints.<span class="fn">back</span>();
+            myCinematicData.movementDirection = myCinematicData.targetPos - myCinematicData.instance.myPosition;
+            myCinematicData.totalDistanceToNextFrame = myCinematicData.movementDirection.<span class="fn">Length</span>();
+            myCinematicData.movementDirection.<span class="fn">Normalize</span>();
+        }
+    }
+}</pre></div></div>
+          </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. PROJECT MANAGER — text only, no code -->
+      <div class="proj-contribution-border">
+        <div class="proj-twocol-text" style="max-width:700px;">
+          <span class="proj-contribution-title">Project Manager</span>
+          <p class="proj-contribution-desc">Handled communication gaps across disciplines, booked meetings and tracked attendance. Main responsibility for sprint reviews and presenting them. Always on the lookout for opportunities to improve how the team was working together.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <footer>
+    <span class="footer-name">Fredrik Lundin</span>
+    <ul class="footer-links">
+      <li><a href="https://github.com/fredriklundingit" target="_blank">GitHub</a></li>
+      <li><a href="https://www.linkedin.com/in/fredrik-lundin-917a391bb/" target="_blank">LinkedIn</a></li>
+      <li><a href="/cdn-cgi/l/email-protection#7e180c1b1a0c1715500c50120b101a17103e19131f1712501d1113"><span class="__cf_email__" data-cfemail="c2a4b0a7a6b0aba9ecb0ecaeb7aca6abac82a5afa3abaeeca1adaf">[email&#160;protected]</span></a></li>
+      <li><a href="tel:+46707760906">+46 70 776 09 06</a></li>
+    </ul>
+    <span class="footer-copy">© 2026</span>
+  </footer>
+</div>
+
+
+
+<footer>
+  <span class="footer-name">Fredrik Lundin</span>
+  <ul class="footer-links">
+    <li><a href="https://github.com/fredriklundingit" target="_blank">GitHub</a></li>
+    <li><a href="https://www.linkedin.com/in/fredrik-lundin-917a391bb/" target="_blank">LinkedIn</a></li>
+    <li><a href="mailto:fredrik.r.lundin@gmail.com">fredrik.r.lundin@gmail.com</a></li>
+    <li><a href="tel:+46707760906">+46 70 776 09 06</a></li>
+  </ul>
+  <span class="footer-copy">© 2026</span>
+</footer>
+
+<script src="scripts.js"></script>
+</body>
+</html>

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Human Resources — Fredrik Lundin</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="index.html">Home</a>
+  <ul class="nav-links">
+    <li><a href="about.html">About</a></li>
+    <li><a href="index.html#tools">Tools</a></li>
+    <li><a href="index.html#projects">Projects</a></li>
+    <li><a href="contact.html">Contact</a></li>
+    <li><a href="CV_Fredrik_Lundin.pdf" download class="nav-cv">Download CV</a></li>
+  </ul>
+</nav>
+
+<div class="proj-page">
+<a class="back-btn" href="index.html" style="margin:0 3rem 0;">← Back</a>
+
+    <div class="proj-hero">
+      <video muted loop playsinline preload="none" data-src="videos/HumanResourcesWeb.mp4" poster="images/HRthumbnailImage.png" style="width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0;"></video>
+      <div class="proj-hero-overlay">
+        <span class="proj-hero-label">Project</span>
+        <h2>Human Resources</h2>
+        <a class="proj-trailer-btn" href="#" target="_blank">▶ Watch Trailer</a>
+      </div>
+    </div>
+    <div class="proj-meta-bar">
+      <span class="proj-meta-item">2024</span>
+      <span class="proj-meta-item">The Game Assembly</span>
+      <span class="proj-meta-item">Engine Programmer</span>
+      <span class="proj-meta-item">C++ · DirectX 11 · HLSL · SSAO</span>
+    </div>
+    <div class="proj-intro">
+      
+      <p>Continuation of the same custom engine from Cycles of Deluge. The focus shifted towards iteration and editor integration — refactoring the render pipeline and building new rendering features while making the editor actually usable for level designers.</p>
+    </div>
+    <span class="proj-section-label">Contributions</span>
+    <div class="proj-contributions proj-contributions-wide">
+
+      <!-- Render Pipeline Refactor — text only, centered with accent -->
+      <div class="proj-contribution-border">
+        <div class="proj-text-only">
+          <span class="proj-contribution-title">Render Pipeline Refactor</span>
+          <p class="proj-contribution-desc">Responsible for a full refactor of the render pipeline, introducing a command pattern with render data containing commands for each pass. This made it easier to add features and also brought the editor up to speed — level designers could now see changes without launching the game. New features added this project: spotlights, SSAO, line lights and a player flashlight.</p>
+          <button class="proj-code-toggle" onclick="projToggleCode(this)">View Code ↓</button><div class="proj-code-block"><pre><span class="cmt">// Add your render pipeline refactor code here</span></pre></div>
+        </div>
+      </div>
+
+      <!-- Editor Integration — video left, text + code right -->
+      <div class="proj-contribution-border">
+        <div class="proj-twocol has-video">
+          <div class="proj-twocol-media">
+            <video muted loop playsinline preload="none" data-src="videos/HRPage/EditorRenderingWeb.mp4" poster="images/HRimages/editorrenderingthumbnail.png" style="width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0;"></video>
+          </div>
+          <div class="proj-twocol-text">
+            <span class="proj-contribution-title">Editor Integration</span>
+            <p class="proj-contribution-desc">Earlier the editor used actual scene object properties for rendering and had its own ID pass for outlining selected objects. With the removal of those passes, I built render commands — including ID commands — from the scene objects, feeding them into the same renderer the game uses.</p>
+            <button class="proj-code-toggle" onclick="projToggleCode(this)">View Code ↓</button><div class="proj-code-block"><pre><span class="cmt">// Add your editor integration code here</span></pre></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Single Asset Preview & VFX Live Editing — text left, video right -->
+      <div class="proj-contribution-border">
+        <div class="proj-twocol has-video">
+          <div class="proj-twocol-text">
+            <span class="proj-contribution-title">Single Asset Preview & VFX Live Editing</span>
+            <p class="proj-contribution-desc">A long-standing request from Cycles of Deluge. Added the ability to preview individual assets in the editor with live lighting, and to preview and live-edit VFX while viewing them.</p>
+          </div>
+          <div class="proj-twocol-media">
+            <video muted loop playsinline preload="none" data-src="videos/HRPage/VfxeditingWeb.mp4" poster="images/HRimages/vfxeditingthumbnail.png" style="width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0;"></video>
+          </div>
+        </div>
+      </div>
+
+      <!-- Enemy Behaviour — video left, text + code right -->
+      <div class="proj-contribution-border">
+        <div class="proj-twocol has-video">
+          <div class="proj-twocol-media">
+            <video muted loop playsinline preload="none" data-src="videos/HRPage/EnemybehaviorWeb.mp4" poster="images/HRimages/enemybehaviorthumbnail.png" style="width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0;"></video>
+          </div>
+          <div class="proj-twocol-text">
+            <span class="proj-contribution-title">Enemy Behaviour</span>
+            <p class="proj-contribution-desc">Integrated enemy behaviour using third-party libraries for navmesh generation, pathfinding and agent separation. With limited time, I reused the state machine as a behaviour tree — creating nodes for each state with Enter, Update and Exit phases.</p>
+            <button class="proj-code-toggle" onclick="projToggleCode(this)">View Code ↓</button><div class="proj-code-block"><pre><span class="cmt">// Add your enemy behaviour code here</span></pre></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <footer>
+    <span class="footer-name">Fredrik Lundin</span>
+    <ul class="footer-links">
+      <li><a href="https://github.com/fredriklundingit" target="_blank">GitHub</a></li>
+      <li><a href="https://www.linkedin.com/in/fredrik-lundin-917a391bb/" target="_blank">LinkedIn</a></li>
+      <li><a href="/cdn-cgi/l/email-protection#cfa9bdaaabbda6a4e1bde1a3baa1aba6a18fa8a2aea6a3e1aca0a2"><span class="__cf_email__" data-cfemail="610713040513080a4f134f0d140f05080f21060c00080d4f020e0c">[email&#160;protected]</span></a></li>
+      <li><a href="tel:+46707760906">+46 70 776 09 06</a></li>
+    </ul>
+    <span class="footer-copy">© 2026</span>
+  </footer>
+</div>
+
+<footer>
+  <span class="footer-name">Fredrik Lundin</span>
+  <ul class="footer-links">
+    <li><a href="https://github.com/fredriklundingit" target="_blank">GitHub</a></li>
+    <li><a href="https://www.linkedin.com/in/fredrik-lundin-917a391bb/" target="_blank">LinkedIn</a></li>
+    <li><a href="mailto:fredrik.r.lundin@gmail.com">fredrik.r.lundin@gmail.com</a></li>
+    <li><a href="tel:+46707760906">+46 70 776 09 06</a></li>
+  </ul>
+  <span class="footer-copy">© 2026</span>
+</footer>
+
+<script src="scripts.js"></script>
+</body>
+</html>

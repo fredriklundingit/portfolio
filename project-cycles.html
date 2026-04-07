@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cycles of Deluge — Fredrik Lundin</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="index.html">Home</a>
+  <ul class="nav-links">
+    <li><a href="about.html">About</a></li>
+    <li><a href="index.html#tools">Tools</a></li>
+    <li><a href="index.html#projects">Projects</a></li>
+    <li><a href="contact.html">Contact</a></li>
+    <li><a href="CV_Fredrik_Lundin.pdf" download class="nav-cv">Download CV</a></li>
+  </ul>
+</nav>
+
+<div class="proj-page">
+<a class="back-btn" href="index.html" style="margin:0 3rem 0;">← Back</a>
+
+    <!-- HERO -->
+
+    <div class="proj-hero">
+      <video muted loop playsinline preload="none" data-src="videos/CyclesWeb.mp4" poster="images/CyclesthumbnailImage.png" style="width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0;"></video>
+      <div class="proj-hero-overlay">
+        <span class="proj-hero-label">Project</span>
+        <h2>Cycles of Deluge</h2>
+        <a class="proj-trailer-btn" href="#" target="_blank">▶ Watch Trailer</a>
+      </div>
+    </div>
+
+    <!-- META -->
+    <div class="proj-meta-bar">
+      <span class="proj-meta-item">2024</span>
+      <span class="proj-meta-item">The Game Assembly</span>
+      <span class="proj-meta-item">Engine Programmer</span>
+      <span class="proj-meta-item">C++ · DirectX 11 · HLSL · FMOD</span>
+    </div>
+
+    <!-- INTRO -->
+    <div class="proj-intro">
+      <p>A 3D action game built on a custom engine. I was responsible for several core systems — render pipeline, scene management, enemy AI and audio — working closely with other disciplines throughout.</p>
+    </div>
+
+    <span class="proj-section-label">Contributions</span>
+    <div class="proj-contributions proj-contributions-wide">
+
+      <!-- 1. RENDER PIPELINE — video left, text + code right -->
+      <div class="proj-twocol proj-contribution-border">
+        <div class="proj-twocol-media">
+          <video muted loop playsinline preload="none" data-src="videos/CyclesPage/CyclesprojectRenderpipelineWeb.mp4" poster="images/Cyclesimages/renderingthumbnail.png" style="width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0;"></video>
+        </div>
+        <div class="proj-twocol-text">
+          <span class="proj-contribution-title">Render Pipeline</span>
+          <p class="proj-contribution-desc">Responsible for the full render pipeline. Had to balance requests from other disciplines while building something fast and maintainable. Collecting render data each frame and setting up all passes — shadows, GBuffer, lighting, bloom and post processing.</p>
+          <div class="proj-code-block" style="display:block; max-height:420px; overflow:auto;"><pre><span class="cmt">// ***** SHADOWS *****</span>
+graphicsStateStack.<span class="fn">Push</span>();
+graphicsStateStack.<span class="fn">SetRasterizerState</span>(RasterizerState::Shadow);
+graphicsStateStack.<span class="fn">SetCamera</span>(myShadowCamera);
+
+myRenderData.shadowMap.<span class="fn">Clear</span>();
+myRenderData.shadowMap.<span class="fn">SetAsActiveTarget</span>();
+<span class="fn">DrawModelsToShadowMap</span>(shadowCasters, graphicsEngine, graphicsStateStack);
+
+graphicsStateStack.<span class="fn">Pop</span>();
+
+<span class="cmt">// ***** GBUFFER PASS *****</span>
+graphicsStateStack.<span class="fn">Push</span>();
+
+myGBuffer.<span class="fn">ClearTextures</span>();
+
+std::array&lt;ID3D11ShaderResourceView*, <span class="num">5</span>&gt; nullViews = {};
+Tga::DX11::Context-&gt;<span class="fn">PSSetShaderResources</span>(<span class="num">6</span>, <span class="num">5</span>, nullViews.<span class="fn">data</span>());
+
+graphicsStateStack.<span class="fn">SetBlendState</span>(BlendState::Disabled);
+myGBuffer.<span class="fn">SetAsActiveTarget</span>(DX11::DepthBuffer);
+<span class="fn">DrawModelsToGBuffer</span>(culledOpaqueModels, graphicsStateStack);
+
+graphicsStateStack.<span class="fn">Pop</span>();</pre></div>
+        </div>
+      </div>
+
+      <!-- 2. SCENE MANAGEMENT — text left, code right -->
+      <div class="proj-contribution-border">
+        <div class="proj-twocol">
+          <div class="proj-twocol-text">
+            <span class="proj-contribution-title">Scene & Game Object Management</span>
+            <p class="proj-contribution-desc">Responsible for loading and caching scenes and scene objects, including the full pipeline from engine to editor. Built a Game Object factory and a Property applier to keep it maintainable and readable — every programmer on the team was going to work with this the entire project. The registry pattern in the factory made adding new object types a one-liner.</p>
+          </div>
+          <div class="proj-twocol-code"><div class="proj-code-slides">
+            <div class="proj-code-slides-bar">
+              <button class="proj-slide-arrow" onclick="projSlideNav(this,-1)">←</button>
+              <span class="proj-slide-counter">1 / 2</span>
+              <button class="proj-slide-arrow" onclick="projSlideNav(this,1)">→</button>
+            </div>
+            <div class="proj-code-slide active"><div class="proj-code-block" style="display:block; max-height:420px; overflow:auto;"><pre>std::weak_ptr&lt;GameObject&gt; <span class="fn">SceneManager::BuildGameObject</span>(
+    Tga::TextureManager&amp; aTextureManager,
+    <span class="kw">const</span> std::shared_ptr&lt;GameScene&gt;&amp; aGameScene,
+    std::vector&lt;Tga::ScenePropertyDefinition&gt;&amp; someObjectProperties,
+    <span class="kw">const</span> Tga::Matrix4x4f&amp; anObjectTransform, <span class="kw">bool</span> aMarkForAdd)
+{
+    <span class="kw">bool</span> isPlayer = <span class="kw">false</span>;
+    TagData objectTagData = { Tag::Other };
+
+    <span class="cmt">// Find tag in ObjectProperties</span>
+    <span class="kw">for</span> (<span class="kw">auto</span>&amp; property : someObjectProperties)
+    {
+        <span class="kw">if</span> (property.type == <span class="fn">GetPropertyType</span>&lt;CopyOnWriteWrapper&lt;TagData&gt;&gt;())
+        {
+            objectTagData = property.value.<span class="fn">Get</span>&lt;CopyOnWriteWrapper&lt;TagData&gt;&gt;()-&gt;<span class="fn">Get</span>();
+            <span class="kw">break</span>;
+        }
+    }
+
+    GameObjectFactory <span class="fn">gameObjectFactory</span>(someObjectProperties);
+    std::shared_ptr&lt;GameObject&gt; gameObject = gameObjectFactory.<span class="fn">CreateGameObject</span>(objectTagData, isPlayer);
+
+    PropertyApplier::<span class="fn">ApplyGeneralProperties</span>(aTextureManager, gameObject, someObjectProperties, anObjectTransform);
+
+    gameObject-&gt;<span class="fn">Init</span>();
+
+    <span class="kw">if</span> (<span class="kw">auto</span> actor = std::dynamic_pointer_cast&lt;Actor, GameObject&gt;(gameObject))
+    {
+        actor-&gt;<span class="fn">ApplyProps</span>(someObjectProperties);
+    }
+
+    aGameScene-&gt;<span class="fn">AddGameObject</span>(gameObject, aMarkForAdd);
+    <span class="kw">return</span> gameObject;
+}</pre></div></div><div class="proj-code-slide"><div class="proj-code-block" style="display:block; max-height:420px; overflow:auto;"><pre><span class="fn">GameObjectFactory::GameObjectFactory</span>(
+    <span class="kw">const</span> std::vector&lt;Tga::ScenePropertyDefinition&gt;&amp; aObjectProperties)
+    : myObjectProperties(aObjectProperties)
+{
+    <span class="cmt">// Register known game object types — add new types here</span>
+    myGameObjectRegistry =
+    {
+        { Tga::Tag::Other,   [] { <span class="kw">return</span> std::make_shared&lt;GameObject&gt;(); } },
+        { Tga::Tag::Player,  [] { <span class="kw">return</span> std::make_shared&lt;Player&gt;(); } },
+        { Tga::Tag::Melee,   [] { <span class="kw">return</span> std::make_shared&lt;WickerMan&gt;(); } },
+        { Tga::Tag::Ranged,  [] { <span class="kw">return</span> std::make_shared&lt;BogHag&gt;(); } },
+        { Tga::Tag::Boss,    [] { <span class="kw">return</span> std::make_shared&lt;Boss&gt;(); } },
+        { Tga::Tag::Attack,  [&amp;]() -&gt; std::shared_ptr&lt;GameObject&gt;
+        {
+            <span class="kw">if</span> (<span class="kw">auto</span> property = PropertyApplier::<span class="fn">FindProperty</span>&lt;Tga::AttackProp&gt;(myObjectProperties))
+            {
+                <span class="kw">switch</span> (property-&gt;<span class="fn">Get</span>().type)
+                {
+                    <span class="kw">case</span> Tga::AttackProp::AttackType::StaticAttack:
+                        <span class="kw">return</span> std::make_shared&lt;Attack&gt;(property-&gt;<span class="fn">Get</span>());
+                    <span class="kw">case</span> Tga::AttackProp::AttackType::ProjectileAttack:
+                        <span class="kw">return</span> std::make_shared&lt;ProjectileAttack&gt;(property-&gt;<span class="fn">Get</span>());
+                    <span class="kw">default</span>:
+                        <span class="kw">return</span> std::make_shared&lt;Attack&gt;(property-&gt;<span class="fn">Get</span>());
+                }
+            }
+            <span class="kw">return</span> std::make_shared&lt;GameObject&gt;();
+        }},
+    };
+}</pre></div></div>
+          </div></div>
+        </div>
+      </div>
+
+      <!-- 3. VFX MANAGER — code left, text right -->
+      <div class="proj-contribution-border">
+        <div class="proj-twocol proj-twocol-reverse">
+          <div class="proj-twocol-code"><div class="proj-code-block" style="display:block; max-height:420px; overflow:auto;"><pre><span class="kw">class</span> <span class="fn">VFXManager</span>
+{
+<span class="kw">public</span>:
+    VFXAsset <span class="fn">GetVFX</span>(Tga::StringId aVFX);
+    <span class="kw">const</span> std::unordered_map&lt;Tga::StringId, VFXAsset&gt;&amp; <span class="fn">GetCached3DVFX</span>();
+
+    <span class="kw">static</span> VFXManager* <span class="fn">GetInstance</span>();
+    <span class="kw">static void</span> <span class="fn">DestroyInstance</span>();
+
+    <span class="kw">void</span> <span class="fn">CacheVfx</span>(std::vector&lt;Tga::ScenePropertyDefinition&gt;&amp; someProps, Tga::TextureManager&amp; aTextureManager);
+    <span class="kw">void</span> <span class="fn">PlayVFX</span>(Tga::StringId id, <span class="kw">const</span> Tga::Vector3f&amp; pos);
+    <span class="kw">void</span> <span class="fn">PlayVFX</span>(Tga::StringId id, <span class="kw">const</span> Tga::Matrix4x4f&amp; aTransform);
+    std::shared_ptr&lt;SpawnedObject&gt; <span class="fn">PlayVFXReturnObject</span>(Tga::StringId vfxName, <span class="kw">const</span> Tga::Matrix4x4f&amp; aTransform);
+
+<span class="kw">private</span>:
+    <span class="kw">static</span> VFXManager* ourInstance;
+    std::unordered_map&lt;Tga::StringId, VFXAsset&gt; myCachedVFXAssets;
+};</pre></div></div>
+          <div class="proj-twocol-text">
+            <span class="proj-contribution-title">VFX Manager</span>
+            <p class="proj-contribution-desc">Built a dedicated VFX Manager to cache and hold VFX assets, with a clean public interface for triggering them by ID from anywhere in the game.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. ENEMY STATE MACHINE — text left, code right -->
+      <div class="proj-contribution-border">
+        <div class="proj-twocol">
+          <div class="proj-twocol-text">
+            <span class="proj-contribution-title">Enemy State Machine & Baseline Behaviour</span>
+            <p class="proj-contribution-desc">Built the enemy foundation for colleagues to iterate on — a state machine with shareable states across all enemy types, while still allowing custom unique states per enemy. Each controller registers its own states on startup, keeping things decoupled and easy to extend.</p>
+          </div>
+          <div class="proj-twocol-code"><div class="proj-code-slides">
+            <div class="proj-code-slides-bar">
+              <button class="proj-slide-arrow" onclick="projSlideNav(this,-1)">←</button>
+              <span class="proj-slide-counter">1 / 3</span>
+              <button class="proj-slide-arrow" onclick="projSlideNav(this,1)">→</button>
+            </div>
+            <div class="proj-code-slide active"><div class="proj-code-block" style="display:block; max-height:420px; overflow:auto;"><pre><span class="kw">void</span> <span class="fn">StateMachine::RegisterState</span>(EnemyStateID aStateID, std::unique_ptr&lt;EnemyState&gt; anEnemyState)
+{
+    anEnemyState-&gt;<span class="fn">SetOwner</span>(<span class="kw">this</span>);
+    myCachedStates.<span class="fn">try_emplace</span>(aStateID, std::move(anEnemyState));
+}
+
+<span class="kw">void</span> <span class="fn">StateMachine::ChangeState</span>(Enemy* anEnemy, EnemyStateID anEnemyStateID)
+{
+    <span class="kw">if</span> (myCachedStates.<span class="fn">contains</span>(anEnemyStateID))
+    {
+        myCurrentStateID = anEnemyStateID;
+        myCurrentState-&gt;<span class="fn">OnExit</span>(anEnemy);
+        myCurrentState = myCachedStates.<span class="fn">at</span>(anEnemyStateID).<span class="fn">get</span>();
+        anEnemy-&gt;<span class="fn">SetAnimation</span>(anEnemyStateID);
+        myCurrentState-&gt;<span class="fn">OnEnter</span>(anEnemy);
+    }
+}</pre></div></div><div class="proj-code-slide"><div class="proj-code-block" style="display:block; max-height:420px; overflow:auto;"><pre><span class="kw">void</span> <span class="fn">BogZombieController::Init</span>()
+{
+    <span class="cmt">// Register all states for this enemy type</span>
+    myStateMachine.<span class="fn">RegisterState</span>(EnemyStateID::Idle,   std::make_unique&lt;IdleState&gt;());
+    myStateMachine.<span class="fn">RegisterState</span>(EnemyStateID::Wander, std::make_unique&lt;WanderState&gt;());
+    myStateMachine.<span class="fn">RegisterState</span>(EnemyStateID::Engage, std::make_unique&lt;EngageState&gt;());
+    myStateMachine.<span class="fn">RegisterState</span>(EnemyStateID::Attack, std::make_unique&lt;AttackState&gt;());
+
+    myStateMachine.<span class="fn">SetInitialState</span>(EnemyStateID::Idle);
+}</pre></div></div><div class="proj-code-slide"><div class="proj-code-block" style="display:block; max-height:420px; overflow:auto;"><pre><span class="kw">void</span> <span class="fn">AttackState::Update</span>(Enemy* anEnemy, [[maybe_unused]] <span class="kw">float</span> aDeltaTime)
+{
+    <span class="kw">const float</span> attackRange = anEnemy-&gt;<span class="fn">GetData</span>().attackRange;
+    <span class="kw">const</span> Tga::Vector3f playerPosition = Blackboard::<span class="fn">GetInstance</span>()-&gt;<span class="fn">GetVector3</span>(<span class="str">"playerPosition"</span>);
+    <span class="kw">const</span> Tga::Vector3f difference = playerPosition - anEnemy-&gt;<span class="fn">GetPosition</span>();
+
+    <span class="kw">if</span> (difference.<span class="fn">Length</span>() &gt; attackRange)
+    {
+        myStateMachine-&gt;<span class="fn">ChangeState</span>(anEnemy, EnemyStateID::Engage);
+        <span class="kw">return</span>;
+    }
+
+    anEnemy-&gt;<span class="fn">RotateTowardsVelocityOrDirection</span>(difference, aDeltaTime);
+
+    <span class="kw">if</span> (anEnemy-&gt;<span class="fn">TryAttack</span>())
+    {
+        anEnemy-&gt;<span class="fn">SetAnimation</span>(EnemyStateID::Attack);
+    }
+}</pre></div></div>
+          </div></div>
+        </div>
+      </div>
+
+      <!-- 5. AUDIO MANAGER — code left, text right -->
+      <div class="proj-contribution-border">
+        <div class="proj-twocol proj-twocol-reverse">
+          <div class="proj-twocol-code"><div class="proj-code-block" style="display:block; max-height:420px; overflow:auto;"><pre><span class="kw">bool</span> <span class="fn">AudioManager::Init</span>()
+{
+    FMOD_RESULT result;
+    myStudioSystem = <span class="kw">nullptr</span>;
+    result = FMOD::Studio::System::<span class="fn">create</span>(&amp;myStudioSystem);
+
+    <span class="kw">if</span> (result != FMOD_OK)
+    {
+        <span class="kw">return</span> <span class="kw">false</span>;
+    }
+
+    myStudioSystem-&gt;<span class="fn">initialize</span>(
+        <span class="num">1024</span>,
+        FMOD_STUDIO_INIT_LIVEUPDATE | FMOD_STUDIO_INIT_NORMAL,
+        FMOD_INIT_NORMAL,
+        <span class="kw">nullptr</span>
+    );
+
+    myStudioSystem-&gt;<span class="fn">getCoreSystem</span>(&amp;myCoreSystem);
+    <span class="fn">PlayReverbEventAtStartUp</span>();
+
+    <span class="kw">return</span> <span class="kw">true</span>;
+}</pre></div></div>
+          <div class="proj-twocol-text">
+            <span class="proj-contribution-title">Audio Manager & FMOD Integration</span>
+            <p class="proj-contribution-desc">Built the Audio Manager and integrated FMOD, ready for colleagues to iterate on. Also responsible for communication with APA (a school for game audio) and adding SFX and music. Handled reverb and spatial sound integration with the game world.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <footer>
+    <span class="footer-name">Fredrik Lundin</span>
+    <ul class="footer-links">
+      <li><a href="https://github.com/fredriklundingit" target="_blank">GitHub</a></li>
+      <li><a href="https://www.linkedin.com/in/fredrik-lundin-917a391bb/" target="_blank">LinkedIn</a></li>
+      <li><a href="/cdn-cgi/l/email-protection#7315011617011a185d015d1f061d171a1d33141e121a1f5d101c1e"><span class="__cf_email__" data-cfemail="f395819697819a98dd81dd9f869d979a9db3949e929a9fdd909c9e">[email&#160;protected]</span></a></li>
+      <li><a href="tel:+46707760906">+46 70 776 09 06</a></li>
+    </ul>
+    <span class="footer-copy">© 2026</span>
+  </footer>
+</div>
+
+<footer>
+  <span class="footer-name">Fredrik Lundin</span>
+  <ul class="footer-links">
+    <li><a href="https://github.com/fredriklundingit" target="_blank">GitHub</a></li>
+    <li><a href="https://www.linkedin.com/in/fredrik-lundin-917a391bb/" target="_blank">LinkedIn</a></li>
+    <li><a href="mailto:fredrik.r.lundin@gmail.com">fredrik.r.lundin@gmail.com</a></li>
+    <li><a href="tel:+46707760906">+46 70 776 09 06</a></li>
+  </ul>
+  <span class="footer-copy">© 2026</span>
+</footer>
+
+<script src="scripts.js"></script>
+</body>
+</html>
