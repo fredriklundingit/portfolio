@@ -292,13 +292,10 @@
             <div class="tp-carousel-slide active">
               <video muted loop playsinline preload="none" data-src="videos/AssetBrushPage/MultiassetWeb.mp4" poster="images/assetbrushimages/multiassetthumbnail.png" style="width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0;"></video>
             </div>
-            <div class="tp-carousel-slide">
-              <div class="tp-video-placeholder">[]</div>
-            </div>
           </div>
           <div class="tp-carousel-bar">
             <button class="tp-carousel-arrow" onclick="carouselPrev('feat-2')">←</button>
-            <span class="tp-carousel-counter">1 / 2</span>
+            <span class="tp-carousel-counter">1 / 1</span>
             <button class="tp-carousel-arrow" onclick="carouselNext('feat-2')">→</button>
           </div>
           <button class="tp-code-toggle" onclick="carouselToggleCode('feat-2')">View Code ↓</button>
@@ -321,17 +318,79 @@
           <div style="display:flex;align-items:center;gap:0.8rem;">
             <div class="tp-overlay-arrows">
               <button class="tp-overlay-arrow" onclick="carouselNav('feat-2',-1)">←</button>
-              <span class="tp-overlay-counter" id="overlay-counter-feat-2">1 / 2</span>
+              <span class="tp-overlay-counter" id="overlay-counter-feat-2">1 / 1</span>
               <button class="tp-overlay-arrow" onclick="carouselNav('feat-2',1)">→</button>
             </div>
             <button class="tp-overlay-close" onclick="carouselToggleCode('feat-2')">✕ Close</button>
           </div>
         </div>
         <div class="tp-overlay-code active" data-slide="0">
-          <pre><span class="cmt">// Slide 1 code</span></pre>
-        </div>
-        <div class="tp-overlay-code" data-slide="1">
-          <pre><span class="cmt">// Slide 2 code</span></pre>
+          <pre><span class=<span class="str">"cmt"</span>>// Using ImGui to add an asset to our palette:</span>
+<span class=<span class="str">"kw"</span>>if</span> (ImGui::BeginChild(<span class="str">"AssetListFrame"</span>, listSize, <span class=<span class="str">"kw"</span>>true</span>, ImGuiWindowFlags_HorizontalScrollbar))
+{
+    <span class=<span class="str">"kw"</span>>int</span> itemToDelete = -<span class=<span class="str">"num"</span>>1</span>;
+    <span class=<span class="str">"kw"</span>>for</span> (<span class=<span class="str">"kw"</span>>int</span> i = <span class=<span class="str">"num"</span>>0</span>; i &lt; myAssetPalette.size(); i++)
+    {
+        ImGui::PushID(i);
+        <span class=<span class="str">"kw"</span>>bool</span> isSelected = (i == mySelectedPaletteIndex);
+        <span class=<span class="str">"kw"</span>>const</span> char* displayName = myAssetPalette[i].IsEmpty()
+            ? <span class="str">"[ Empty Slot ]"</span>
+            : myAssetPalette[i].GetString();
+        ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(<span class=<span class="str">"num"</span>>0.8f</span>, <span class=<span class="str">"num"</span>>0.2f</span>, <span class=<span class="str">"num"</span>>0.2f</span>, <span class=<span class="str">"num"</span>>1.0f</span>));
+        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(<span class=<span class="str">"num"</span>>1.0f</span>, <span class=<span class="str">"num"</span>>0.3f</span>, <span class=<span class="str">"num"</span>>0.3f</span>, <span class=<span class="str">"num"</span>>1.0f</span>));
+        ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(<span class=<span class="str">"num"</span>>0.7f</span>, <span class=<span class="str">"num"</span>>0.1f</span>, <span class=<span class="str">"num"</span>>0.1f</span>, <span class=<span class="str">"num"</span>>1.0f</span>));
+        <span class=<span class="str">"kw"</span>>if</span> (ImGui::SmallButton(<span class="str">"X"</span>))
+        {
+            itemToDelete = i;
+        }
+        ImGui::PopStyleColor(<span class=<span class="str">"num"</span>>3</span>);
+        ImGui::SameLine();
+        <span class=<span class="str">"kw"</span>>if</span> (ImGui::Selectable(displayName, isSelected, ImGuiSelectableFlags_AllowDoubleClick))
+        {
+            mySelectedPaletteIndex = i;
+        }
+        <span class=<span class="str">"kw"</span>>if</span> (ImGui::BeginDragDropTarget())
+        {
+            <span class=<span class="str">"kw"</span>>if</span> (<span class=<span class="str">"kw"</span>>const</span> ImGuiPayload* payload = ImGui::AcceptDragDropPayload(<span class="str">".tgo"</span>))
+            {
+                <span class=<span class="str">"kw"</span>>const</span> char* dropped = <span class=<span class="str">"kw"</span>>static_cast</span>&lt;<span class=<span class="str">"kw"</span>>const</span> char*&gt;(payload-&gt;Data);
+                myAssetPalette[i] = Tga::StringRegistry::RegisterOrGetString(dropped);
+            }
+            ImGui::EndDragDropTarget();
+        }
+        ImGui::PopID();
+    }
+<span class=<span class="str">"cmt"</span>>// Then using the asset palette with placement count when placing objects, here Random as an example:</span>
+    <span class=<span class="str">"kw"</span>>if</span> (myPaletteMode == PaletteMode::Random)
+    {
+        std::vector&lt;Tga::StringId&gt; validAssets;
+        <span class=<span class="str">"kw"</span>>for</span> (<span class=<span class="str">"kw"</span>>const</span> <span class=<span class="str">"kw"</span>>auto</span>&amp; asset : myAssetPalette)
+        {
+            <span class=<span class="str">"kw"</span>>if</span> (!asset.IsEmpty())
+            {
+                validAssets.push_back(asset);
+            }
+        }
+        <span class=<span class="str">"kw"</span>>if</span> (!validAssets.empty())
+        {
+            <span class=<span class="str">"kw"</span>>for</span> (<span class=<span class="str">"kw"</span>>int</span> i = <span class=<span class="str">"num"</span>>0</span>; i &lt; myPlacementCount; i++)
+            {
+                <span class=<span class="str">"kw"</span>>const</span> <span class=<span class="str">"kw"</span>>int</span> randomIndex = rand() % validAssets.size();
+                <span class=<span class="str">"kw"</span>>auto</span> object = PlaceObjectWithAsset(validAssets[randomIndex], currentBatchPositions);
+                <span class=<span class="str">"kw"</span>>if</span> (object)
+                {
+                    objectsToPlace.push_back(object);
+                }
+            }
+        }
+    }
+<span class=<span class="str">"cmt"</span>>// Using the position scatter to decide where to place it inside the brush circle:</span>
+<span class=<span class="str">"kw"</span>>float</span> distance = RandomGenerator::GetFloat(myBrush.randomOffsetRadiusMin, myBrush.randomOffsetRadiusMax);
+distance = FMath::Min(distance, myBrush.size);
+Tga::Vector3f tangent;
+Tga::Vector3f bitangent;
+GetSurfaceTangentFrame(myBrush.normal, tangent, bitangent);
+Tga::Vector3f offset = (tangent * cosf(angle) + bitangent * sinf(angle)) * distance;</pre>
         </div>
       </div>
       </div>
@@ -343,13 +402,10 @@
             <div class="tp-carousel-slide active">
               <video muted loop playsinline preload="none" data-src="videos/AssetBrushPage/RandomizationWeb.mp4" poster="images/assetbrushimages/randomizationthumbnail.png" style="width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0;"></video>
             </div>
-            <div class="tp-carousel-slide">
-              <div class="tp-video-placeholder">[]</div>
-            </div>
           </div>
           <div class="tp-carousel-bar">
             <button class="tp-carousel-arrow" onclick="carouselPrev('feat-3')">←</button>
-            <span class="tp-carousel-counter">1 / 2</span>
+            <span class="tp-carousel-counter">1 / 1</span>
             <button class="tp-carousel-arrow" onclick="carouselNext('feat-3')">→</button>
           </div>
           <button class="tp-code-toggle" onclick="carouselToggleCode('feat-3')">View Code ↓</button>
@@ -372,17 +428,59 @@
           <div style="display:flex;align-items:center;gap:0.8rem;">
             <div class="tp-overlay-arrows">
               <button class="tp-overlay-arrow" onclick="carouselNav('feat-3',-1)">←</button>
-              <span class="tp-overlay-counter" id="overlay-counter-feat-3">1 / 2</span>
+              <span class="tp-overlay-counter" id="overlay-counter-feat-3">1 / 1</span>
               <button class="tp-overlay-arrow" onclick="carouselNav('feat-3',1)">→</button>
             </div>
             <button class="tp-overlay-close" onclick="carouselToggleCode('feat-3')">✕ Close</button>
           </div>
         </div>
         <div class="tp-overlay-code active" data-slide="0">
-          <pre><span class="cmt">// Slide 1 code</span></pre>
-        </div>
-        <div class="tp-overlay-code" data-slide="1">
-          <pre><span class="cmt">// Slide 2 code</span></pre>
+          <pre><span class=<span class="str">"cmt"</span>>// First calculate the base rotation using the normal, then add the rotations as implied by the user:</span>
+Tga::Quaternionf AssetBrush::CalculateRandomRotation(<span class=<span class="str">"kw"</span>>const</span> Tga::Vector3f&amp; aSurfaceNormal) <span class=<span class="str">"kw"</span>>const</span>
+{
+    Tga::Quaternionf baseRotation = Tga::Quaternionf::CreateFromUpDirection(aSurfaceNormal);
+    Tga::Quaternionf finalRotation = baseRotation;
+    <span class=<span class="str">"kw"</span>>if</span> (myBrush.useRandomRotation)
+    {
+        <span class=<span class="str">"kw"</span>>float</span> randomYaw = RandomGenerator::GetFloat(myBrush.randomRotationMin, myBrush.randomRotationMax);
+        Tga::Vector3f localUp = finalRotation.GetUp();
+        Tga::Quaternionf yawRotation(localUp, randomYaw);
+        finalRotation = baseRotation * yawRotation;
+    }
+    <span class=<span class="str">"kw"</span>>if</span> (myBrush.useRandomPitch)
+    {
+        <span class=<span class="str">"kw"</span>>float</span> randomPitch = RandomGenerator::GetFloat(myBrush.randomPitchMin, myBrush.randomPitchMax);
+        Tga::Vector3f localRight = finalRotation.GetRight();
+        Tga::Quaternionf pitchRotation(localRight, randomPitch);
+        finalRotation = pitchRotation * finalRotation;
+    }
+    <span class=<span class="str">"kw"</span>>if</span> (myBrush.useRandomRoll)
+    {
+        <span class=<span class="str">"kw"</span>>float</span> randomRoll = RandomGenerator::GetFloat(myBrush.randomRollMin, myBrush.randomRollMax);
+        Tga::Vector3f localForward = finalRotation.GetForward();
+        Tga::Quaternionf rollRotation(localForward, randomRoll);
+        finalRotation = rollRotation * finalRotation;
+    }
+    <span class=<span class="str">"kw"</span>>return</span> finalRotation;
+}
+<span class=<span class="str">"cmt"</span>>// Calculate scale</span>
+Tga::Vector3f AssetBrush::CalculateRandomScale() <span class=<span class="str">"kw"</span>>const</span>
+{
+    <span class=<span class="str">"kw"</span>>if</span> (!myBrush.useRandomScale)
+    {
+        <span class=<span class="str">"kw"</span>>return</span> Tga::Vector3f(<span class=<span class="str">"num"</span>>1.0f</span>, <span class=<span class="str">"num"</span>>1.0f</span>, <span class=<span class="str">"num"</span>>1.0f</span>);
+    }
+    <span class=<span class="str">"kw"</span>>if</span> (myBrush.uniformScale)
+    {
+        <span class=<span class="str">"kw"</span>>const</span> <span class=<span class="str">"kw"</span>>float</span> scale = RandomGenerator::GetFloat(myBrush.randomScaleMin, myBrush.randomScaleMax);
+        <span class=<span class="str">"kw"</span>>return</span> Tga::Vector3f(scale, scale, scale);
+    }
+    <span class=<span class="str">"kw"</span>>return</span> Tga::Vector3f(
+        RandomGenerator::GetFloat(myBrush.randomScaleMin, myBrush.randomScaleMax),
+        RandomGenerator::GetFloat(myBrush.randomScaleMin, myBrush.randomScaleMax),
+        RandomGenerator::GetFloat(myBrush.randomScaleMin, myBrush.randomScaleMax)
+    );
+}</pre>
         </div>
       </div>
       </div>
@@ -394,13 +492,10 @@
             <div class="tp-carousel-slide active">
               <video muted loop playsinline preload="none" data-src="videos/AssetBrushPage/SlopefilteringWeb.mp4" poster="images/assetbrushimages/slopefilterthumbnail.png" style="width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0;"></video>
             </div>
-            <div class="tp-carousel-slide">
-              <div class="tp-video-placeholder">[]</div>
-            </div>
           </div>
           <div class="tp-carousel-bar">
             <button class="tp-carousel-arrow" onclick="carouselPrev('feat-4')">←</button>
-            <span class="tp-carousel-counter">1 / 2</span>
+            <span class="tp-carousel-counter">1 / 1</span>
             <button class="tp-carousel-arrow" onclick="carouselNext('feat-4')">→</button>
           </div>
           <button class="tp-code-toggle" onclick="carouselToggleCode('feat-4')">View Code ↓</button>
@@ -423,17 +518,40 @@
           <div style="display:flex;align-items:center;gap:0.8rem;">
             <div class="tp-overlay-arrows">
               <button class="tp-overlay-arrow" onclick="carouselNav('feat-4',-1)">←</button>
-              <span class="tp-overlay-counter" id="overlay-counter-feat-4">1 / 2</span>
+              <span class="tp-overlay-counter" id="overlay-counter-feat-4">1 / 1</span>
               <button class="tp-overlay-arrow" onclick="carouselNav('feat-4',1)">→</button>
             </div>
             <button class="tp-overlay-close" onclick="carouselToggleCode('feat-4')">✕ Close</button>
           </div>
         </div>
         <div class="tp-overlay-code active" data-slide="0">
-          <pre><span class="cmt">// Slide 1 code</span></pre>
-        </div>
-        <div class="tp-overlay-code" data-slide="1">
-          <pre><span class="cmt">// Slide 2 code</span></pre>
+          <pre><span class=<span class="str">"cmt"</span>>// By using the normal of the position we got from doing the placement calculations, we now check <span class=<span class="str">"kw"</span>>if</span> the slope is valid:</span>
+<span class=<span class="str">"kw"</span>>const</span> OffsetResult offsetResult = CalculateOffsetPosition();
+<span class=<span class="str">"kw"</span>>if</span> (!offsetResult.valid)
+{
+    <span class=<span class="str">"kw"</span>>continue</span>;
+}
+<span class=<span class="str">"kw"</span>>const</span> Tga::Vector3f position = offsetResult.position;
+<span class=<span class="str">"kw"</span>>const</span> Tga::Vector3f surfaceNormal = offsetResult.normal;
+<span class=<span class="str">"kw"</span>>if</span> (!IsSlopeValid(surfaceNormal))
+{
+    <span class=<span class="str">"kw"</span>>continue</span>;
+}
+<span class=<span class="str">"kw"</span>>bool</span> AssetBrush::IsSlopeValid(<span class=<span class="str">"kw"</span>>const</span> Tga::Vector3f&amp; aNormal) <span class=<span class="str">"kw"</span>>const</span>
+{
+    <span class=<span class="str">"kw"</span>>if</span> (!myBrush.useSlopeFilter)
+    {
+        <span class=<span class="str">"kw"</span>>return</span> <span class=<span class="str">"kw"</span>>true</span>;
+    }
+    <span class=<span class="str">"cmt"</span>>// Calculate slope angle from normal</span>
+    <span class=<span class="str">"kw"</span>>float</span> normalY = std::abs(aNormal.y);
+    <span class=<span class="str">"kw"</span>>float</span> slopeDegrees = acosf(std::clamp(normalY, <span class=<span class="str">"num"</span>>0.0f</span>, <span class=<span class="str">"num"</span>>1.0f</span>)) * (<span class=<span class="str">"num"</span>>180.0f</span> / FMath::Pi);
+    <span class=<span class="str">"kw"</span>>if</span> (slopeDegrees &lt; myBrush.minSlope || slopeDegrees &gt; myBrush.maxSlope)
+    {
+        <span class=<span class="str">"kw"</span>>return</span> <span class=<span class="str">"kw"</span>>false</span>;
+    }
+    <span class=<span class="str">"kw"</span>>return</span> <span class=<span class="str">"kw"</span>>true</span>;
+}</pre>
         </div>
       </div>
       </div>
@@ -700,10 +818,18 @@ uint64_t <span class="fn">AssetBrush::GetSpatialKey</span>(<span class="kw">int<
   </div>
 </div>
 
+
 <footer>
   <span class="footer-name">Fredrik Lundin</span>
   <ul class="footer-links">
     <li><a href="https://github.com/fredriklundingit" target="_blank">GitHub</a></li>
     <li><a href="https://www.linkedin.com/in/fredrik-lundin-917a391bb/" target="_blank">LinkedIn</a></li>
-    <li><a href="/cdn-cgi/l/email-protection#2244504746504b490c500c4e574c464b4c62454f434b4e0c414d4f"><span class="__cf_email__" data-cfemail="fc9a8e99988e9597d28ed2908992989592bc9b919d9590d29f9391">[email&#160;protected]</span></a></li>
-    <li><a href="tel:+467
+    <li><a href="mailto:fredrik.r.lundin@gmail.com">fredrik.r.lundin@gmail.com</a></li>
+    <li><a href="tel:+46707760906">+46 70 776 09 06</a></li>
+  </ul>
+  <span class="footer-copy">© 2026</span>
+</footer>
+
+<script src="scripts.js"></script>
+</body>
+</html>
