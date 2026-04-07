@@ -46,17 +46,20 @@
 
     <!-- Render Pipeline Refactor -->
     <div class="proj-contribution-border">
-      <div class="proj-text-only">
-        <span class="proj-contribution-title">Render Pipeline Refactor</span>
-        <p class="proj-contribution-desc">I was responsible for a full refactor of the render pipeline, introducing a command pattern with render data containing commands for each pass (GBuffer pass, shadow pass etc). This made it easier to add features and also brought the editor up to speed, level designers could now see changes without launching the game. New features added this project: spotlights, SSAO, line lights (shout out to my classmate Mattias Strand for letting me implement his version) and a player flashlight.</p>
-        <div class="proj-code-slides" style="margin-top:1rem;">
-          <div class="proj-code-slides-bar">
-            <button class="proj-slide-arrow" onclick="projSlideNav(this,-1)">←</button>
-            <span class="proj-slide-counter">1 / 2</span>
-            <button class="proj-slide-arrow" onclick="projSlideNav(this,1)">→</button>
-          </div>
-          <div class="proj-code-slide active">
-            <div class="proj-code-block" style="display:block; max-height:400px; overflow:auto;">
+      <div class="proj-twocol has-video">
+        <div class="proj-twocol-text">
+          <span class="proj-contribution-title">Render Pipeline Refactor</span>
+          <p class="proj-contribution-desc">I was responsible for a full refactor of the render pipeline, introducing a command pattern with render data containing commands for each pass (GBuffer pass, shadow pass etc). This made it easier to add features and also brought the editor up to speed, level designers could now see changes without launching the game. New features added this project: spotlights, SSAO, line lights (shout out to my classmate Mattias Strand for letting me implement his version) and a player flashlight.</p>
+        </div>
+        <div class="proj-twocol-code">
+          <div class="proj-code-slides">
+            <div class="proj-code-slides-bar">
+              <button class="proj-slide-arrow" onclick="projSlideNav(this,-1)">←</button>
+              <span class="proj-slide-counter">1 / 2</span>
+              <button class="proj-slide-arrow" onclick="projSlideNav(this,1)">→</button>
+            </div>
+            <div class="proj-code-slide active">
+              <div class="proj-code-block" style="display:block; max-height:400px; overflow:auto;">
               <pre><code class="language-cpp">// The function called by both ingame and editor in the end:
 void RenderManager::ExecuteRenderPipeline(const NCE::RenderData&amp; renderData, Tga::DepthBuffer* aDepthBuffer, bool aRenderToBackBuffer)
 {
@@ -147,8 +150,6 @@ struct RenderCommand
         </div>
       </div>
     </div>
-
-    <!-- Editor Integration -->
     <div class="proj-contribution-border">
       <div class="proj-twocol has-video">
         <div class="proj-twocol-media">

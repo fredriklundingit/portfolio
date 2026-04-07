@@ -1209,7 +1209,7 @@ footer {
 
 .proj-twocol.has-video {
   grid-template-columns: 1.2fr 1fr;
-  align-items: start;
+  align-items: center;
 }
 
 .proj-twocol-reverse { direction: ltr; }
