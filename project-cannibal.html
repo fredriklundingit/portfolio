@@ -40,8 +40,8 @@
       <span class="proj-meta-item">C++</span>
     </div>
 
-    <div class="proj-intro">
-      <p>My first time working with AI. I was fully responsible for all enemy systems — pathfinding, behaviour and state handling across three different enemy types.</p>
+    <div class="proj-intro" style="text-align:left; margin:0;">
+      <p>This is my first experience with enemy AI. I was fully responsible for the enemies during this project, and since it was my only responsibility, I had the chance to really explore and try out different approaches.</p>
     </div>
 
     <span class="proj-section-label">Contributions</span>
@@ -55,74 +55,74 @@
           </div>
           <div class="proj-twocol-text">
             <span class="proj-contribution-title">A* Pathfinding</span>
-            <p class="proj-contribution-desc">My own A* implementation as the movement foundation. Getting it to work reliably meant handling obstacle avoidance, diagonal movement edge cases, height transitions and field of view — among other things.</p>
+            <p class="proj-contribution-desc">I implemented my own A* implementation as the movement foundation. Getting it to work reliably meant handling obstacle avoidance, diagonal movement edge cases, height transitions and field of view, among other things.</p>
             <div class="proj-code-slides">
             <div class="proj-code-slides-bar">
               <button class="proj-slide-arrow" onclick="projSlideNav(this,-1)">←</button>
               <span class="proj-slide-counter">1 / 2</span>
               <button class="proj-slide-arrow" onclick="projSlideNav(this,1)">→</button>
             </div>
-            <div class="proj-code-slide active"><div class="proj-code-block" style="display:block; max-height:380px; overflow:auto;"><pre><code class="language-cpp"><span class="kw">void</span> <span class="fn">PathFind</span>(<span class="kw">const</span> Tga::Vector3f aStartPosition, <span class="kw">const</span> Tga::Vector3f aEndPosition, std::vector&lt;Tga::Vector3f&gt;&amp; aPath)
+            <div class="proj-code-slide active"><div class="proj-code-block" style="display:block; max-height:380px; overflow:auto;"><pre><code class="language-cpp">void PathFind(const Tga::Vector3f aStartPosition, const Tga::Vector3f aEndPosition, std::vector&lt;Tga::Vector3f&gt;&amp; aPath)
 {
-    <span class="kw">const int</span> startIndex = locGrid.<span class="fn">GetCellIndexFromWorld</span>(aStartPosition);
-    <span class="kw">int</span> endIndex         = locGrid.<span class="fn">GetCellIndexFromWorld</span>(aEndPosition);
+    const int startIndex = locGrid.GetCellIndexFromWorld(aStartPosition);
+    int endIndex         = locGrid.GetCellIndexFromWorld(aEndPosition);
 
-    <span class="kw">if</span> (<span class="fn">CellFull</span>(startIndex))
+    if (CellFull(startIndex))
     {
-        endIndex = <span class="fn">GetValidNeighbor</span>(locGrid.<span class="fn">GetNeighbours</span>(endIndex), aEndPosition, endIndex, startIndex);
+        endIndex = GetValidNeighbor(locGrid.GetNeighbours(endIndex), aEndPosition, endIndex, startIndex);
     }
 
-    locGrid.<span class="fn">GetCells</span>()[startIndex].g       = <span class="num">0.f</span>;
-    locGrid.<span class="fn">GetCells</span>()[startIndex].h       = std::<span class="fn">abs</span>(aStartPosition.x - aEndPosition.x) + std::<span class="fn">abs</span>(aStartPosition.z - aEndPosition.z);
-    locGrid.<span class="fn">GetCells</span>()[startIndex].f       = locGrid.<span class="fn">GetCells</span>()[startIndex].g + locGrid.<span class="fn">GetCells</span>()[startIndex].h;
-    locGrid.<span class="fn">GetCells</span>()[startIndex].isStart = <span class="kw">true</span>;
-    locGrid.<span class="fn">GetCells</span>()[startIndex].status  = CellStatus::Open;
-    locGrid.<span class="fn">GetCells</span>()[endIndex].isTarget = <span class="kw">true</span>;
+    locGrid.GetCells()[startIndex].g       = 0.f;
+    locGrid.GetCells()[startIndex].h       = std::abs(aStartPosition.x - aEndPosition.x) + std::abs(aStartPosition.z - aEndPosition.z);
+    locGrid.GetCells()[startIndex].f       = locGrid.GetCells()[startIndex].g + locGrid.GetCells()[startIndex].h;
+    locGrid.GetCells()[startIndex].isStart = true;
+    locGrid.GetCells()[startIndex].status  = CellStatus::Open;
+    locGrid.GetCells()[endIndex].isTarget = true;
 
-    sortedCells.<span class="fn">push</span>(startIndex);
-    touchedCells.<span class="fn">push_back</span>(startIndex);
+    sortedCells.push(startIndex);
+    touchedCells.push_back(startIndex);
 
-    <span class="kw">while</span> (!sortedCells.<span class="fn">empty</span>())
+    while (!sortedCells.empty())
     {
-        <span class="kw">const int</span> currentCell = sortedCells.<span class="fn">top</span>();
-        sortedCells.<span class="fn">pop</span>();
-        locGrid.<span class="fn">GetCells</span>()[currentCell].status = CellStatus::Closed;
+        const int currentCell = sortedCells.top();
+        sortedCells.pop();
+        locGrid.GetCells()[currentCell].status = CellStatus::Closed;
 
-        <span class="kw">if</span> (locGrid.<span class="fn">GetCells</span>()[currentCell].isTarget)
+        if (locGrid.GetCells()[currentCell].isTarget)
         {
-            <span class="fn">CreatePath</span>(currentCell, aPath);
-            <span class="fn">ResetPath</span>();
-            <span class="kw">return</span>;
+            CreatePath(currentCell, aPath);
+            ResetPath();
+            return;
         }
 
-        <span class="kw">for</span> (<span class="kw">const int</span> neighbor : locGrid.<span class="fn">GetNeighbours</span>(currentCell))
+        for (const int neighbor : locGrid.GetNeighbours(currentCell))
         {
-            <span class="fn">UpdateCell</span>(neighbor, currentCell, endIndex);
+            UpdateCell(neighbor, currentCell, endIndex);
         }
     }
 
-    aPath.<span class="fn">clear</span>();
-    <span class="fn">ResetPath</span>();
-}</code></pre></div></div><div class="proj-code-slide"><div class="proj-code-block" style="display:block; max-height:380px; overflow:auto;"><pre><code class="language-cpp"><span class="cmt">// Diagonal movement — check both cardinal neighbours are clear</span>
-<span class="kw">if</span> (aDX != <span class="num">0</span> && aDZ != <span class="num">0</span>)
+    aPath.clear();
+    ResetPath();
+}</code></pre></div></div><div class="proj-code-slide"><div class="proj-code-block" style="display:block; max-height:380px; overflow:auto;"><pre><code class="language-cpp">// Diagonal movement — check both cardinal neighbours are clear
+if (aDX != 0 && aDZ != 0)
 {
-    Tga::Vector3f horizontalNeighborPos = aOriginPos + Tga::Vector3f(aDX * CELL_SIZE, <span class="num">0.0f</span>, <span class="num">0.0f</span>);
-    Tga::Vector3f verticalNeighborPos   = aOriginPos + Tga::Vector3f(<span class="num">0.0f</span>, <span class="num">0.0f</span>, aDZ * CELL_SIZE);
+    Tga::Vector3f horizontalNeighborPos = aOriginPos + Tga::Vector3f(aDX * CELL_SIZE, 0.0f, 0.0f);
+    Tga::Vector3f verticalNeighborPos   = aOriginPos + Tga::Vector3f(0.0f, 0.0f, aDZ * CELL_SIZE);
 
-    <span class="kw">bool</span> horizontalClear = <span class="fn">DiagonalMovementTolerated</span>(aDX, <span class="num">0</span>, horizontalNeighborPos, aOriginPos);
-    <span class="kw">bool</span> verticalClear   = <span class="fn">DiagonalMovementTolerated</span>(<span class="num">0</span>, aDZ, verticalNeighborPos, aOriginPos);
+    bool horizontalClear = DiagonalMovementTolerated(aDX, 0, horizontalNeighborPos, aOriginPos);
+    bool verticalClear   = DiagonalMovementTolerated(0, aDZ, verticalNeighborPos, aOriginPos);
 
-    <span class="kw">if</span> (!horizontalClear || !verticalClear)
+    if (!horizontalClear || !verticalClear)
     {
-        <span class="kw">return</span> <span class="kw">false</span>;
+        return false;
     }
 }
 
-<span class="cmt">// Height transition check — East example</span>
-<span class="kw">if</span> (aDX == <span class="num">1</span> && aDZ == <span class="num">0</span>)
+// Height transition check — East example
+if (aDX == 1 && aDZ == 0)
 {
-    <span class="kw">return</span> <span class="fn">almostEqual</span>(origin-&gt;heightTR, neighbor-&gt;heightTL)
-        && <span class="fn">almostEqual</span>(origin-&gt;heightBR, neighbor-&gt;heightBL);
+    return almostEqual(origin-&gt;heightTR, neighbor-&gt;heightTL)
+        && almostEqual(origin-&gt;heightBR, neighbor-&gt;heightBL);
 }</code></pre></div></div>
           </div>
           </div>
@@ -134,75 +134,75 @@
         <div class="proj-twocol has-video">
           <div class="proj-twocol-text">
             <span class="proj-contribution-title">Enemy Behaviour</span>
-            <p class="proj-contribution-desc">Three enemy types: melee, ranged and elite. Melee used a seek-and-alert pattern. Ranged added a flee behaviour to create distance from the player. The surround system was something I was particularly proud of — enemies check occupied cells to avoid clumping, surrounding the player instead.</p>
+            <p class="proj-contribution-desc">We decided on three enemy types: melee, ranged and elite. Melee used a seek-and-alert pattern. For the ranged enemy, I added a flee behaviour to create distance from the player. The surround system was something I was particularly proud of, where enemies check occupied cells to avoid clumping, surrounding the player instead.</p>
             <div class="proj-code-slides">
             <div class="proj-code-slides-bar">
               <button class="proj-slide-arrow" onclick="projSlideNav(this,-1)">←</button>
               <span class="proj-slide-counter">1 / 3</span>
               <button class="proj-slide-arrow" onclick="projSlideNav(this,1)">→</button>
             </div>
-            <div class="proj-code-slide active"><div class="proj-code-block" style="display:block; max-height:380px; overflow:auto;"><pre><code class="language-cpp"><span class="kw">void</span> <span class="fn">MeleeEnemy::UpdateAttacking</span>(<span class="kw">const float</span> aDeltaTime)
+            <div class="proj-code-slide active"><div class="proj-code-block" style="display:block; max-height:380px; overflow:auto;"><pre><code class="language-cpp">void MeleeEnemy::UpdateAttacking(const float aDeltaTime)
 {
     AnimationRunner&amp; animRunner = myAnimationData.animationRunner;
-    animRunner.<span class="fn">SetNextAnimation</span>(MeleeAnimationData::AnimationState_Attack);
-    animRunner.<span class="fn">SetAnimationSpeed</span>(myData.attackSpeed);
+    animRunner.SetNextAnimation(MeleeAnimationData::AnimationState_Attack);
+    animRunner.SetAnimationSpeed(myData.attackSpeed);
 
-    <span class="kw">if</span> (!animRunner.<span class="fn">HasCurrentAnimationPassedFrame</span>(myData.framesWithLockOn))
+    if (!animRunner.HasCurrentAnimationPassedFrame(myData.framesWithLockOn))
     {
-        Utility::<span class="fn">RotateTowardsTargetY</span>(entity, myPlayerTargetEntity.<span class="fn">Transform</span>().<span class="fn">Position</span>(), myData.rotationSpeed, aDeltaTime);
+        Utility::RotateTowardsTargetY(entity, myPlayerTargetEntity.Transform().Position(), myData.rotationSpeed, aDeltaTime);
     }
 
-    <span class="kw">const bool</span> isInHitWindow = animRunner.<span class="fn">HasCurrentAnimationPassedFrame</span>(attackWindowStartFrame)
-                             && !animRunner.<span class="fn">HasCurrentAnimationPassedFrame</span>(attackWindowEndFrame);
+    const bool isInHitWindow = animRunner.HasCurrentAnimationPassedFrame(attackWindowStartFrame)
+                             && !animRunner.HasCurrentAnimationPassedFrame(attackWindowEndFrame);
 
-    <span class="kw">if</span> (isInHitWindow && !myData.hasHit)
+    if (isInHitWindow && !myData.hasHit)
     {
-        myData.hasHit = <span class="kw">true</span>;
+        myData.hasHit = true;
         CollisionSystem::HitInfo hit;
-        <span class="kw">if</span> (<span class="fn">CheckPlayerCollision</span>(myData.attackRange, hit, entity))
+        if (CheckPlayerCollision(myData.attackRange, hit, entity))
         {
-            <span class="kw">if</span> (hit.alignment &gt; myData.accuracy)
+            if (hit.alignment &gt; myData.accuracy)
             {
-                AttackSystem::<span class="fn">TransferDamage</span>(hit.hitEntity, entity.<span class="fn">Stats</span>().<span class="fn">GetDamage</span>().damage, Stats::DamageSource::EnemyMelee);
-                BehaviorRegistry::<span class="fn">GetPlayer</span>()-&gt;<span class="fn">ApplyKnockback</span>(attackDirection);
+                AttackSystem::TransferDamage(hit.hitEntity, entity.Stats().GetDamage().damage, Stats::DamageSource::EnemyMelee);
+                BehaviorRegistry::GetPlayer()-&gt;ApplyKnockback(attackDirection);
             }
         }
     }
 
-    <span class="kw">if</span> (animRunner.<span class="fn">HasCurrentAnimationFinishedPlaying</span>())
+    if (animRunner.HasCurrentAnimationFinishedPlaying())
     {
-        myData.hasHit = <span class="kw">false</span>;
+        myData.hasHit = false;
         myState       = EnemyState::Engaging;
     }
-}</code></pre></div></div><div class="proj-code-slide"><div class="proj-code-block" style="display:block; max-height:380px; overflow:auto;"><pre><code class="language-cpp"><span class="kw">void</span> <span class="fn">RangedEnemy::UpdateFleeing</span>(<span class="kw">const float</span> aDeltaTime)
+}</code></pre></div></div><div class="proj-code-slide"><div class="proj-code-block" style="display:block; max-height:380px; overflow:auto;"><pre><code class="language-cpp">void RangedEnemy::UpdateFleeing(const float aDeltaTime)
 {
     CollisionSystem::HitInfo hit;
 
-    <span class="kw">if</span> (!<span class="fn">CheckPlayerCollision</span>(myData.attackRadius, hit, entity))
+    if (!CheckPlayerCollision(myData.attackRadius, hit, entity))
     {
         myState = EnemyState::Idle;
-        <span class="kw">return</span>;
+        return;
     }
 
     myData.fleeTimer += aDeltaTime;
-    <span class="kw">if</span> (myData.fleeTimer &gt; myData.fleeDuration)
+    if (myData.fleeTimer &gt; myData.fleeDuration)
     {
         myState          = EnemyState::Attacking;
-        myData.fleeTimer = <span class="num">0.f</span>;
-        <span class="kw">return</span>;
+        myData.fleeTimer = 0.f;
+        return;
     }
 
-    <span class="kw">const</span> Tga::Vector3f fleeDirection = transform.<span class="fn">Position</span>() - myPlayerTargetEntity.<span class="fn">Transform</span>().<span class="fn">Position</span>();
-    Utility::<span class="fn">RotateTowardsTargetY</span>(entity, transform.<span class="fn">Position</span>() + fleeDirection, myData.rotationSpeed, aDeltaTime);
-    <span class="fn">MoveInDirection</span>(fleeDirection, entity, myData.speed, aDeltaTime);
-}</code></pre></div></div><div class="proj-code-slide"><div class="proj-code-block" style="display:block; max-height:380px; overflow:auto;"><pre><code class="language-cpp"><span class="kw">bool</span> <span class="fn">CellFull</span>(<span class="kw">int</span> aIndex)
+    const Tga::Vector3f fleeDirection = transform.Position() - myPlayerTargetEntity.Transform().Position();
+    Utility::RotateTowardsTargetY(entity, transform.Position() + fleeDirection, myData.rotationSpeed, aDeltaTime);
+    MoveInDirection(fleeDirection, entity, myData.speed, aDeltaTime);
+}</code></pre></div></div><div class="proj-code-slide"><div class="proj-code-block" style="display:block; max-height:380px; overflow:auto;"><pre><code class="language-cpp">bool CellFull(int aIndex)
 {
-    <span class="kw">if</span> (locGrid.<span class="fn">GetCells</span>()[aIndex].occupants &gt;= maxOccupants)
+    if (locGrid.GetCells()[aIndex].occupants &gt;= maxOccupants)
     {
-        <span class="kw">return</span> <span class="kw">true</span>;
+        return true;
     }
 
-    <span class="kw">return</span> <span class="kw">false</span>;
+    return false;
 }</code></pre></div></div>
           </div>
           </div>
@@ -214,7 +214,7 @@
       <div class="proj-contribution-border">
         <div class="proj-twocol"><div class="proj-twocol-text">
             <span class="proj-contribution-title">Enemy State Handling</span>
-            <p class="proj-contribution-desc">First time working with AI, so I kept it simple — a state machine where each enemy type has its own update per state. Easy to maintain and more than enough for the scale of the game. A learning I take with me.</p>
+            <p class="proj-contribution-desc">I kept it simple — a state machine where each enemy type has its own update per state. Easy to maintain and more than enough for the scale of the game. A learning I take with me.</p>
           </div>
           <div class="proj-twocol-code"><div class="proj-code-slides">
             <div class="proj-code-slides-bar">
@@ -222,7 +222,7 @@
               <span class="proj-slide-counter">1 / 2</span>
               <button class="proj-slide-arrow" onclick="projSlideNav(this,1)">→</button>
             </div>
-            <div class="proj-code-slide active"><div class="proj-code-block" style="display:block; max-height:380px; overflow:auto;"><pre><code class="language-cpp"><span class="kw">enum class</span> EnemyState
+            <div class="proj-code-slide active"><div class="proj-code-block" style="display:block; max-height:380px; overflow:auto;"><pre><code class="language-cpp">enum class EnemyState
 {
     Idle,
     Roaming,
@@ -232,35 +232,35 @@
     Count,
 };
 
-<span class="cmt">// State dispatch in Update</span>
-<span class="kw">switch</span> (myState)
+// State dispatch in Update
+switch (myState)
 {
-    <span class="kw">case</span> EnemyState::Idle:     { <span class="fn">UpdateIdle</span>(aDeltaTime);     <span class="kw">break</span>; }
-    <span class="kw">case</span> EnemyState::Engaging: { <span class="fn">UpdateEngaging</span>(aDeltaTime); <span class="kw">break</span>; }
-    <span class="kw">case</span> EnemyState::Attacking:{ <span class="fn">UpdateAttacking</span>(aDeltaTime);<span class="kw">break</span>; }
-    <span class="kw">case</span> EnemyState::Roaming:  { <span class="fn">UpdateRoaming</span>(aDeltaTime);  <span class="kw">break</span>; }
-    <span class="kw">default</span>: <span class="kw">break</span>;
-}</code></pre></div></div><div class="proj-code-slide"><div class="proj-code-block" style="display:block; max-height:380px; overflow:auto;"><pre><code class="language-cpp"><span class="kw">class</span> <span class="fn">BaseEnemy</span>
+    case EnemyState::Idle:     { UpdateIdle(aDeltaTime);     break; }
+    case EnemyState::Engaging: { UpdateEngaging(aDeltaTime); break; }
+    case EnemyState::Attacking:{ UpdateAttacking(aDeltaTime);break; }
+    case EnemyState::Roaming:  { UpdateRoaming(aDeltaTime);  break; }
+    default: break;
+}</code></pre></div></div><div class="proj-code-slide"><div class="proj-code-block" style="display:block; max-height:380px; overflow:auto;"><pre><code class="language-cpp">class BaseEnemy
 {
-<span class="kw">public</span>:
-    <span class="fn">BaseEnemy</span>();
+public:
+    BaseEnemy();
 
-    <span class="kw">virtual void</span> <span class="fn">UpdateIdle</span>(<span class="kw">float</span> aDeltaTime) = <span class="num">0</span>;
-    <span class="kw">virtual void</span> <span class="fn">UpdateRoaming</span>(<span class="kw">float</span> aDeltaTime) = <span class="num">0</span>;
-    <span class="kw">virtual void</span> <span class="fn">UpdateAttacking</span>(<span class="kw">float</span> aDeltaTime) = <span class="num">0</span>;
-    <span class="kw">virtual void</span> <span class="fn">UpdateFleeing</span>(<span class="kw">float</span> aDeltaTime) = <span class="num">0</span>;
-    <span class="kw">virtual void</span> <span class="fn">UpdateEngaging</span>(<span class="kw">float</span> aDeltaTime) = <span class="num">0</span>;
+    virtual void UpdateIdle(float aDeltaTime) = 0;
+    virtual void UpdateRoaming(float aDeltaTime) = 0;
+    virtual void UpdateAttacking(float aDeltaTime) = 0;
+    virtual void UpdateFleeing(float aDeltaTime) = 0;
+    virtual void UpdateEngaging(float aDeltaTime) = 0;
 
-    <span class="kw">void</span> <span class="fn">UpdateCellIndex</span>();
-    <span class="kw">bool</span> <span class="fn">CheckPlayerCollision</span>(<span class="kw">float</span> aRadiusToCheck, CollisionSystem::HitInfo&amp; aHitInfo, Entity aEntity) <span class="kw">const</span>;
-    <span class="kw">void</span> <span class="fn">MoveInDirection</span>(Tga::Vector3f aDirection, Entity&amp; aEntity, <span class="kw">float</span> aSpeed, <span class="kw">float</span> aDeltaTime);
-    <span class="kw">void</span> <span class="fn">Alert</span>(Entity aEnemyEntity, <span class="kw">float</span> aAlertRadius);
+    void UpdateCellIndex();
+    bool CheckPlayerCollision(float aRadiusToCheck, CollisionSystem::HitInfo&amp; aHitInfo, Entity aEntity) const;
+    void MoveInDirection(Tga::Vector3f aDirection, Entity&amp; aEntity, float aSpeed, float aDeltaTime);
+    void Alert(Entity aEnemyEntity, float aAlertRadius);
 
-<span class="kw">protected</span>:
+protected:
     Entity myPlayerTargetEntity;
     SharedData mySharedData;
-    <span class="kw">int</span> myCurrentCellIndex  = <span class="num">0</span>;
-    <span class="kw">int</span> myPreviousCellIndex = <span class="num">0</span>;
+    int myCurrentCellIndex  = 0;
+    int myPreviousCellIndex = 0;
 };</code></pre></div></div>
           </div></div></div>
       </div>
@@ -273,40 +273,40 @@
               <span class="proj-slide-counter">1 / 2</span>
               <button class="proj-slide-arrow" onclick="projSlideNav(this,1)">→</button>
             </div>
-            <div class="proj-code-slide active"><div class="proj-code-block" style="display:block; max-height:380px; overflow:auto;"><pre><code class="language-cpp"><span class="kw">void</span> <span class="fn">SpawnProjectile</span>(
+            <div class="proj-code-slide active"><div class="proj-code-block" style="display:block; max-height:380px; overflow:auto;"><pre><code class="language-cpp">void SpawnProjectile(
     Tga::Vector3f aEntityPosition, Tga::Vector3f aEntityForwardDirection,
     Tga::Vector3f aEntityRotation, ProjectileType aType,
-    <span class="kw">float</span> aScalar, <span class="kw">float</span> aSpeed, <span class="kw">float</span> aAngleOffset)
+    float aScalar, float aSpeed, float aAngleOffset)
 {
     GameEntity::EntityInfo entityInfo;
     ProjectileInfo projectileInfo;
 
-    <span class="kw">if</span> (aType == ProjectileType::Player)
+    if (aType == ProjectileType::Player)
     {
         projectileInfo = locPlayerProjInfo;
-        Tga::Vector3f scale = { <span class="num">1.f</span>, <span class="num">1.f</span>, <span class="num">1.f</span> };
+        Tga::Vector3f scale = { 1.f, 1.f, 1.f };
         scale *= aScalar;
         locPlayerProjInfo.projTransformInfo.scale = scale;
     }
-    <span class="kw">else</span>
+    else
     {
         projectileInfo = locEnemyProjInfo;
     }
 
-    <span class="cmt">// Calculate rotated direction — angle offset creates an arch spread</span>
-    <span class="cmt">// -15 spawns left, +15 spawns right, used for player shotgun spread</span>
-    <span class="kw">float</span> radians         = Tga::<span class="fn">DegToRad</span>(aAngleOffset);
-    Tga::Vector3f forward  = aEntityForwardDirection.<span class="fn">GetNormalized</span>();
+    // Calculate rotated direction — angle offset creates an arch spread
+    // -15 spawns left, +15 spawns right, used for player shotgun spread
+    float radians         = Tga::DegToRad(aAngleOffset);
+    Tga::Vector3f forward  = aEntityForwardDirection.GetNormalized();
     Tga::Vector3f rotatedDirection;
-    rotatedDirection.x = forward.x * std::<span class="fn">cos</span>(radians) - forward.z * std::<span class="fn">sin</span>(radians);
+    rotatedDirection.x = forward.x * std::cos(radians) - forward.z * std::sin(radians);
     rotatedDirection.y = forward.y;
-    rotatedDirection.z = forward.x * std::<span class="fn">sin</span>(radians) + forward.z * std::<span class="fn">cos</span>(radians);
+    rotatedDirection.z = forward.x * std::sin(radians) + forward.z * std::cos(radians);
 
-    Tga::Vector3f spawnPos = aEntityPosition + rotatedDirection * <span class="num">20.0f</span>;
+    Tga::Vector3f spawnPos = aEntityPosition + rotatedDirection * 20.0f;
     Tga::Vector3f rotation = aEntityRotation;
     rotation.y -= aAngleOffset;
 
-    projectileInfo.projTransformInfo.position = spawnPos + Tga::Vector3f{ <span class="num">0.f</span>, <span class="num">50.f</span>, <span class="num">0.f</span> };
+    projectileInfo.projTransformInfo.position = spawnPos + Tga::Vector3f{ 0.f, 50.f, 0.f };
     projectileInfo.projTransformInfo.rotation = rotation;
 
     entityInfo.transform = &amp;projectileInfo.projTransformInfo;
@@ -315,46 +315,46 @@
     entityInfo.meshModel = &amp;projectileInfo.projModelInfo;
     entityInfo.stats     = &amp;projectileInfo.projStatsInfo;
 
-    [[maybe_unused]] Entity <span class="fn">entity</span>{ <span class="fn">Create</span>(entityInfo) };
-    toAdd.<span class="fn">push_back</span>({ .entity = entity, .direction = rotatedDirection, .speed = aSpeed });
-}</code></pre></div></div><div class="proj-code-slide"><div class="proj-code-block" style="display:block; max-height:380px; overflow:auto;"><pre><code class="language-cpp"><span class="kw">void</span> <span class="fn">Projectile::Update</span>(<span class="kw">const float</span> aDeltaTime)
+    [[maybe_unused]] Entity entity{ Create(entityInfo) };
+    toAdd.push_back({ .entity = entity, .direction = rotatedDirection, .speed = aSpeed });
+}</code></pre></div></div><div class="proj-code-slide"><div class="proj-code-block" style="display:block; max-height:380px; overflow:auto;"><pre><code class="language-cpp">void Projectile::Update(const float aDeltaTime)
 {
     myAliveTimer += aDeltaTime;
-    Tga::Vector3f pos = entity.<span class="fn">Transform</span>().<span class="fn">Position</span>();
+    Tga::Vector3f pos = entity.Transform().Position();
     pos += myDirection * mySpeed * aDeltaTime;
 
-    <span class="kw">if</span> (GridSystem::<span class="fn">IsUnderGrid</span>(pos) || myAliveTimer &gt;= ALIVE_TIME)
+    if (GridSystem::IsUnderGrid(pos) || myAliveTimer &gt;= ALIVE_TIME)
     {
-        <span class="fn">SelfDestroy</span>();
+        SelfDestroy();
     }
 
-    entity.<span class="fn">Transform</span>().<span class="fn">SetPosition</span>(pos);
+    entity.Transform().SetPosition(pos);
 
     std::vector&lt;CollisionSystem::HitInfo&gt; hits;
-    <span class="kw">if</span> (<span class="fn">CheckSphereCollision</span>(entity, hits))
+    if (CheckSphereCollision(entity, hits))
     {
-        <span class="kw">for</span> (<span class="kw">auto</span>&amp; [hitEntity, alignment] : hits)
+        for (auto&amp; [hitEntity, alignment] : hits)
         {
-            <span class="cmt">// Enemy projectile hits player</span>
-            <span class="kw">if</span> ((entity.<span class="fn">Tag</span>().<span class="fn">StringID</span>() == locEnemyProjID) && (hitEntity.<span class="fn">Tag</span>().<span class="fn">StringID</span>() == locPlayerID))
+            // Enemy projectile hits player
+            if ((entity.Tag().StringID() == locEnemyProjID) && (hitEntity.Tag().StringID() == locPlayerID))
             {
-                AttackSystem::<span class="fn">TransferDamage</span>(hitEntity, entity.<span class="fn">Stats</span>().<span class="fn">GetDamage</span>().damage, Stats::DamageSource::EnemyRanged);
-                <span class="fn">SelfDestroy</span>();
+                AttackSystem::TransferDamage(hitEntity, entity.Stats().GetDamage().damage, Stats::DamageSource::EnemyRanged);
+                SelfDestroy();
             }
-            <span class="cmt">// Player projectile hits enemy</span>
-            <span class="kw">else if</span> ((entity.<span class="fn">Tag</span>().<span class="fn">StringID</span>() == locPlayerProjID) && (
-                hitEntity.<span class="fn">Tag</span>().<span class="fn">StringID</span>() == locEnemyID || hitEntity.<span class="fn">Tag</span>().<span class="fn">StringID</span>() == locRangedID))
+            // Player projectile hits enemy
+            else if ((entity.Tag().StringID() == locPlayerProjID) && (
+                hitEntity.Tag().StringID() == locEnemyID || hitEntity.Tag().StringID() == locRangedID))
             {
-                AttackSystem::<span class="fn">TransferDamage</span>(hitEntity, entity.<span class="fn">Stats</span>().<span class="fn">GetDamage</span>().damage, Stats::DamageSource::PlayerShotgun);
-                <span class="fn">SelfDestroy</span>();
+                AttackSystem::TransferDamage(hitEntity, entity.Stats().GetDamage().damage, Stats::DamageSource::PlayerShotgun);
+                SelfDestroy();
             }
         }
     }
 
-    <span class="cmt">// Collide with world objects (ignoring player/enemy)</span>
-    <span class="kw">if</span> (CollisionSystem::<span class="fn">Collided</span>(entity, {locPlayerID, locEnemyID, locRangedID, locPlayerProjID, locEnemyProjID}))
+    // Collide with world objects (ignoring player/enemy)
+    if (CollisionSystem::Collided(entity, {locPlayerID, locEnemyID, locRangedID, locPlayerProjID, locEnemyProjID}))
     {
-        <span class="fn">SelfDestroy</span>();
+        SelfDestroy();
     }
 }</code></pre></div></div>
           </div></div>
