@@ -86,13 +86,171 @@
           </div>
         </div>
         <div class="tp-overlay-code active" data-slide="0">
-          <pre><code class="language-cpp">// Slide 1 — Add your spacing code here</code></pre>
+          <pre><code class="language-cpp">void AssetBrush::Update(bool isLeftMouseDown)
+{
+    HandleInput();
+    if (!myIsActive || !myBrush.isValid)
+    {
+        myWasMouseDownLastFrame = false;
+        return;
+    }
+    if (myBrush.mode == BrushMode::Paint)
+    {
+        const bool hasAssets = !myAssetPalette.empty();
+        if (!hasAssets)
+        {
+            myWasMouseDownLastFrame = false;
+            return;
+        }
+    }
+    // --- Hold and drag ---
+    if (myPlacementMode == PlacementMode::HoldAndDrag)
+    {
+        if (isLeftMouseDown)
+        {
+            bool shouldAct = false;
+            // First click - always act
+            if (!myWasMouseDownLastFrame)
+            {
+                shouldAct = true;
+            }
+            // Holding - check distance from last action
+            else
+            {
+                float distanceFromLast = (myBrush.position - myLastPlacedPosition).LengthSqr();
+                if (distanceFromLast &gt;= FMath::Sq(myBrush.strokeSpacing))
+                {
+                    shouldAct = true;
+                }
+            }
+            if (shouldAct)
+            {
+                if (myBrush.mode == BrushMode::Paint)
+                {
+                    PlaceObject();
+                }
+                else if (myBrush.mode == BrushMode::Erase)
+                {
+                    EraseObjects();
+                }
+                myLastPlacedPosition = myBrush.position;
+            }
+        }
+    }
+    // --- Single click ---
+    else if (myPlacementMode == PlacementMode::SingleClick)
+    {
+        if (isLeftMouseDown &amp;&amp; !myWasMouseDownLastFrame)
+        {
+            if (myBrush.mode == BrushMode::Paint)
+            {
+                PlaceObject();
+            }
+            else if (myBrush.mode == BrushMode::Erase)
+            {
+                EraseObjects();
+            }
+        }
+    }
+    myWasMouseDownLastFrame = isLeftMouseDown;
+}</code></pre>
         </div>
         <div class="tp-overlay-code" data-slide="1">
-          <pre><code class="language-cpp">// Slide 2 — Add your draw mode code here</code></pre>
+          <pre><code class="language-cpp">std::shared_ptr&lt;Tga::SceneObject&gt; AssetBrush::PlaceObjectWithAsset(Tga::StringId aAssetPath, std::vector&lt;Tga::Vector3f&gt;&amp; someCurrentBatchPositions) const
+{
+    constexpr int maxAttempts = 10;
+    for (int attempt = 0; attempt &lt; maxAttempts; attempt++)
+    {
+        OffsetResult offsetResult = CalculateOffsetPosition();
+        if (!offsetResult.valid)
+        {
+            continue;
+        }
+        Tga::Vector3f position = offsetResult.position;
+        Tga::Vector3f surfaceNormal = offsetResult.normal;
+        if (!IsSlopeValid(surfaceNormal))
+        {
+            continue;
+        }
+        if (myBrush.useMinimumSpacing)
+        {
+            if (myBrush.checkOnlyCurrentBatch)
+            {
+                if (IsPositionTooCloseInBatch(position, myBrush.minimumSpacing, someCurrentBatchPositions))
+                {
+                    continue;
+                }
+            }
+            else
+            {
+                if (IsPositionTooClose(position, myBrush.minimumSpacing))
+                {
+                    continue;
+                }
+            }
+        }
+        someCurrentBatchPositions.push_back(position);
+        Tga::Quaternionf finalRotation = CalculateRandomRotation(surfaceNormal);
+        Tga::Vector3f rotationEuler = finalRotation.GetYawPitchRoll();
+        Tga::Vector3f randomScale = CalculateRandomScale();
+        auto object = std::make_shared&lt;Tga::SceneObject&gt;();
+        std::filesystem::path assetFilePath(aAssetPath.GetString());
+        Tga::StringId objectDefinitionName = Tga::StringRegistry::RegisterOrGetString(assetFilePath.stem().string());
+        object-&gt;SetSceneObjectDefintionName(objectDefinitionName);
+        object-&gt;GetTRS().translation = position;
+        object-&gt;GetTRS().rotation = rotationEuler;
+        object-&gt;GetTRS().scale = randomScale;
+        if (myAdjustPivot)
+        {
+            float zeroOffset = 0.f;
+            CalculateNewPivot(object, zeroOffset);
+        }
+        return object;
+    }
+    return nullptr;
+}</code></pre>
         </div>
         <div class="tp-overlay-code" data-slide="2">
-          <pre><code class="language-cpp">// Slide 3 — Add your code here</code></pre>
+          <pre><code class="language-cpp">bool AssetBrush::IsPositionTooClose(const Tga::Vector3f&amp; aNewPos, float aMinDistance) const
+{
+    int cellX = static_cast&lt;int&gt;(floorf(aNewPos.x / mySpatialCellSize));
+    int cellY = static_cast&lt;int&gt;(floorf(aNewPos.y / mySpatialCellSize));
+    int cellZ = static_cast&lt;int&gt;(floorf(aNewPos.z / mySpatialCellSize));
+    for (int dx = -1; dx &lt;= 1; dx++)
+    {
+        for (int dy = -1; dy &lt;= 1; dy++)
+        {
+            for (int dz = -1; dz &lt;= 1; dz++)
+            {
+                auto it = mySpatialGrid.find({ cellX + dx, cellY + dy, cellZ + dz });
+                if (it == mySpatialGrid.end())
+                {
+                    continue;
+                }
+                for (const Tga::Vector3f&amp; pos : it-&gt;second)
+                {
+                    if ((pos - aNewPos).LengthSqr() &lt; FMath::Sq(aMinDistance))
+                    {
+                        return true;
+                    }
+                }
+            }
+        }
+    }
+    return false;
+}
+bool AssetBrush::IsPositionTooCloseInBatch(const Tga::Vector3f&amp; aNewPos, float aMinDistance, const std::vector&lt;Tga::Vector3f&gt;&amp; someBatchPositions)
+{
+    for (const auto&amp; pos : someBatchPositions)
+    {
+        float distance = (pos - aNewPos).LengthSqr();
+        if (distance &lt; FMath::Sq(aMinDistance))
+        {
+            return true;
+        }
+    }
+    return false;
+}</code></pre>
         </div>
       </div>
     </div>
