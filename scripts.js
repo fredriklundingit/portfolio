@@ -125,6 +125,16 @@ function setupHoverVideo(vid, hoverTarget) {
   vid.loop  = true;
   vid.style.opacity = '0';
   vid.style.transition = 'opacity 0.6s ease';
+
+  // Set poster as background on the container so it shows while video is transparent
+  const poster = vid.getAttribute('poster');
+  if (poster) {
+    const container = vid.parentElement;
+    container.style.backgroundImage = `url('${poster}')`;
+    container.style.backgroundSize = 'cover';
+    container.style.backgroundPosition = 'center';
+  }
+
   hoverTarget.addEventListener('mouseenter', () => {
     if (vid.dataset.src && !vid.getAttribute('src')) {
       vid.src = vid.dataset.src;
