@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Asset Brush — Fredrik Lundin</title>
 <link rel="stylesheet" href="styles.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/cpp.min.js"></script>
 </head>
@@ -320,10 +320,86 @@ bool AssetBrush::IsPositionTooCloseInBatch(const Tga::Vector3f&amp; aNewPos, flo
           <span class="tp-overlay-label">Code</span>
           <div style="display:flex;align-items:center;gap:0.8rem;">
             <div class="tp-overlay-arrows">
-              <button class="tp-overlay-arrow" onclick="carouselNav('feat-2',-1)">←</button>
-              <span class="tp-overlay-counter" id="overlay-counter-feat-2">1 / 1</span>
-              <button class="tp-overlay-arrow" onclick="carouselNav('feat-2',1)">→</button>
+              <button class="tp-overlay-arrow" onclick="overlayNav('feat-2',-1)">←</button>
+              <span class="tp-overlay-counter" id="overlay-counter-feat-2">1 / 3</span>
+              <button class="tp-overlay-arrow" onclick="overlayNav('feat-2',1)">→</button>
             </div>
+            <button class="tp-overlay-close" onclick="carouselToggleCode('feat-2')">✕ Close</button>
+          </div>
+        </div>
+        <div class="tp-overlay-code active" data-slide="0">
+          <pre><code class="language-cpp">// Using ImGui to add an asset to our palette:
+if (ImGui::BeginChild(&quot;AssetListFrame&quot;, listSize, true, ImGuiWindowFlags_HorizontalScrollbar))
+{
+    int itemToDelete = -1;
+    for (int i = 0; i &lt; myAssetPalette.size(); i++)
+    {
+        ImGui::PushID(i);
+        bool isSelected = (i == mySelectedPaletteIndex);
+        const char* displayName = myAssetPalette[i].IsEmpty()
+            ? &quot;[ Empty Slot ]&quot;
+            : myAssetPalette[i].GetString();
+        ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.8f, 0.2f, 0.2f, 1.0f));
+        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1.0f, 0.3f, 0.3f, 1.0f));
+        ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.7f, 0.1f, 0.1f, 1.0f));
+        if (ImGui::SmallButton(&quot;X&quot;))
+        {
+            itemToDelete = i;
+        }
+        ImGui::PopStyleColor(3);
+        ImGui::SameLine();
+        if (ImGui::Selectable(displayName, isSelected, ImGuiSelectableFlags_AllowDoubleClick))
+        {
+            mySelectedPaletteIndex = i;
+        }
+        if (ImGui::BeginDragDropTarget())
+        {
+            if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(&quot;.tgo&quot;))
+            {
+                const char* dropped = static_cast&lt;const char*&gt;(payload-&gt;Data);
+                myAssetPalette[i] = Tga::StringRegistry::RegisterOrGetString(dropped);
+            }
+            ImGui::EndDragDropTarget();
+        }
+        ImGui::PopID();
+    }</code></pre>
+        </div>
+        <div class="tp-overlay-code" data-slide="1">
+          <pre><code class="language-cpp">// Then using the asset palette with placement count when placing objects, here Random as an example:
+    if (myPaletteMode == PaletteMode::Random)
+    {
+        std::vector&lt;Tga::StringId&gt; validAssets;
+        for (const auto&amp; asset : myAssetPalette)
+        {
+            if (!asset.IsEmpty())
+            {
+                validAssets.push_back(asset);
+            }
+        }
+        if (!validAssets.empty())
+        {
+            for (int i = 0; i &lt; myPlacementCount; i++)
+            {
+                const int randomIndex = rand() % validAssets.size();
+                auto object = PlaceObjectWithAsset(validAssets[randomIndex], currentBatchPositions);
+                if (object)
+                {
+                    objectsToPlace.push_back(object);
+                }
+            }
+        }
+    }</code></pre>
+        </div>
+        <div class="tp-overlay-code" data-slide="2">
+          <pre><code class="language-cpp">// Using the position scatter to decide where to place it inside the brush circle:
+float distance = RandomGenerator::GetFloat(myBrush.randomOffsetRadiusMin, myBrush.randomOffsetRadiusMax);
+distance = FMath::Min(distance, myBrush.size);
+Tga::Vector3f tangent;
+Tga::Vector3f bitangent;
+GetSurfaceTangentFrame(myBrush.normal, tangent, bitangent);
+Tga::Vector3f offset = (tangent * cosf(angle) + bitangent * sinf(angle)) * distance;</code></pre>
+        </div>
+      </div>
             <button class="tp-overlay-close" onclick="carouselToggleCode('feat-2')">✕ Close</button>
           </div>
         </div>
@@ -430,10 +506,64 @@ Tga::Vector3f offset = (tangent * cosf(angle) + bitangent * sinf(angle)) * dista
           <span class="tp-overlay-label">Code</span>
           <div style="display:flex;align-items:center;gap:0.8rem;">
             <div class="tp-overlay-arrows">
-              <button class="tp-overlay-arrow" onclick="carouselNav('feat-3',-1)">←</button>
-              <span class="tp-overlay-counter" id="overlay-counter-feat-3">1 / 1</span>
-              <button class="tp-overlay-arrow" onclick="carouselNav('feat-3',1)">→</button>
+              <button class="tp-overlay-arrow" onclick="overlayNav('feat-3',-1)">←</button>
+              <span class="tp-overlay-counter" id="overlay-counter-feat-3">1 / 2</span>
+              <button class="tp-overlay-arrow" onclick="overlayNav('feat-3',1)">→</button>
             </div>
+            <button class="tp-overlay-close" onclick="carouselToggleCode('feat-3')">✕ Close</button>
+          </div>
+        </div>
+        <div class="tp-overlay-code active" data-slide="0">
+          <pre><code class="language-cpp">// First calculate the base rotation using the normal, then add the rotations as implied by the user:
+Tga::Quaternionf AssetBrush::CalculateRandomRotation(const Tga::Vector3f&amp; aSurfaceNormal) const
+{
+    Tga::Quaternionf baseRotation = Tga::Quaternionf::CreateFromUpDirection(aSurfaceNormal);
+    Tga::Quaternionf finalRotation = baseRotation;
+    if (myBrush.useRandomRotation)
+    {
+        float randomYaw = RandomGenerator::GetFloat(myBrush.randomRotationMin, myBrush.randomRotationMax);
+        Tga::Vector3f localUp = finalRotation.GetUp();
+        Tga::Quaternionf yawRotation(localUp, randomYaw);
+        finalRotation = baseRotation * yawRotation;
+    }
+    if (myBrush.useRandomPitch)
+    {
+        float randomPitch = RandomGenerator::GetFloat(myBrush.randomPitchMin, myBrush.randomPitchMax);
+        Tga::Vector3f localRight = finalRotation.GetRight();
+        Tga::Quaternionf pitchRotation(localRight, randomPitch);
+        finalRotation = pitchRotation * finalRotation;
+    }
+    if (myBrush.useRandomRoll)
+    {
+        float randomRoll = RandomGenerator::GetFloat(myBrush.randomRollMin, myBrush.randomRollMax);
+        Tga::Vector3f localForward = finalRotation.GetForward();
+        Tga::Quaternionf rollRotation(localForward, randomRoll);
+        finalRotation = rollRotation * finalRotation;
+    }
+    return finalRotation;
+}</code></pre>
+        </div>
+        <div class="tp-overlay-code" data-slide="1">
+          <pre><code class="language-cpp">// Calculate scale
+Tga::Vector3f AssetBrush::CalculateRandomScale() const
+{
+    if (!myBrush.useRandomScale)
+    {
+        return Tga::Vector3f(1.0f, 1.0f, 1.0f);
+    }
+    if (myBrush.uniformScale)
+    {
+        const float scale = RandomGenerator::GetFloat(myBrush.randomScaleMin, myBrush.randomScaleMax);
+        return Tga::Vector3f(scale, scale, scale);
+    }
+    return Tga::Vector3f(
+        RandomGenerator::GetFloat(myBrush.randomScaleMin, myBrush.randomScaleMax),
+        RandomGenerator::GetFloat(myBrush.randomScaleMin, myBrush.randomScaleMax),
+        RandomGenerator::GetFloat(myBrush.randomScaleMin, myBrush.randomScaleMax)
+    );
+}</code></pre>
+        </div>
+      </div>
             <button class="tp-overlay-close" onclick="carouselToggleCode('feat-3')">✕ Close</button>
           </div>
         </div>
@@ -520,10 +650,45 @@ Tga::Vector3f AssetBrush::CalculateRandomScale() const
           <span class="tp-overlay-label">Code</span>
           <div style="display:flex;align-items:center;gap:0.8rem;">
             <div class="tp-overlay-arrows">
-              <button class="tp-overlay-arrow" onclick="carouselNav('feat-4',-1)">←</button>
-              <span class="tp-overlay-counter" id="overlay-counter-feat-4">1 / 1</span>
-              <button class="tp-overlay-arrow" onclick="carouselNav('feat-4',1)">→</button>
+              <button class="tp-overlay-arrow" onclick="overlayNav('feat-4',-1)">←</button>
+              <span class="tp-overlay-counter" id="overlay-counter-feat-4">1 / 2</span>
+              <button class="tp-overlay-arrow" onclick="overlayNav('feat-4',1)">→</button>
             </div>
+            <button class="tp-overlay-close" onclick="carouselToggleCode('feat-4')">✕ Close</button>
+          </div>
+        </div>
+        <div class="tp-overlay-code active" data-slide="0">
+          <pre><code class="language-cpp">// By using the normal of the position we got from doing the placement calculations, we now check if the slope is valid:
+const OffsetResult offsetResult = CalculateOffsetPosition();
+if (!offsetResult.valid)
+{
+    continue;
+}
+const Tga::Vector3f position = offsetResult.position;
+const Tga::Vector3f surfaceNormal = offsetResult.normal;
+if (!IsSlopeValid(surfaceNormal))
+{
+    continue;
+}</code></pre>
+        </div>
+        <div class="tp-overlay-code" data-slide="1">
+          <pre><code class="language-cpp">bool AssetBrush::IsSlopeValid(const Tga::Vector3f&amp; aNormal) const
+{
+    if (!myBrush.useSlopeFilter)
+    {
+        return true;
+    }
+    // Calculate slope angle from normal
+    float normalY = std::abs(aNormal.y);
+    float slopeDegrees = acosf(std::clamp(normalY, 0.0f, 1.0f)) * (180.0f / FMath::Pi);
+    if (slopeDegrees &lt; myBrush.minSlope || slopeDegrees &gt; myBrush.maxSlope)
+    {
+        return false;
+    }
+    return true;
+}</code></pre>
+        </div>
+      </div>
             <button class="tp-overlay-close" onclick="carouselToggleCode('feat-4')">✕ Close</button>
           </div>
         </div>
