@@ -101,10 +101,17 @@ function carouselToggleCode(id) {
   const toggle  = document.querySelector(`[data-carousel="${id}"] .tp-code-toggle`);
   if (!overlay) return;
 
-  const isOpen = overlay.classList.contains('visible');
+  const isOpen    = overlay.classList.contains('visible');
+  const row       = toggle?.closest('.tp-row');
+  const isReverse = row?.classList.contains('tp-row-reverse');
+  // Normal row: video left, code appears from right → show = →, hide = ←
+  // Reverse row: video right, code appears from left → show = ←, hide = →
+  const showArrow = isReverse ? '←' : '→';
+  const hideArrow = isReverse ? '→' : '←';
+
   overlay.classList.toggle('visible', !isOpen);
   if (toggle) {
-    toggle.textContent = isOpen ? 'View Code ↓' : 'Hide Code ↑';
+    toggle.textContent = isOpen ? `View Code ${showArrow}` : `Hide Code ${hideArrow}`;
     toggle.classList.toggle('open', !isOpen);
   }
 }
