@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>The Misadventures of Captain Hornswaggle — Fredrik Lundin</title>
 <link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/cpp.min.js"></script>
 </head>
 <body>
 
@@ -57,7 +60,7 @@
               <span class="proj-slide-counter">1 / 3</span>
               <button class="proj-slide-arrow" onclick="projSlideNav(this,1)">→</button>
             </div>
-            <div class="proj-code-slide active"><div class="proj-code-block" style="display:block; max-height:380px; overflow:auto;"><pre><span class="kw">void</span> WASD::<span class="fn">AudioManager::PlaySfx</span>(<span class="kw">const</span> SoundData aSoundData, <span class="kw">const</span> Tga::Vector3f aPosition)
+            <div class="proj-code-slide active"><div class="proj-code-block" style="display:block; max-height:380px; overflow:auto;"><pre><code class="language-cpp"><span class="kw">void</span> WASD::<span class="fn">AudioManager::PlaySfx</span>(<span class="kw">const</span> SoundData aSoundData, <span class="kw">const</span> Tga::Vector3f aPosition)
 {
     <span class="kw">if</span> (!<span class="fn">GetSfxIsMuted</span>())
     {
@@ -84,7 +87,7 @@
             mySfx.<span class="fn">at</span>(soundID)[variantToPlay].<span class="fn">SetPosition</span>(soundDistanceToPlayer);
         }
     }
-}</pre></div></div><div class="proj-code-slide"><div class="proj-code-block" style="display:block; max-height:380px; overflow:auto;"><pre><span class="kw">float</span> WASD::<span class="fn">AudioManager::AdjustProximityVolume</span>(
+}</code></pre></div></div><div class="proj-code-slide"><div class="proj-code-block" style="display:block; max-height:380px; overflow:auto;"><pre><code class="language-cpp"><span class="kw">float</span> WASD::<span class="fn">AudioManager::AdjustProximityVolume</span>(
     <span class="kw">const</span> Tga::Vector3f&amp; aObjectPosition, <span class="kw">const</span> Tga::Audio&amp; aAudioInstance) <span class="kw">const</span>
 {
     <span class="kw">const</span> Tga::Vector3f soundDistanceToPlayer = aObjectPosition - globalPlayerPosition;
@@ -106,7 +109,7 @@
     <span class="kw">const</span> std::string fullFilePath = <span class="str">"audio/sfx/"</span> + std::string(aPath);
     mySfx[<span class="fn">CreateSoundID</span>(soundData)].<span class="fn">emplace_back</span>().<span class="fn">Init</span>(fullFilePath.<span class="fn">c_str</span>(), aBaseMaxVolume, aShouldLoop);
     myLastVariantsPlayed[<span class="fn">CreateSoundID</span>(soundData)] = <span class="num">0</span>;
-}</pre></div></div><div class="proj-code-slide"><div class="proj-code-block" style="display:block; max-height:380px; overflow:auto;"><pre><span class="cmt">// Packs SoundType, MaterialType and SubSoundType into a single integer ID
+}</code></pre></div></div><div class="proj-code-slide"><div class="proj-code-block" style="display:block; max-height:380px; overflow:auto;"><pre><code class="language-cpp"><span class="cmt">// Packs SoundType, MaterialType and SubSoundType into a single integer ID
 // by bit-shifting each enum value into its own lane.
 // This lets us use one flat map lookup instead of nested maps,
 // and guarantees a unique key for every (type, material, sub) combination.</span>
@@ -123,7 +126,7 @@
 <span class="cmt">// The three enums that combine to form a SoundID:</span>
 <span class="kw">enum class</span> MaterialType : uint8 { Wood, Stone, Crate, TentacleSkin, Cannon, SkeletonHead, PirateHead, ParrotHead, Player, None, Count };
 <span class="kw">enum class</span> SubSoundType  : uint8 { Player, Pirate, Parrot, Skeleton, Tentacle, Cannon, UI, None, Count };
-<span class="kw">enum class</span> SoundType     : uint8 { Landed, Attacking, Moving, Jumping, Exploding, DoubleJumping, Died, LevelComplete, CheckpointEntered, WallSliding, Breaking, Hovering, None, Count };</pre></div></div>
+<span class="kw">enum class</span> SoundType     : uint8 { Landed, Attacking, Moving, Jumping, Exploding, DoubleJumping, Died, LevelComplete, CheckpointEntered, WallSliding, Breaking, Hovering, None, Count };</code></pre></div></div>
           </div></div></div>
       </div>
 
@@ -142,7 +145,7 @@
               <span class="proj-slide-counter">1 / 2</span>
               <button class="proj-slide-arrow" onclick="projSlideNav(this,1)">→</button>
             </div>
-            <div class="proj-code-slide active"><div class="proj-code-block" style="display:block; max-height:380px; overflow:auto;"><pre><span class="kw">void</span> <span class="fn">CinematicPlayer::Update</span>(<span class="kw">const float</span>&amp; aDeltaTime)
+            <div class="proj-code-slide active"><div class="proj-code-block" style="display:block; max-height:380px; overflow:auto;"><pre><code class="language-cpp"><span class="kw">void</span> <span class="fn">CinematicPlayer::Update</span>(<span class="kw">const float</span>&amp; aDeltaTime)
 {
     myCinematicData.firstSoundTimer += aDeltaTime;
 
@@ -169,7 +172,7 @@
         myCinematicData.showing = <span class="kw">true</span>;
         <span class="fn">FadeInstructions</span>(aDeltaTime);
     }
-}</pre></div></div><div class="proj-code-slide"><div class="proj-code-block" style="display:block; max-height:380px; overflow:auto;"><pre><span class="kw">void</span> <span class="fn">CinematicPlayer::ChangeImage</span>(<span class="kw">const float</span>&amp; aDeltaTime)
+}</code></pre></div></div><div class="proj-code-slide"><div class="proj-code-block" style="display:block; max-height:380px; overflow:auto;"><pre><code class="language-cpp"><span class="kw">void</span> <span class="fn">CinematicPlayer::ChangeImage</span>(<span class="kw">const float</span>&amp; aDeltaTime)
 {
     <span class="kw">if</span> (myCinematicData.startIndex == myCinematicData.maxIndex)
     {
@@ -204,7 +207,7 @@
             myCinematicData.movementDirection.<span class="fn">Normalize</span>();
         }
     }
-}</pre></div></div>
+}</code></pre></div></div>
           </div>
           </div>
         </div>
@@ -236,5 +239,7 @@
 </footer>
 
 <script src="scripts.js"></script>
+<script>hljs.highlightAll();</script>
+<script>hljs.highlightAll();</script>
 </body>
 </html>

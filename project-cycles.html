@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Cycles of Deluge — Fredrik Lundin</title>
 <link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/cpp.min.js"></script>
 </head>
 <body>
 
@@ -56,7 +59,7 @@
         <div class="proj-twocol-text">
           <span class="proj-contribution-title">Render Pipeline</span>
           <p class="proj-contribution-desc">Responsible for the full render pipeline. Had to balance requests from other disciplines while building something fast and maintainable. Collecting render data each frame and setting up all passes — shadows, GBuffer, lighting, bloom and post processing.</p>
-          <div class="proj-code-block" style="display:block; max-height:420px; overflow:auto;"><pre><span class="cmt">// ***** SHADOWS *****</span>
+          <div class="proj-code-block" style="display:block; max-height:420px; overflow:auto;"><pre><code class="language-cpp"><span class="cmt">// ***** SHADOWS *****</span>
 graphicsStateStack.<span class="fn">Push</span>();
 graphicsStateStack.<span class="fn">SetRasterizerState</span>(RasterizerState::Shadow);
 graphicsStateStack.<span class="fn">SetCamera</span>(myShadowCamera);
@@ -79,7 +82,7 @@ graphicsStateStack.<span class="fn">SetBlendState</span>(BlendState::Disabled);
 myGBuffer.<span class="fn">SetAsActiveTarget</span>(DX11::DepthBuffer);
 <span class="fn">DrawModelsToGBuffer</span>(culledOpaqueModels, graphicsStateStack);
 
-graphicsStateStack.<span class="fn">Pop</span>();</pre></div>
+graphicsStateStack.<span class="fn">Pop</span>();</code></pre></div>
         </div>
       </div>
 
@@ -96,7 +99,7 @@ graphicsStateStack.<span class="fn">Pop</span>();</pre></div>
               <span class="proj-slide-counter">1 / 2</span>
               <button class="proj-slide-arrow" onclick="projSlideNav(this,1)">→</button>
             </div>
-            <div class="proj-code-slide active"><div class="proj-code-block" style="display:block; max-height:420px; overflow:auto;"><pre>std::weak_ptr&lt;GameObject&gt; <span class="fn">SceneManager::BuildGameObject</span>(
+            <div class="proj-code-slide active"><div class="proj-code-block" style="display:block; max-height:420px; overflow:auto;"><pre><code class="language-cpp">std::weak_ptr&lt;GameObject&gt; <span class="fn">SceneManager::BuildGameObject</span>(
     Tga::TextureManager&amp; aTextureManager,
     <span class="kw">const</span> std::shared_ptr&lt;GameScene&gt;&amp; aGameScene,
     std::vector&lt;Tga::ScenePropertyDefinition&gt;&amp; someObjectProperties,
@@ -129,7 +132,7 @@ graphicsStateStack.<span class="fn">Pop</span>();</pre></div>
 
     aGameScene-&gt;<span class="fn">AddGameObject</span>(gameObject, aMarkForAdd);
     <span class="kw">return</span> gameObject;
-}</pre></div></div><div class="proj-code-slide"><div class="proj-code-block" style="display:block; max-height:420px; overflow:auto;"><pre><span class="fn">GameObjectFactory::GameObjectFactory</span>(
+}</code></pre></div></div><div class="proj-code-slide"><div class="proj-code-block" style="display:block; max-height:420px; overflow:auto;"><pre><code class="language-cpp"><span class="fn">GameObjectFactory::GameObjectFactory</span>(
     <span class="kw">const</span> std::vector&lt;Tga::ScenePropertyDefinition&gt;&amp; aObjectProperties)
     : myObjectProperties(aObjectProperties)
 {
@@ -158,7 +161,7 @@ graphicsStateStack.<span class="fn">Pop</span>();</pre></div>
             <span class="kw">return</span> std::make_shared&lt;GameObject&gt;();
         }},
     };
-}</pre></div></div>
+}</code></pre></div></div>
           </div></div>
         </div>
       </div>
@@ -166,7 +169,7 @@ graphicsStateStack.<span class="fn">Pop</span>();</pre></div>
       <!-- 3. VFX MANAGER — code left, text right -->
       <div class="proj-contribution-border">
         <div class="proj-twocol proj-twocol-reverse">
-          <div class="proj-twocol-code"><div class="proj-code-block" style="display:block; max-height:420px; overflow:auto;"><pre><span class="kw">class</span> <span class="fn">VFXManager</span>
+          <div class="proj-twocol-code"><div class="proj-code-block" style="display:block; max-height:420px; overflow:auto;"><pre><code class="language-cpp"><span class="kw">class</span> <span class="fn">VFXManager</span>
 {
 <span class="kw">public</span>:
     VFXAsset <span class="fn">GetVFX</span>(Tga::StringId aVFX);
@@ -183,7 +186,7 @@ graphicsStateStack.<span class="fn">Pop</span>();</pre></div>
 <span class="kw">private</span>:
     <span class="kw">static</span> VFXManager* ourInstance;
     std::unordered_map&lt;Tga::StringId, VFXAsset&gt; myCachedVFXAssets;
-};</pre></div></div>
+};</code></pre></div></div>
           <div class="proj-twocol-text">
             <span class="proj-contribution-title">VFX Manager</span>
             <p class="proj-contribution-desc">Built a dedicated VFX Manager to cache and hold VFX assets, with a clean public interface for triggering them by ID from anywhere in the game.</p>
@@ -204,7 +207,7 @@ graphicsStateStack.<span class="fn">Pop</span>();</pre></div>
               <span class="proj-slide-counter">1 / 3</span>
               <button class="proj-slide-arrow" onclick="projSlideNav(this,1)">→</button>
             </div>
-            <div class="proj-code-slide active"><div class="proj-code-block" style="display:block; max-height:420px; overflow:auto;"><pre><span class="kw">void</span> <span class="fn">StateMachine::RegisterState</span>(EnemyStateID aStateID, std::unique_ptr&lt;EnemyState&gt; anEnemyState)
+            <div class="proj-code-slide active"><div class="proj-code-block" style="display:block; max-height:420px; overflow:auto;"><pre><code class="language-cpp"><span class="kw">void</span> <span class="fn">StateMachine::RegisterState</span>(EnemyStateID aStateID, std::unique_ptr&lt;EnemyState&gt; anEnemyState)
 {
     anEnemyState-&gt;<span class="fn">SetOwner</span>(<span class="kw">this</span>);
     myCachedStates.<span class="fn">try_emplace</span>(aStateID, std::move(anEnemyState));
@@ -220,7 +223,7 @@ graphicsStateStack.<span class="fn">Pop</span>();</pre></div>
         anEnemy-&gt;<span class="fn">SetAnimation</span>(anEnemyStateID);
         myCurrentState-&gt;<span class="fn">OnEnter</span>(anEnemy);
     }
-}</pre></div></div><div class="proj-code-slide"><div class="proj-code-block" style="display:block; max-height:420px; overflow:auto;"><pre><span class="kw">void</span> <span class="fn">BogZombieController::Init</span>()
+}</code></pre></div></div><div class="proj-code-slide"><div class="proj-code-block" style="display:block; max-height:420px; overflow:auto;"><pre><code class="language-cpp"><span class="kw">void</span> <span class="fn">BogZombieController::Init</span>()
 {
     <span class="cmt">// Register all states for this enemy type</span>
     myStateMachine.<span class="fn">RegisterState</span>(EnemyStateID::Idle,   std::make_unique&lt;IdleState&gt;());
@@ -229,7 +232,7 @@ graphicsStateStack.<span class="fn">Pop</span>();</pre></div>
     myStateMachine.<span class="fn">RegisterState</span>(EnemyStateID::Attack, std::make_unique&lt;AttackState&gt;());
 
     myStateMachine.<span class="fn">SetInitialState</span>(EnemyStateID::Idle);
-}</pre></div></div><div class="proj-code-slide"><div class="proj-code-block" style="display:block; max-height:420px; overflow:auto;"><pre><span class="kw">void</span> <span class="fn">AttackState::Update</span>(Enemy* anEnemy, [[maybe_unused]] <span class="kw">float</span> aDeltaTime)
+}</code></pre></div></div><div class="proj-code-slide"><div class="proj-code-block" style="display:block; max-height:420px; overflow:auto;"><pre><code class="language-cpp"><span class="kw">void</span> <span class="fn">AttackState::Update</span>(Enemy* anEnemy, [[maybe_unused]] <span class="kw">float</span> aDeltaTime)
 {
     <span class="kw">const float</span> attackRange = anEnemy-&gt;<span class="fn">GetData</span>().attackRange;
     <span class="kw">const</span> Tga::Vector3f playerPosition = Blackboard::<span class="fn">GetInstance</span>()-&gt;<span class="fn">GetVector3</span>(<span class="str">"playerPosition"</span>);
@@ -247,7 +250,7 @@ graphicsStateStack.<span class="fn">Pop</span>();</pre></div>
     {
         anEnemy-&gt;<span class="fn">SetAnimation</span>(EnemyStateID::Attack);
     }
-}</pre></div></div>
+}</code></pre></div></div>
           </div></div>
         </div>
       </div>
@@ -255,7 +258,7 @@ graphicsStateStack.<span class="fn">Pop</span>();</pre></div>
       <!-- 5. AUDIO MANAGER — code left, text right -->
       <div class="proj-contribution-border">
         <div class="proj-twocol proj-twocol-reverse">
-          <div class="proj-twocol-code"><div class="proj-code-block" style="display:block; max-height:420px; overflow:auto;"><pre><span class="kw">bool</span> <span class="fn">AudioManager::Init</span>()
+          <div class="proj-twocol-code"><div class="proj-code-block" style="display:block; max-height:420px; overflow:auto;"><pre><code class="language-cpp"><span class="kw">bool</span> <span class="fn">AudioManager::Init</span>()
 {
     FMOD_RESULT result;
     myStudioSystem = <span class="kw">nullptr</span>;
@@ -277,7 +280,7 @@ graphicsStateStack.<span class="fn">Pop</span>();</pre></div>
     <span class="fn">PlayReverbEventAtStartUp</span>();
 
     <span class="kw">return</span> <span class="kw">true</span>;
-}</pre></div></div>
+}</code></pre></div></div>
           <div class="proj-twocol-text">
             <span class="proj-contribution-title">Audio Manager & FMOD Integration</span>
             <p class="proj-contribution-desc">Built the Audio Manager and integrated FMOD, ready for colleagues to iterate on. Also responsible for communication with APA (a school for game audio) and adding SFX and music. Handled reverb and spatial sound integration with the game world.</p>
@@ -301,5 +304,7 @@ graphicsStateStack.<span class="fn">Pop</span>();</pre></div>
 </footer>
 
 <script src="scripts.js"></script>
+<script>hljs.highlightAll();</script>
+<script>hljs.highlightAll();</script>
 </body>
 </html>

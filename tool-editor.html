@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>UI Editor with Animator — Fredrik Lundin</title>
 <link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/cpp.min.js"></script>
 </head>
 <body>
 
@@ -74,7 +77,7 @@
             </div>
           </div>
           <div class="tp-overlay-code active" data-slide="0">
-            <pre><span class="cmt">// Add your code here</span></pre>
+            <pre><code class="language-cpp"><span class="cmt">// Add your code here</span></code></pre>
           </div>
         </div>
       </div>
@@ -107,7 +110,7 @@
             </div>
           </div>
           <div class="tp-overlay-code active" data-slide="0">
-            <pre><span class="cmt">// Add your code here</span></pre>
+            <pre><code class="language-cpp"><span class="cmt">// Add your code here</span></code></pre>
           </div>
         </div>
       </div>
@@ -140,7 +143,7 @@
             </div>
           </div>
           <div class="tp-overlay-code active" data-slide="0">
-            <pre><span class="cmt">// Add your code here</span></pre>
+            <pre><code class="language-cpp"><span class="cmt">// Add your code here</span></code></pre>
           </div>
         </div>
       </div>
@@ -173,7 +176,7 @@
             </div>
           </div>
           <div class="tp-overlay-code active" data-slide="0">
-            <pre><span class="cmt">// Add your code here</span></pre>
+            <pre><code class="language-cpp"><span class="cmt">// Add your code here</span></code></pre>
           </div>
         </div>
       </div>
@@ -206,7 +209,7 @@
             </div>
           </div>
           <div class="tp-overlay-code active" data-slide="0">
-            <pre><span class="cmt">// Add your code here</span></pre>
+            <pre><code class="language-cpp"><span class="cmt">// Add your code here</span></code></pre>
           </div>
         </div>
       </div>
@@ -232,7 +235,7 @@
         <h3 class="chal-title">Integrating the UI elements into our component system</h3>
         <p class="proj-contribution-desc" style="max-width:820px; margin-bottom:0.9rem;">I first started making a detached system for our UI. We had just started our merge to a component system, which made the current state of our engine a hybrid between a component system and a pure OOP style system. Since I wasn't too comfortable with a component system at the time and since I had not gotten the chance to learn it properly, the first thing I did was making separate Game objects for the different elements such as button/sliders etc. Even though it could have worked in theory, I quickly decided to switch focus and start integrating it with our component system instead.</p>
         <p class="proj-contribution-desc" style="max-width:820px; margin-bottom:0.9rem;">I started sketching on how a system could look, with each UI element being a GameObject with correpsonding components that get updated individually. One simple component was the UIImage component. It basically takes a default texture and color and slaps it onto the Game object. Then, when sliders/buttons/toggles wnat to fetch their image, they call the same game object they are components off, fetching their corresponding image, making it very easy to manipulate the underlying image.</p>
-        <div class="proj-code-block" style="display:block; max-height:400px; overflow:auto; margin:1.2rem 0;"><pre><span class="kw">class</span> <span class="fn">UIImage_C</span> : <span class="kw">public</span> Component, <span class="kw">public</span> UIAnimatable
+        <div class="proj-code-block" style="display:block; max-height:400px; overflow:auto; margin:1.2rem 0;"><pre><code class="language-cpp"><span class="kw">class</span> <span class="fn">UIImage_C</span> : <span class="kw">public</span> Component, <span class="kw">public</span> UIAnimatable
 {
 <span class="kw">public</span>:
     <span class="fn">UIImage_C</span>()           = <span class="kw">default</span>;
@@ -271,9 +274,9 @@
     <span class="kw">bool</span>                        myHasCustomShader = <span class="kw">false</span>;
     <span class="kw">bool</span>                        myVisible = <span class="kw">true</span>;
     <span class="kw">int</span>                         mySortOrder = <span class="num">0</span>;
-};</pre></div>
+};</code></pre></div>
         <p class="proj-contribution-desc" style="max-width:820px; margin-bottom:0.9rem;">One mistake I made when continuing my work was making separate textures/colors for my sliders and toggles, with them cahnging their underlying image themselves, instead of manipulating the underlying images, something I am looking to change the coming week. They just need a way to distinguish which UI image component that beloings to which part (fill, handle, and background for toggle for example).</p>
-        <div class="proj-code-block" style="display:block; max-height:400px; overflow:auto; margin:1.2rem 0;"><pre><span class="kw">void</span> <span class="fn">UIButton_C::ApplyState</span>() <span class="kw">const</span>
+        <div class="proj-code-block" style="display:block; max-height:400px; overflow:auto; margin:1.2rem 0;"><pre><code class="language-cpp"><span class="kw">void</span> <span class="fn">UIButton_C::ApplyState</span>() <span class="kw">const</span>
 {
     <span class="kw">auto</span> img = myImage.<span class="fn">lock</span>();
     <span class="kw">if</span> (!img)
@@ -308,7 +311,7 @@
             <span class="kw">break</span>;
         }
     }
-}</pre></div>
+}</code></pre></div>
       </div>
 
       <!-- CHALLENGE 2: Parenting -->
@@ -322,7 +325,7 @@
                 <span class="proj-slide-counter">1 / 2</span>
                 <button class="proj-slide-arrow" onclick="projSlideNav(this,1)">→</button>
               </div>
-              <div class="proj-code-slide active"><div class="proj-code-block" style="display:block; max-height:400px; overflow:auto; margin:1.2rem 0;"><pre><span class="kw">for</span> (<span class="kw">const auto</span>&amp; object : objects | std::views::values)
+              <div class="proj-code-slide active"><div class="proj-code-block" style="display:block; max-height:400px; overflow:auto; margin:1.2rem 0;"><pre><code class="language-cpp"><span class="kw">for</span> (<span class="kw">const auto</span>&amp; object : objects | std::views::values)
 {
     std::vector&lt;ScenePropertyDefinition&gt; properties;
     object-&gt;<span class="fn">CalculateCombinedPropertySet</span>(aDefinitionManager, properties);
@@ -365,7 +368,7 @@
     }
 
     parentRelationshipComp-&gt;<span class="fn">AddChild</span>(child-&gt;second);
-}</pre></div></div><div class="proj-code-slide"><div class="proj-code-block" style="display:block; max-height:400px; overflow:auto; margin:1.2rem 0;"><pre><span class="kw">class</span> <span class="fn">UIRelationship_C</span> : <span class="kw">public</span> Component
+}</code></pre></div></div><div class="proj-code-slide"><div class="proj-code-block" style="display:block; max-height:400px; overflow:auto; margin:1.2rem 0;"><pre><code class="language-cpp"><span class="kw">class</span> <span class="fn">UIRelationship_C</span> : <span class="kw">public</span> Component
 {
 <span class="kw">public</span>:
     <span class="kw">void</span> <span class="fn">SetParent</span>(std::shared_ptr&lt;GameObject&gt; aParent) { myParent = aParent; }
@@ -410,7 +413,7 @@ Tga::Vector3f <span class="fn">GetUIWorldPosition</span>(<span class="kw">const<
         }
     }
     <span class="kw">return</span> pos;
-}</pre></div></div>
+}</code></pre></div></div>
             </div>
         <p class="proj-contribution-desc" style="max-width:820px; margin-bottom:0.9rem;">Right now, there is a known limitaion in that artist could assign a A as child to B and B as child to A, which could happen if they "change their mind" mid editing. That would cause infinite recursion. Looking into fixing this.</p>
       </div>
@@ -421,7 +424,7 @@ Tga::Vector3f <span class="fn">GetUIWorldPosition</span>(<span class="kw">const<
         <p class="proj-contribution-desc" style="max-width:820px; margin-bottom:0.9rem;">In our engine and editor we have two separate representations of a an object. In game we use the class GameObjects as the representation of our objects and in the editor the class SceneObject is used. I wanted the UI editor to be able to have a live preview. But his meant marking theboth the editor and the live scene as dirty when the user either moved a scene object or the animator animated a gameobject. Both of them manipulated objects, triggering a rebuild.</p>
         <p class="proj-contribution-desc" style="max-width:820px; margin-bottom:0.9rem;">At first, I saved our objects for every property changed on it during animation, back to the editor. This quickly turned into a huge mess, with saving json properties with almost every click. This made me implement a working copy pattern.</p>
         <p class="proj-contribution-desc" style="max-width:820px; margin-bottom:0.9rem;">All edits go into a local copy of the animation data. Nothing touches the actual scene property store until a save is called, which issues a single command to save everything back to the editor. This means the artist can freely experiment without polluting the scene with every tiny edit.</p>
-        <div class="proj-code-block" style="display:block; max-height:400px; overflow:auto; margin:1.2rem 0;"><pre><span class="kw">void</span> <span class="fn">UIAnimationEditor::AddClip</span>(Tga::StringId aName)
+        <div class="proj-code-block" style="display:block; max-height:400px; overflow:auto; margin:1.2rem 0;"><pre><code class="language-cpp"><span class="kw">void</span> <span class="fn">UIAnimationEditor::AddClip</span>(Tga::StringId aName)
 {
     Tga::UIAnimationClip newClip;
     newClip.name = aName;
@@ -441,10 +444,10 @@ CommandManager::<span class="fn">DoCommand</span>(command);
 <span class="kw">if</span> (myOnDirty)
 {
     <span class="fn">myOnDirty</span>();
-}</pre></div>
+}</code></pre></div>
         <p class="proj-contribution-desc" style="max-width:820px; margin-bottom:0.9rem;">The drawback is the artist cannot change the scene in realtime while the animation editor is open, but this was a trade off I decided was ok to keep, since the whole point of opening an animation editor is to animate the UI.</p>
         <p class="proj-contribution-desc" style="max-width:820px; margin-bottom:0.9rem;">The keyframes were solved by capturing a snapshot of the object state when the user opens up the editor. The animation data of the SceneObject is also collected and cached for that session, while the object is being animated. The object is then being animated through the GameObject which gets a working copy of the animation data. This prevents polluting the SceneObject and it also makes it easy to work with.</p>
-        <div class="proj-code-block" style="display:block; max-height:400px; overflow:auto; margin:1.2rem 0;"><pre><span class="kw">struct</span> AnimationFrame
+        <div class="proj-code-block" style="display:block; max-height:400px; overflow:auto; margin:1.2rem 0;"><pre><code class="language-cpp"><span class="kw">struct</span> AnimationFrame
 {
     Tga::Vector4f   shaderParam = { <span class="num">0.f</span>, <span class="num">0.f</span>, <span class="num">0.f</span>, <span class="num">0.f</span> };
     Tga::Vector2f   position = { <span class="num">0.f</span>, <span class="num">0.f</span> };
@@ -456,8 +459,8 @@ CommandManager::<span class="fn">DoCommand</span>(command);
 
     Tga::Vector2f   restPosition = { <span class="num">0.f</span>, <span class="num">0.f</span> };
     <span class="kw">float</span>           restRotation = <span class="num">0.f</span>;
-};</pre></div>
-        <div class="proj-code-block" style="display:block; max-height:400px; overflow:auto; margin:1.2rem 0;"><pre>mySnapshot = {};
+};</code></pre></div>
+        <div class="proj-code-block" style="display:block; max-height:400px; overflow:auto; margin:1.2rem 0;"><pre><code class="language-cpp">mySnapshot = {};
 <span class="kw">if</span> (myLiveScene)
 {
     <span class="kw">auto</span> it = myLiveScene-&gt;<span class="fn">GetGameObjectMap</span>().<span class="fn">find</span>(mySceneObjectId);
@@ -485,7 +488,7 @@ Tga::Scene* scene = <span class="fn">GetActiveScene</span>();
         mySnapshot.sceneObjectRotation = sceneObject-&gt;<span class="fn">GetEuler</span>();
         mySnapshot.sceneObjectScale    = sceneObject-&gt;<span class="fn">GetScale</span>();
     }
-}</pre></div>
+}</code></pre></div>
         <p class="proj-contribution-desc" style="max-width:820px; margin-bottom:0.9rem;">When the artist clicks "Add Keyframe", CaptureKeyframe reads the live object's current state directly from UIImage_C and packages it into a UIKeyFrame struct with a timestampm such as color/scale etc. The keyframe is then inserted into the clip's keyframe array and sorted by time. If a keyframe already exists at that time it gets replaced.</p>
         <p class="proj-contribution-desc" style="max-width:820px; margin-bottom:0.9rem;">When the artist closes the editor, we do the save operation, which saves the data to the json file, ready to be used ingame or in the live preview of the editor.</p>
       </div>
@@ -534,5 +537,7 @@ Tga::Scene* scene = <span class="fn">GetActiveScene</span>();
 </footer>
 
 <script src="scripts.js"></script>
+<script>hljs.highlightAll();</script>
+<script>hljs.highlightAll();</script>
 </body>
 </html>

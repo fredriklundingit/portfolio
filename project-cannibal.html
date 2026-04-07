@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Cannibal Crossing — Fredrik Lundin</title>
 <link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/cpp.min.js"></script>
 </head>
 <body>
 
@@ -59,7 +62,7 @@
               <span class="proj-slide-counter">1 / 2</span>
               <button class="proj-slide-arrow" onclick="projSlideNav(this,1)">→</button>
             </div>
-            <div class="proj-code-slide active"><div class="proj-code-block" style="display:block; max-height:380px; overflow:auto;"><pre><span class="kw">void</span> <span class="fn">PathFind</span>(<span class="kw">const</span> Tga::Vector3f aStartPosition, <span class="kw">const</span> Tga::Vector3f aEndPosition, std::vector&lt;Tga::Vector3f&gt;&amp; aPath)
+            <div class="proj-code-slide active"><div class="proj-code-block" style="display:block; max-height:380px; overflow:auto;"><pre><code class="language-cpp"><span class="kw">void</span> <span class="fn">PathFind</span>(<span class="kw">const</span> Tga::Vector3f aStartPosition, <span class="kw">const</span> Tga::Vector3f aEndPosition, std::vector&lt;Tga::Vector3f&gt;&amp; aPath)
 {
     <span class="kw">const int</span> startIndex = locGrid.<span class="fn">GetCellIndexFromWorld</span>(aStartPosition);
     <span class="kw">int</span> endIndex         = locGrid.<span class="fn">GetCellIndexFromWorld</span>(aEndPosition);
@@ -100,7 +103,7 @@
 
     aPath.<span class="fn">clear</span>();
     <span class="fn">ResetPath</span>();
-}</pre></div></div><div class="proj-code-slide"><div class="proj-code-block" style="display:block; max-height:380px; overflow:auto;"><pre><span class="cmt">// Diagonal movement — check both cardinal neighbours are clear</span>
+}</code></pre></div></div><div class="proj-code-slide"><div class="proj-code-block" style="display:block; max-height:380px; overflow:auto;"><pre><code class="language-cpp"><span class="cmt">// Diagonal movement — check both cardinal neighbours are clear</span>
 <span class="kw">if</span> (aDX != <span class="num">0</span> && aDZ != <span class="num">0</span>)
 {
     Tga::Vector3f horizontalNeighborPos = aOriginPos + Tga::Vector3f(aDX * CELL_SIZE, <span class="num">0.0f</span>, <span class="num">0.0f</span>);
@@ -120,7 +123,7 @@
 {
     <span class="kw">return</span> <span class="fn">almostEqual</span>(origin-&gt;heightTR, neighbor-&gt;heightTL)
         && <span class="fn">almostEqual</span>(origin-&gt;heightBR, neighbor-&gt;heightBL);
-}</pre></div></div>
+}</code></pre></div></div>
           </div>
           </div>
         </div>
@@ -138,7 +141,7 @@
               <span class="proj-slide-counter">1 / 3</span>
               <button class="proj-slide-arrow" onclick="projSlideNav(this,1)">→</button>
             </div>
-            <div class="proj-code-slide active"><div class="proj-code-block" style="display:block; max-height:380px; overflow:auto;"><pre><span class="kw">void</span> <span class="fn">MeleeEnemy::UpdateAttacking</span>(<span class="kw">const float</span> aDeltaTime)
+            <div class="proj-code-slide active"><div class="proj-code-block" style="display:block; max-height:380px; overflow:auto;"><pre><code class="language-cpp"><span class="kw">void</span> <span class="fn">MeleeEnemy::UpdateAttacking</span>(<span class="kw">const float</span> aDeltaTime)
 {
     AnimationRunner&amp; animRunner = myAnimationData.animationRunner;
     animRunner.<span class="fn">SetNextAnimation</span>(MeleeAnimationData::AnimationState_Attack);
@@ -171,7 +174,7 @@
         myData.hasHit = <span class="kw">false</span>;
         myState       = EnemyState::Engaging;
     }
-}</pre></div></div><div class="proj-code-slide"><div class="proj-code-block" style="display:block; max-height:380px; overflow:auto;"><pre><span class="kw">void</span> <span class="fn">RangedEnemy::UpdateFleeing</span>(<span class="kw">const float</span> aDeltaTime)
+}</code></pre></div></div><div class="proj-code-slide"><div class="proj-code-block" style="display:block; max-height:380px; overflow:auto;"><pre><code class="language-cpp"><span class="kw">void</span> <span class="fn">RangedEnemy::UpdateFleeing</span>(<span class="kw">const float</span> aDeltaTime)
 {
     CollisionSystem::HitInfo hit;
 
@@ -192,7 +195,7 @@
     <span class="kw">const</span> Tga::Vector3f fleeDirection = transform.<span class="fn">Position</span>() - myPlayerTargetEntity.<span class="fn">Transform</span>().<span class="fn">Position</span>();
     Utility::<span class="fn">RotateTowardsTargetY</span>(entity, transform.<span class="fn">Position</span>() + fleeDirection, myData.rotationSpeed, aDeltaTime);
     <span class="fn">MoveInDirection</span>(fleeDirection, entity, myData.speed, aDeltaTime);
-}</pre></div></div><div class="proj-code-slide"><div class="proj-code-block" style="display:block; max-height:380px; overflow:auto;"><pre><span class="kw">bool</span> <span class="fn">CellFull</span>(<span class="kw">int</span> aIndex)
+}</code></pre></div></div><div class="proj-code-slide"><div class="proj-code-block" style="display:block; max-height:380px; overflow:auto;"><pre><code class="language-cpp"><span class="kw">bool</span> <span class="fn">CellFull</span>(<span class="kw">int</span> aIndex)
 {
     <span class="kw">if</span> (locGrid.<span class="fn">GetCells</span>()[aIndex].occupants &gt;= maxOccupants)
     {
@@ -200,7 +203,7 @@
     }
 
     <span class="kw">return</span> <span class="kw">false</span>;
-}</pre></div></div>
+}</code></pre></div></div>
           </div>
           </div>
           <div class="proj-twocol-media">
@@ -219,7 +222,7 @@
               <span class="proj-slide-counter">1 / 2</span>
               <button class="proj-slide-arrow" onclick="projSlideNav(this,1)">→</button>
             </div>
-            <div class="proj-code-slide active"><div class="proj-code-block" style="display:block; max-height:380px; overflow:auto;"><pre><span class="kw">enum class</span> EnemyState
+            <div class="proj-code-slide active"><div class="proj-code-block" style="display:block; max-height:380px; overflow:auto;"><pre><code class="language-cpp"><span class="kw">enum class</span> EnemyState
 {
     Idle,
     Roaming,
@@ -237,7 +240,7 @@
     <span class="kw">case</span> EnemyState::Attacking:{ <span class="fn">UpdateAttacking</span>(aDeltaTime);<span class="kw">break</span>; }
     <span class="kw">case</span> EnemyState::Roaming:  { <span class="fn">UpdateRoaming</span>(aDeltaTime);  <span class="kw">break</span>; }
     <span class="kw">default</span>: <span class="kw">break</span>;
-}</pre></div></div><div class="proj-code-slide"><div class="proj-code-block" style="display:block; max-height:380px; overflow:auto;"><pre><span class="kw">class</span> <span class="fn">BaseEnemy</span>
+}</code></pre></div></div><div class="proj-code-slide"><div class="proj-code-block" style="display:block; max-height:380px; overflow:auto;"><pre><code class="language-cpp"><span class="kw">class</span> <span class="fn">BaseEnemy</span>
 {
 <span class="kw">public</span>:
     <span class="fn">BaseEnemy</span>();
@@ -258,7 +261,7 @@
     SharedData mySharedData;
     <span class="kw">int</span> myCurrentCellIndex  = <span class="num">0</span>;
     <span class="kw">int</span> myPreviousCellIndex = <span class="num">0</span>;
-};</pre></div></div>
+};</code></pre></div></div>
           </div></div></div>
       </div>
 
@@ -270,7 +273,7 @@
               <span class="proj-slide-counter">1 / 2</span>
               <button class="proj-slide-arrow" onclick="projSlideNav(this,1)">→</button>
             </div>
-            <div class="proj-code-slide active"><div class="proj-code-block" style="display:block; max-height:380px; overflow:auto;"><pre><span class="kw">void</span> <span class="fn">SpawnProjectile</span>(
+            <div class="proj-code-slide active"><div class="proj-code-block" style="display:block; max-height:380px; overflow:auto;"><pre><code class="language-cpp"><span class="kw">void</span> <span class="fn">SpawnProjectile</span>(
     Tga::Vector3f aEntityPosition, Tga::Vector3f aEntityForwardDirection,
     Tga::Vector3f aEntityRotation, ProjectileType aType,
     <span class="kw">float</span> aScalar, <span class="kw">float</span> aSpeed, <span class="kw">float</span> aAngleOffset)
@@ -314,7 +317,7 @@
 
     [[maybe_unused]] Entity <span class="fn">entity</span>{ <span class="fn">Create</span>(entityInfo) };
     toAdd.<span class="fn">push_back</span>({ .entity = entity, .direction = rotatedDirection, .speed = aSpeed });
-}</pre></div></div><div class="proj-code-slide"><div class="proj-code-block" style="display:block; max-height:380px; overflow:auto;"><pre><span class="kw">void</span> <span class="fn">Projectile::Update</span>(<span class="kw">const float</span> aDeltaTime)
+}</code></pre></div></div><div class="proj-code-slide"><div class="proj-code-block" style="display:block; max-height:380px; overflow:auto;"><pre><code class="language-cpp"><span class="kw">void</span> <span class="fn">Projectile::Update</span>(<span class="kw">const float</span> aDeltaTime)
 {
     myAliveTimer += aDeltaTime;
     Tga::Vector3f pos = entity.<span class="fn">Transform</span>().<span class="fn">Position</span>();
@@ -353,7 +356,7 @@
     {
         <span class="fn">SelfDestroy</span>();
     }
-}</pre></div></div>
+}</code></pre></div></div>
           </div></div>
           <div class="proj-twocol-text">
             <span class="proj-contribution-title">Projectile System</span>
@@ -377,5 +380,7 @@
 </footer>
 
 <script src="scripts.js"></script>
+<script>hljs.highlightAll();</script>
+<script>hljs.highlightAll();</script>
 </body>
 </html>

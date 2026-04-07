@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Human Resources — Fredrik Lundin</title>
 <link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/cpp.min.js"></script>
 </head>
 <body>
 
@@ -47,7 +50,7 @@
         <div class="proj-text-only">
           <span class="proj-contribution-title">Render Pipeline Refactor</span>
           <p class="proj-contribution-desc">Responsible for a full refactor of the render pipeline, introducing a command pattern with render data containing commands for each pass. This made it easier to add features and also brought the editor up to speed — level designers could now see changes without launching the game. New features added this project: spotlights, SSAO, line lights and a player flashlight.</p>
-          <button class="proj-code-toggle" onclick="projToggleCode(this)">View Code ↓</button><div class="proj-code-block"><pre><span class="cmt">// Add your render pipeline refactor code here</span></pre></div>
+          <button class="proj-code-toggle" onclick="projToggleCode(this)">View Code ↓</button><div class="proj-code-block"><pre><code class="language-cpp"><span class="cmt">// Add your render pipeline refactor code here</span></code></pre></div>
         </div>
       </div>
 
@@ -60,7 +63,7 @@
           <div class="proj-twocol-text">
             <span class="proj-contribution-title">Editor Integration</span>
             <p class="proj-contribution-desc">Earlier the editor used actual scene object properties for rendering and had its own ID pass for outlining selected objects. With the removal of those passes, I built render commands — including ID commands — from the scene objects, feeding them into the same renderer the game uses.</p>
-            <button class="proj-code-toggle" onclick="projToggleCode(this)">View Code ↓</button><div class="proj-code-block"><pre><span class="cmt">// Add your editor integration code here</span></pre></div>
+            <button class="proj-code-toggle" onclick="projToggleCode(this)">View Code ↓</button><div class="proj-code-block"><pre><code class="language-cpp"><span class="cmt">// Add your editor integration code here</span></code></pre></div>
           </div>
         </div>
       </div>
@@ -87,7 +90,7 @@
           <div class="proj-twocol-text">
             <span class="proj-contribution-title">Enemy Behaviour</span>
             <p class="proj-contribution-desc">Integrated enemy behaviour using third-party libraries for navmesh generation, pathfinding and agent separation. With limited time, I reused the state machine as a behaviour tree — creating nodes for each state with Enter, Update and Exit phases.</p>
-            <button class="proj-code-toggle" onclick="projToggleCode(this)">View Code ↓</button><div class="proj-code-block"><pre><span class="cmt">// Add your enemy behaviour code here</span></pre></div>
+            <button class="proj-code-toggle" onclick="projToggleCode(this)">View Code ↓</button><div class="proj-code-block"><pre><code class="language-cpp"><span class="cmt">// Add your enemy behaviour code here</span></code></pre></div>
           </div>
         </div>
       </div>
@@ -108,5 +111,7 @@
 </footer>
 
 <script src="scripts.js"></script>
+<script>hljs.highlightAll();</script>
+<script>hljs.highlightAll();</script>
 </body>
 </html>
