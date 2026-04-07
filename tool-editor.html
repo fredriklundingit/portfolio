@@ -53,7 +53,7 @@
       <div class="tp-carousel" data-carousel="ui-feat-1">
         <div class="tp-carousel-track">
           <div class="tp-carousel-slide active">
-            <video muted loop playsinline preload="none" data-src="videos/UIEditorPage/uiessentialsWeb.mp4" poster="images/UIeditorimages/uiEssentialsthumbnail.png" style="width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0;"></video>
+            <video muted loop playsinline preload="none" data-src="videos/UIEditorPage/uiessentialsWeb.mp4" poster="images/UIeditorimages/uiEssentialsthumbnail.webp" style="width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0;"></video>
           </div>
         </div>
         <div class="tp-carousel-bar">
@@ -163,7 +163,7 @@ if (uiToggle &amp;&amp; uiTransform)
       <div class="tp-carousel" data-carousel="ui-feat-2">
         <div class="tp-carousel-track">
           <div class="tp-carousel-slide active">
-            <video muted loop playsinline preload="none" data-src="videos/UIEditorPage/AnimationeditorWeb.mp4" poster="images/UIeditorimages/AnimationEditorthumbnailimage.png" style="width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0;"></video>
+            <video muted loop playsinline preload="none" data-src="videos/UIEditorPage/AnimationeditorWeb.mp4" poster="images/UIeditorimages/AnimationEditorthumbnailimage.webp" style="width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0;"></video>
           </div>
         </div>
         <div class="tp-carousel-bar">
@@ -282,7 +282,7 @@ void UIAnimator_C::FireTrigger(Tga::UIAnimationTrigger aTrigger)
       <div class="tp-carousel" data-carousel="ui-feat-3">
         <div class="tp-carousel-track">
           <div class="tp-carousel-slide active">
-            <video muted loop playsinline preload="none" data-src="videos/UIEditorPage/ParentingWeb.mp4" poster="images/UIeditorimages/parentingthumbnail.png" style="width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0;"></video>
+            <video muted loop playsinline preload="none" data-src="videos/UIEditorPage/ParentingWeb.mp4" poster="images/UIeditorimages/parentingthumbnail.webp" style="width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0;"></video>
           </div>
         </div>
         <div class="tp-carousel-bar">
@@ -381,7 +381,7 @@ for (const auto&amp; object : objects | std::views::values)
       <div class="tp-carousel" data-carousel="ui-feat-4">
         <div class="tp-carousel-track">
           <div class="tp-carousel-slide active">
-            <video muted loop playsinline preload="none" data-src="videos/UIEditorPage/BackgroundWeb.mp4" poster="images/UIeditorimages/backgroundeditingthumbnail.png" style="width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0;"></video>
+            <video muted loop playsinline preload="none" data-src="videos/UIEditorPage/BackgroundWeb.mp4" poster="images/UIeditorimages/backgroundeditingthumbnail.webp" style="width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0;"></video>
           </div>
         </div>
         <div class="tp-carousel-bar">
@@ -458,7 +458,7 @@ if (!myLiveScene-&gt;GetBackgroundScenePath().IsEmpty())
       <div class="tp-carousel" data-carousel="ui-feat-5">
         <div class="tp-carousel-track">
           <div class="tp-carousel-slide active">
-            <video muted loop playsinline preload="none" data-src="videos/UIEditorPage/HudWeb.mp4" poster="images/UIeditorimages/Hudthumbnailimage.png" style="width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0;"></video>
+            <video muted loop playsinline preload="none" data-src="videos/UIEditorPage/HudWeb.mp4" poster="images/UIeditorimages/Hudthumbnailimage.webp" style="width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0;"></video>
           </div>
         </div>
         <div class="tp-carousel-bar">
@@ -965,7 +965,7 @@ void RenderManager::RenderScene(UIScene&amp; aUIScene)
         <p class="proj-contribution-desc" style="max-width:820px; margin-bottom:0.9rem;">As mentioned above, a lightweight background scene representation is a high priority. Right now the background scene runs the same update and render logic as a regular game scene, with some constraints already in place, physics is disabled for example. But there is still a lot of unnecessary logic running, such as enemies checking against the player each frame, which we have no need for in the editor. What we actually need is a simple way to play animations and render objects. Our current setup also requires a player to be present, which I worked around by keeping a non-rendered player in the background scene just to get the first iteration going. Stripping all of this out would make the background scene a lot more lightweight and easier to work with.</p>
         <p class="proj-contribution-desc" style="max-width:820px; margin-bottom:0.9rem;">Another thing I would like to implement is the ability to render UI elements in 3D space, similar to how Unity handles it. Right now the only way to view the 3D world is to switch scene representation completely, which stops the UI elements from rendering. Doing this properly would require rendering UI sprites into 3D world space, handling billboarding, correct position calculations and so on. Ideally it would also mean having a single scene representation containing both UI elements and 3D objects, rather than having to switch between the two. My current setup works well as a first iteration though, and the ability to switch camera projection type mid-render would make this a natural next step.</p>
         <div class="proj-twocol-media" style="aspect-ratio:16/9; margin-bottom:1.5rem; margin-top:1.5rem;">
-          <video muted loop playsinline preload="none" data-src="videos/UIEditorPage/MenuswitchWeb.mp4" poster="images/UIeditorimages/menuswithcthumbnail.png" style="width:100%;height:100%;object-fit:cover;display:block;"></video>
+          <video muted loop playsinline preload="none" data-src="videos/UIEditorPage/MenuswitchWeb.mp4" poster="images/UIeditorimages/menuswithcthumbnail.webp" style="width:100%;height:100%;object-fit:cover;display:block;"></video>
         </div>
         <p class="proj-contribution-desc" style="max-width:820px; margin-bottom:0.9rem;">One thing I also want to improve is relative position support in the parenting system. Right now if you animate a parent panel to move left by X units, the children clump to the parent's position on the first keyframe rather than maintaining their offsets. The solution I am looking at is storing each child's offset from its parent at the start of the animation, and adding that offset back when applying keyframe positions, so the parent moves by a relative amount and the children maintain their spacing throughout.</p>
       </div>
