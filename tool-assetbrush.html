@@ -22,67 +22,113 @@
   </ul>
 </nav>
 
-
 <div class="tool-page">
 <a class="back-btn" href="index.html" style="margin:0 3rem 0;">← Back</a>
 
-    <!-- HERO VIDEO -->
-    <div class="tp-hero">
-      <video muted loop playsinline preload="none" data-src="videos/AssetbrushWeb.mp4" poster="images/assetbrushimages/objectspaceingthumbnail.png" style="width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0;"></video>
-      <div class="tp-hero-title">
-        <span class="tp-label">Tool</span>
-        <h2>Asset Brush</h2>
+  <!-- HERO VIDEO -->
+  <div class="tp-hero">
+    <video muted loop playsinline preload="none" data-src="videos/AssetbrushWeb.mp4" poster="images/assetbrushimages/objectspaceingthumbnail.png" style="width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0;"></video>
+    <div class="tp-hero-title">
+      <span class="tp-label">Tool</span>
+      <h2>Asset Brush</h2>
+    </div>
+  </div>
+
+  <!-- INTRO + JUMP LINKS -->
+  <div class="tp-intro">
+    <p class="tp-desc">The asset brush is a tool I made during our tools course at The Game Assembly. We had just completed our top down adventure project and I identified a huge time sink for our artists when set dressing the levels. They had to place each individual foliage asset by hand, meaning duplicating each asset, rotate/scale to their liking, and then placing it. I wanted to make a tool that made this job fast, easy to learn and fun to use. This way, we could save loads of time in our future projects.<br><br>I will refer to a "brush stroke" and a "batch" in my descriptions. They are essentially the same thing, meaning one single placement of a group of assets.</p>
+    <div class="tp-jumplinks">
+      <span class="tp-jump-label">Jump to section</span>
+      <div class="tp-jump-buttons">
+        <a class="tp-jump-btn" href="#ab-features">Features</a>
+        <a class="tp-jump-btn" href="#ab-challenges">Challenges</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- FEATURES -->
+  <div class="tp-section" id="ab-features">
+    <span class="section-label" style="font-size:1.6rem;opacity:0.85;">Features</span>
+
+    <!-- feat-1: Spacing & Draw Mode -->
+    <div class="tp-row" id="feat-1">
+      <div class="tp-carousel" data-carousel="feat-1">
+        <div class="tp-carousel-track">
+          <div class="tp-carousel-slide active">
+            <video muted loop playsinline preload="none" data-src="videos/AssetBrushPage/Objectspaceing.mp4" poster="images/assetbrushimages/objectspaceingthumbnail.png" style="width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0;"></video>
+          </div>
+          <div class="tp-carousel-slide">
+            <video muted loop playsinline preload="none" data-src="videos/AssetBrushPage/PositionscatteredWeb.mp4" poster="images/assetbrushimages/positionscatterthumbnail.png" style="width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0;"></video>
+          </div>
+        </div>
+        <div class="tp-carousel-bar">
+          <button class="tp-carousel-arrow" onclick="carouselPrev('feat-1')">←</button>
+          <span class="tp-carousel-counter">1 / 2</span>
+          <button class="tp-carousel-arrow" onclick="carouselNext('feat-1')">→</button>
+        </div>
+        <button class="tp-code-toggle" onclick="carouselToggleCode('feat-1')">View Code ↓</button>
+        <div class="tp-carousel-codes"></div>
+      </div>
+      <div class="tp-row-info">
+        <span class="tp-feature-title">Spacing &amp; Draw Mode</span>
+        <p class="tp-feature-desc">Both draw and erase mode let the user choose between hold-and-drag or single click, giving fine-grained control over how assets are placed. Asset selection can be either random or sequential, with random selecting a random asset from the ones in the palette, and sequential placing them in the order they were added to the palette. The draw mode also supports preview and none preview mode, with preview mode showing green ghost assets representing the position and orientation the asset will be placed as. For more control, the user can select the option to freeze each brush stroke, effectively letting them move around the current batch of assets to place wherever they like, and then only generate a new batch if the user presses 'R'.<br><br>Spacing is handled in two ways. The user can control the distance between each brush stroke, so each batch is placed at a set interval from the previous one. On top of that, minimum spacing between individual objects can be enabled, either against all previously painted objects, or just within the current batch. One known issue with the current implementation is that the assets currently only check their absolute position against each other, which can make them overlap during certain circumstances — a problem that could be solved by instead checking their max bounds and computing the minimum distance that way. But for now, absolute position is more than enough for almost every case.<br><br>The user can also decide to scatter the positions relative to the brush size, meaning they can spread the assets around the edges of the brush, or concentrate the placement to the inner 20%, or in whatever combination they wish, all configurable under the "Position Scatter" option.</p>
+      </div>
+      <div class="tp-code-overlay" id="overlay-feat-1">
+        <div class="tp-overlay-header">
+          <span class="tp-overlay-label">Code</span>
+          <div style="display:flex;align-items:center;gap:0.8rem;">
+            <div class="tp-overlay-arrows">
+              <button class="tp-overlay-arrow" onclick="overlayNav('feat-1',-1)">←</button>
+              <span class="tp-overlay-counter" id="overlay-counter-feat-1">1 / 3</span>
+              <button class="tp-overlay-arrow" onclick="overlayNav('feat-1',1)">→</button>
+            </div>
+            <button class="tp-overlay-close" onclick="carouselToggleCode('feat-1')">✕ Close</button>
+          </div>
+        </div>
+        <div class="tp-overlay-code active" data-slide="0">
+          <pre><code class="language-cpp">// Slide 1 — Add your spacing code here</code></pre>
+        </div>
+        <div class="tp-overlay-code" data-slide="1">
+          <pre><code class="language-cpp">// Slide 2 — Add your draw mode code here</code></pre>
+        </div>
+        <div class="tp-overlay-code" data-slide="2">
+          <pre><code class="language-cpp">// Slide 3 — Add your code here</code></pre>
+        </div>
       </div>
     </div>
 
-    <!-- DESCRIPTION + JUMP LINKS PROMINENT -->
-    <div class="tp-intro">
-      <p class="tp-desc">The asset brush is a tool I made during our tools course at The Game Assembly. We had just completed our top down adventure project and I identified a huge time sink for our artists when set dressing the levels. They had to place each individual foliage asset by hand, meaning duplicating each asset, rotate/scale to their liking, and then placing it. I wanted to make a tool that made this job fast, easy to learn and fun to use. This way, we could save loads of time in our future projects.<br><br>I will refer to a "brush stroke" and a "batch" in my descriptions. They are essentially the same thing, meaning one single placement of a group of assets.</p>
-      <div class="tp-jumplinks">
-        <span class="tp-jump-label">Jump to section</span>
-        <div class="tp-jump-buttons">
-          <a class="tp-jump-btn" href="#ab-features">Features</a>
-          <a class="tp-jump-btn" href="#ab-challenges">Challenges</a>
+    <!-- feat-2: Multi-Asset Drawing -->
+    <div class="tp-row tp-row-reverse" id="feat-2">
+      <div class="tp-carousel" data-carousel="feat-2">
+        <div class="tp-carousel-track">
+          <div class="tp-carousel-slide active">
+            <video muted loop playsinline preload="none" data-src="videos/AssetBrushPage/MultiassetWeb.mp4" poster="images/assetbrushimages/multiassetthumbnail.png" style="width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0;"></video>
+          </div>
         </div>
+        <div class="tp-carousel-bar">
+          <button class="tp-carousel-arrow" onclick="carouselPrev('feat-2')">←</button>
+          <span class="tp-carousel-counter">1 / 1</span>
+          <button class="tp-carousel-arrow" onclick="carouselNext('feat-2')">→</button>
+        </div>
+        <button class="tp-code-toggle" onclick="carouselToggleCode('feat-2')">View Code ↓</button>
+        <div class="tp-carousel-codes"></div>
       </div>
-    </div>
-
-    <!-- FEATURES -->
-    <div class="tp-section" id="ab-features">
-      <span class="section-label" style="font-size:1.6rem;opacity:0.85;">Features</span>
-
-      <!-- Multi-Asset Drawing -->
-      <div class="tp-row tp-row-reverse" id="feat-2">
-        <div class="tp-carousel" data-carousel="feat-2">
-          <div class="tp-carousel-track">
-            <div class="tp-carousel-slide active">
-              <video muted loop playsinline preload="none" data-src="videos/AssetBrushPage/MultiassetWeb.mp4" poster="images/assetbrushimages/multiassetthumbnail.png" style="width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0;"></video>
+      <div class="tp-row-info">
+        <span class="tp-feature-title">Multi-Asset Drawing</span>
+        <p class="tp-feature-desc">As a first iteration I only allowed placement of one unique asset — this quickly became underwhelming. Multi asset drawing gives the user unlimited choices in how to design their clusters. With randomization per asset, spacing and the ability to tune how many assets to place, each brush stroke can generate something unique. Users do so by adding slots to an &ldquo;Asset Palette&rdquo;, a representation of which assets they are currently using in their brush stroke. This supports a large amount of assets, and for the time being, I set the maximum assets per stroke to 20.<br><br>As for now, a limitation to the system is if the brush size in combination with spacing makes the placement of a single asset within a batch fail because of the settings. I did implement a &ldquo;Try Place&rdquo; function, which tries placing the asset a maximum of 10 times before silently failing the placement, as you can see in the code snippet under &ldquo;Spacing &amp; Draw Mode&rdquo;.</p>
+      </div>
+      <div class="tp-code-overlay" id="overlay-feat-2">
+        <div class="tp-overlay-header">
+          <span class="tp-overlay-label">Code</span>
+          <div style="display:flex;align-items:center;gap:0.8rem;">
+            <div class="tp-overlay-arrows">
+              <button class="tp-overlay-arrow" onclick="overlayNav('feat-2',-1)">←</button>
+              <span class="tp-overlay-counter" id="overlay-counter-feat-2">1 / 3</span>
+              <button class="tp-overlay-arrow" onclick="overlayNav('feat-2',1)">→</button>
             </div>
+            <button class="tp-overlay-close" onclick="carouselToggleCode('feat-2')">✕ Close</button>
           </div>
-          <div class="tp-carousel-bar">
-            <button class="tp-carousel-arrow" onclick="carouselPrev('feat-2')">←</button>
-            <span class="tp-carousel-counter">1 / 1</span>
-            <button class="tp-carousel-arrow" onclick="carouselNext('feat-2')">→</button>
-          </div>
-          <button class="tp-code-toggle" onclick="carouselToggleCode('feat-2')">View Code ↓</button>
-          <div class="tp-carousel-codes"></div>
         </div>
-        <div class="tp-row-info">
-          <span class="tp-feature-title">Multi-Asset Drawing</span>
-          <p class="tp-feature-desc">As a first iteration I only allowed placement of one unique asset — this quickly became underwhelming. Multi asset drawing gives the user unlimited choices in how to design their clusters. With randomization per asset, spacing and the ability to tune how many assets to place, each brush stroke can generate something unique. Users do so by adding slots to an &ldquo;Asset Palette&rdquo;, a representation of which assets they are currently using in their brush stroke. This supports a large amount of assets, and for the time being, I set the maximum assets per stroke to 20.<br><br>As for now, a limitation to the system is if the brush size in combination with spacing makes the placement of a single asset within a batch fail because of the settings. I did implement a &ldquo;Try Place&rdquo; function, which tries placing the asset a maximum of 10 times before silently failing the placement, as you can see in the code snippet under &ldquo;Spacing &amp; Draw Mode&rdquo;.</p>
-        </div>
-        <div class="tp-code-overlay" id="overlay-feat-2">
-          <div class="tp-overlay-header">
-            <span class="tp-overlay-label">Code</span>
-            <div style="display:flex;align-items:center;gap:0.8rem;">
-              <div class="tp-overlay-arrows">
-                <button class="tp-overlay-arrow" onclick="overlayNav('feat-2',-1)">←</button>
-                <span class="tp-overlay-counter" id="overlay-counter-feat-2">1 / 3</span>
-                <button class="tp-overlay-arrow" onclick="overlayNav('feat-2',1)">→</button>
-              </div>
-              <button class="tp-overlay-close" onclick="carouselToggleCode('feat-2')">✕ Close</button>
-            </div>
-          </div>
         <div class="tp-overlay-code active" data-slide="0">
           <pre><code class="language-cpp">// Using ImGui to add an asset to our palette:
 if (ImGui::BeginChild(&quot;AssetListFrame&quot;, listSize, true, ImGuiWindowFlags_HorizontalScrollbar))
@@ -118,7 +164,8 @@ if (ImGui::BeginChild(&quot;AssetListFrame&quot;, listSize, true, ImGuiWindowFla
             ImGui::EndDragDropTarget();
         }
         ImGui::PopID();
-    }</code></pre>
+    }
+}</code></pre>
         </div>
         <div class="tp-overlay-code" data-slide="1">
           <pre><code class="language-cpp">// Then using the asset palette with placement count when placing objects, here Random as an example:
@@ -155,551 +202,166 @@ Tga::Vector3f bitangent;
 GetSurfaceTangentFrame(myBrush.normal, tangent, bitangent);
 Tga::Vector3f offset = (tangent * cosf(angle) + bitangent * sinf(angle)) * distance;</code></pre>
         </div>
-        </div>
       </div>
-          </div>
-          <div class="tp-carousel-bar">
-            <button class="tp-carousel-arrow" onclick="carouselPrev('feat-2')">←</button>
-            <span class="tp-carousel-counter">1 / 1</span>
-            <button class="tp-carousel-arrow" onclick="carouselNext('feat-2')">→</button>
-          </div>
-          <button class="tp-code-toggle" onclick="carouselToggleCode('feat-2')">View Code ↓</button>
-          <div class="tp-carousel-codes">
-            <div class="tp-code-block tp-carousel-code active" style="display:none;">
-              <pre><code class="language-cpp">// Slide 1 — Add your multi-asset code here</code></pre>
-            </div>
-            <div class="tp-code-block tp-carousel-code" style="display:none;">
-              <pre><code class="language-cpp">// Slide 2 — Add your code here</code></pre>
-            </div>
-          </div>
-        </div>
-        <div class="tp-row-info">
-          <span class="tp-feature-title">Multi-Asset Drawing</span>
-          <p class="tp-feature-desc">As a first iteration I only allowed placement of one unique asset — this quickly became underwhelming. Multi asset drawing gives the user unlimited choices in how to design their clusters. With randomization per asset, spacing and the ability to tune how many assets to place, each brush stroke can generate something unique. Users do so by adding slots to an "Asset Palette", a representation of which assets they are currently using in their brush stroke. This supports a large amount of assets, and for the time being, I set the maximum assets per stroke to 20.<br><br>As for now, a limitation to the system is if the brush size in combination with spacing makes the placement of a single asset within a batch fail because of the settings. I did implement a "Try Place" function, which tries placing the asset a maximum of 10 times before silently failing the placement, as you can see in the code snippet under "Spacing & Draw Mode".</p>
-        </div>
-            <button class="tp-overlay-close" onclick="carouselToggleCode('feat-2')">✕ Close</button>
-          </div>
-        </div>
-        <div class="tp-overlay-code active" data-slide="0">
-          <pre><code class="language-cpp">// Using ImGui to add an asset to our palette:
-if (ImGui::BeginChild(&quot;AssetListFrame&quot;, listSize, true, ImGuiWindowFlags_HorizontalScrollbar))
-{
-    int itemToDelete = -1;
-    for (int i = 0; i &lt; myAssetPalette.size(); i++)
-    {
-        ImGui::PushID(i);
-        bool isSelected = (i == mySelectedPaletteIndex);
-        const char* displayName = myAssetPalette[i].IsEmpty()
-            ? &quot;[ Empty Slot ]&quot;
-            : myAssetPalette[i].GetString();
-        ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.8f, 0.2f, 0.2f, 1.0f));
-        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1.0f, 0.3f, 0.3f, 1.0f));
-        ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.7f, 0.1f, 0.1f, 1.0f));
-        if (ImGui::SmallButton(&quot;X&quot;))
-        {
-            itemToDelete = i;
-        }
-        ImGui::PopStyleColor(3);
-        ImGui::SameLine();
-        if (ImGui::Selectable(displayName, isSelected, ImGuiSelectableFlags_AllowDoubleClick))
-        {
-            mySelectedPaletteIndex = i;
-        }
-        if (ImGui::BeginDragDropTarget())
-        {
-            if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(&quot;.tgo&quot;))
-            {
-                const char* dropped = static_cast&lt;const char*&gt;(payload-&gt;Data);
-                myAssetPalette[i] = Tga::StringRegistry::RegisterOrGetString(dropped);
-            }
-            ImGui::EndDragDropTarget();
-        }
-        ImGui::PopID();
-    }</code></pre>
-        </div>
-        <div class="tp-overlay-code" data-slide="1">
-          <pre><code class="language-cpp">// Then using the asset palette with placement count when placing objects, here Random as an example:
-    if (myPaletteMode == PaletteMode::Random)
-    {
-        std::vector&lt;Tga::StringId&gt; validAssets;
-        for (const auto&amp; asset : myAssetPalette)
-        {
-            if (!asset.IsEmpty())
-            {
-                validAssets.push_back(asset);
-            }
-        }
-        if (!validAssets.empty())
-        {
-            for (int i = 0; i &lt; myPlacementCount; i++)
-            {
-                const int randomIndex = rand() % validAssets.size();
-                auto object = PlaceObjectWithAsset(validAssets[randomIndex], currentBatchPositions);
-                if (object)
-                {
-                    objectsToPlace.push_back(object);
-                }
-            }
-        }
-    }</code></pre>
-        </div>
-        <div class="tp-overlay-code" data-slide="2">
-          <pre><code class="language-cpp">// Using the position scatter to decide where to place it inside the brush circle:
-float distance = RandomGenerator::GetFloat(myBrush.randomOffsetRadiusMin, myBrush.randomOffsetRadiusMax);
-distance = FMath::Min(distance, myBrush.size);
-Tga::Vector3f tangent;
-Tga::Vector3f bitangent;
-GetSurfaceTangentFrame(myBrush.normal, tangent, bitangent);
-Tga::Vector3f offset = (tangent * cosf(angle) + bitangent * sinf(angle)) * distance;</code></pre>
-        </div>
-      </div>
-            <button class="tp-overlay-close" onclick="carouselToggleCode('feat-2')">✕ Close</button>
-          </div>
-        </div>
-        <div class="tp-overlay-code active" data-slide="0">
-          <pre><code class="language-cpp">// Using ImGui to add an asset to our palette:
-if (ImGui::BeginChild("AssetListFrame", listSize, true, ImGuiWindowFlags_HorizontalScrollbar))
-{
-    int itemToDelete = -1;
-    for (int i = 0; i &lt; myAssetPalette.size(); i++)
-    {
-        ImGui::PushID(i);
-        bool isSelected = (i == mySelectedPaletteIndex);
-        const char* displayName = myAssetPalette[i].IsEmpty()
-            ? "[ Empty Slot ]"
-            : myAssetPalette[i].GetString();
-        ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.8f, 0.2f, 0.2f, 1.0f));
-        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1.0f, 0.3f, 0.3f, 1.0f));
-        ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.7f, 0.1f, 0.1f, 1.0f));
-        if (ImGui::SmallButton("X"))
-        {
-            itemToDelete = i;
-        }
-        ImGui::PopStyleColor(3);
-        ImGui::SameLine();
-        if (ImGui::Selectable(displayName, isSelected, ImGuiSelectableFlags_AllowDoubleClick))
-        {
-            mySelectedPaletteIndex = i;
-        }
-        if (ImGui::BeginDragDropTarget())
-        {
-            if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(".tgo"))
-            {
-                const char* dropped = static_cast&lt;const char*&gt;(payload-&gt;Data);
-                myAssetPalette[i] = Tga::StringRegistry::RegisterOrGetString(dropped);
-            }
-            ImGui::EndDragDropTarget();
-        }
-        ImGui::PopID();
-    }
-// Then using the asset palette with placement count when placing objects, here Random as an example:
-    if (myPaletteMode == PaletteMode::Random)
-    {
-        std::vector&lt;Tga::StringId&gt; validAssets;
-        for (const auto&amp; asset : myAssetPalette)
-        {
-            if (!asset.IsEmpty())
-            {
-                validAssets.push_back(asset);
-            }
-        }
-        if (!validAssets.empty())
-        {
-            for (int i = 0; i &lt; myPlacementCount; i++)
-            {
-                const int randomIndex = rand() % validAssets.size();
-                auto object = PlaceObjectWithAsset(validAssets[randomIndex], currentBatchPositions);
-                if (object)
-                {
-                    objectsToPlace.push_back(object);
-                }
-            }
-        }
-    }
-// Using the position scatter to decide where to place it inside the brush circle:
-float distance = RandomGenerator::GetFloat(myBrush.randomOffsetRadiusMin, myBrush.randomOffsetRadiusMax);
-distance = FMath::Min(distance, myBrush.size);
-Tga::Vector3f tangent;
-Tga::Vector3f bitangent;
-GetSurfaceTangentFrame(myBrush.normal, tangent, bitangent);
-Tga::Vector3f offset = (tangent * cosf(angle) + bitangent * sinf(angle)) * distance;</code></pre>
-        </div>
-      </div>
-      </div>
-
-      <!-- Randomize -->
-      <div class="tp-row" id="feat-3">
-        <div class="tp-carousel" data-carousel="feat-3">
-          <div class="tp-carousel-track">
-            <div class="tp-carousel-slide active">
-              <video muted loop playsinline preload="none" data-src="videos/AssetBrushPage/RandomizationWeb.mp4" poster="images/assetbrushimages/randomizationthumbnail.png" style="width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0;"></video>
-            </div>
-          </div>
-          <div class="tp-carousel-bar">
-            <button class="tp-carousel-arrow" onclick="carouselPrev('feat-3')">←</button>
-            <span class="tp-carousel-counter">1 / 1</span>
-            <button class="tp-carousel-arrow" onclick="carouselNext('feat-3')">→</button>
-          </div>
-          <button class="tp-code-toggle" onclick="carouselToggleCode('feat-3')">View Code ↓</button>
-          <div class="tp-carousel-codes"></div>
-        </div>
-        <div class="tp-row-info">
-          <span class="tp-feature-title">Randomize</span>
-          <p class="tp-feature-desc">Randomization gives the user a tool for creating unique assets in each batch. I've chosen to divide it into yaw/pitch/roll and scale, to give the user an easy overview of what is available. I noticed that with the inclusion of previews and the ability to turn off auto generate (the freeze function described earlier), this became even more useful. The user can now generate a new randomized batch if they feel like the brush stroke is in a position they like. One thing I really would like to add is the ability to only regenerate the randomness of the current batch assets, without also switching out the current batch assets. But for now, this is more than enough, giving a lot of options.<br><br>I noticed this was also very useful for more detailed work, such as single asset placement, when working in a concentrated area. The user also has the ability to change yaw/pitch/roll and scale of the current batch manually, by certain key commands such as shift+scroll, x+scroll etc, for even more fine tuning.</p>
-        </div>
-        <div class="tp-code-overlay" id="overlay-feat-3">
-          <div class="tp-overlay-header">
-            <span class="tp-overlay-label">Code</span>
-            <div style="display:flex;align-items:center;gap:0.8rem;">
-              <div class="tp-overlay-arrows">
-                <button class="tp-overlay-arrow" onclick="overlayNav('feat-3',-1)">←</button>
-                <span class="tp-overlay-counter" id="overlay-counter-feat-3">1 / 2</span>
-                <button class="tp-overlay-arrow" onclick="overlayNav('feat-3',1)">→</button>
-              </div>
-              <button class="tp-overlay-close" onclick="carouselToggleCode('feat-3')">✕ Close</button>
-            </div>
-          </div>
-        <div class="tp-overlay-code active" data-slide="0">
-          <pre><code class="language-cpp">// First calculate the base rotation using the normal, then add the rotations as implied by the user:
-Tga::Quaternionf AssetBrush::CalculateRandomRotation(const Tga::Vector3f&amp; aSurfaceNormal) const
-{
-    Tga::Quaternionf baseRotation = Tga::Quaternionf::CreateFromUpDirection(aSurfaceNormal);
-    Tga::Quaternionf finalRotation = baseRotation;
-    if (myBrush.useRandomRotation)
-    {
-        float randomYaw = RandomGenerator::GetFloat(myBrush.randomRotationMin, myBrush.randomRotationMax);
-        Tga::Vector3f localUp = finalRotation.GetUp();
-        Tga::Quaternionf yawRotation(localUp, randomYaw);
-        finalRotation = baseRotation * yawRotation;
-    }
-    if (myBrush.useRandomPitch)
-    {
-        float randomPitch = RandomGenerator::GetFloat(myBrush.randomPitchMin, myBrush.randomPitchMax);
-        Tga::Vector3f localRight = finalRotation.GetRight();
-        Tga::Quaternionf pitchRotation(localRight, randomPitch);
-        finalRotation = pitchRotation * finalRotation;
-    }
-    if (myBrush.useRandomRoll)
-    {
-        float randomRoll = RandomGenerator::GetFloat(myBrush.randomRollMin, myBrush.randomRollMax);
-        Tga::Vector3f localForward = finalRotation.GetForward();
-        Tga::Quaternionf rollRotation(localForward, randomRoll);
-        finalRotation = rollRotation * finalRotation;
-    }
-    return finalRotation;
-}</code></pre>
-        </div>
-        <div class="tp-overlay-code" data-slide="1">
-          <pre><code class="language-cpp">// Calculate scale
-Tga::Vector3f AssetBrush::CalculateRandomScale() const
-{
-    if (!myBrush.useRandomScale)
-    {
-        return Tga::Vector3f(1.0f, 1.0f, 1.0f);
-    }
-    if (myBrush.uniformScale)
-    {
-        const float scale = RandomGenerator::GetFloat(myBrush.randomScaleMin, myBrush.randomScaleMax);
-        return Tga::Vector3f(scale, scale, scale);
-    }
-    return Tga::Vector3f(
-        RandomGenerator::GetFloat(myBrush.randomScaleMin, myBrush.randomScaleMax),
-        RandomGenerator::GetFloat(myBrush.randomScaleMin, myBrush.randomScaleMax),
-        RandomGenerator::GetFloat(myBrush.randomScaleMin, myBrush.randomScaleMax)
-    );
-}</code></pre>
-        </div>
-        </div>
-      </div>
-          </div>
-          <div class="tp-carousel-bar">
-            <button class="tp-carousel-arrow" onclick="carouselPrev('feat-3')">←</button>
-            <span class="tp-carousel-counter">1 / 1</span>
-            <button class="tp-carousel-arrow" onclick="carouselNext('feat-3')">→</button>
-          </div>
-          <button class="tp-code-toggle" onclick="carouselToggleCode('feat-3')">View Code ↓</button>
-          <div class="tp-carousel-codes">
-            <div class="tp-code-block tp-carousel-code active" style="display:none;">
-              <pre><code class="language-cpp">// Slide 1 — Add your randomization code here</code></pre>
-            </div>
-            <div class="tp-code-block tp-carousel-code" style="display:none;">
-              <pre><code class="language-cpp">// Slide 2 — Add your code here</code></pre>
-            </div>
-          </div>
-        </div>
-        <div class="tp-row-info">
-          <span class="tp-feature-title">Randomize</span>
-          <p class="tp-feature-desc">Randomization gives the user a tool for creating unique assets in each batch. I've chosen to divide it into yaw/pitch/roll and scale, to give the user an easy overview of what is available. I noticed that with the inclusion of previews and the ability to turn off auto generate (the freeze function described earlier), this became even more useful. The user can now generate a new randomized batch if they feel like the brush stroke is in a position they like. One thing I really would like to add is the ability to only regenerate the randomness of the current batch assets, without also switching out the current batch assets. But for now, this is more than enough, giving a lot of options.<br><br>I noticed this was also very useful for more detailed work, such as single asset placement, when working in a concentrated area. The user also has the ability to change yaw/pitch/roll and scale of the current batch manually, by certain key commands such as shift+scroll, x+scroll etc, for even more fine tuning.</p>
-        </div>
-            <button class="tp-overlay-close" onclick="carouselToggleCode('feat-3')">✕ Close</button>
-          </div>
-        </div>
-        <div class="tp-overlay-code active" data-slide="0">
-          <pre><code class="language-cpp">// First calculate the base rotation using the normal, then add the rotations as implied by the user:
-Tga::Quaternionf AssetBrush::CalculateRandomRotation(const Tga::Vector3f&amp; aSurfaceNormal) const
-{
-    Tga::Quaternionf baseRotation = Tga::Quaternionf::CreateFromUpDirection(aSurfaceNormal);
-    Tga::Quaternionf finalRotation = baseRotation;
-    if (myBrush.useRandomRotation)
-    {
-        float randomYaw = RandomGenerator::GetFloat(myBrush.randomRotationMin, myBrush.randomRotationMax);
-        Tga::Vector3f localUp = finalRotation.GetUp();
-        Tga::Quaternionf yawRotation(localUp, randomYaw);
-        finalRotation = baseRotation * yawRotation;
-    }
-    if (myBrush.useRandomPitch)
-    {
-        float randomPitch = RandomGenerator::GetFloat(myBrush.randomPitchMin, myBrush.randomPitchMax);
-        Tga::Vector3f localRight = finalRotation.GetRight();
-        Tga::Quaternionf pitchRotation(localRight, randomPitch);
-        finalRotation = pitchRotation * finalRotation;
-    }
-    if (myBrush.useRandomRoll)
-    {
-        float randomRoll = RandomGenerator::GetFloat(myBrush.randomRollMin, myBrush.randomRollMax);
-        Tga::Vector3f localForward = finalRotation.GetForward();
-        Tga::Quaternionf rollRotation(localForward, randomRoll);
-        finalRotation = rollRotation * finalRotation;
-    }
-    return finalRotation;
-}</code></pre>
-        </div>
-        <div class="tp-overlay-code" data-slide="1">
-          <pre><code class="language-cpp">// Calculate scale
-Tga::Vector3f AssetBrush::CalculateRandomScale() const
-{
-    if (!myBrush.useRandomScale)
-    {
-        return Tga::Vector3f(1.0f, 1.0f, 1.0f);
-    }
-    if (myBrush.uniformScale)
-    {
-        const float scale = RandomGenerator::GetFloat(myBrush.randomScaleMin, myBrush.randomScaleMax);
-        return Tga::Vector3f(scale, scale, scale);
-    }
-    return Tga::Vector3f(
-        RandomGenerator::GetFloat(myBrush.randomScaleMin, myBrush.randomScaleMax),
-        RandomGenerator::GetFloat(myBrush.randomScaleMin, myBrush.randomScaleMax),
-        RandomGenerator::GetFloat(myBrush.randomScaleMin, myBrush.randomScaleMax)
-    );
-}</code></pre>
-        </div>
-      </div>
-            <button class="tp-overlay-close" onclick="carouselToggleCode('feat-3')">✕ Close</button>
-          </div>
-        </div>
-        <div class="tp-overlay-code active" data-slide="0">
-          <pre><code class="language-cpp">// First calculate the base rotation using the normal, then add the rotations as implied by the user:
-Tga::Quaternionf AssetBrush::CalculateRandomRotation(const Tga::Vector3f&amp; aSurfaceNormal) const
-{
-    Tga::Quaternionf baseRotation = Tga::Quaternionf::CreateFromUpDirection(aSurfaceNormal);
-    Tga::Quaternionf finalRotation = baseRotation;
-    if (myBrush.useRandomRotation)
-    {
-        float randomYaw = RandomGenerator::GetFloat(myBrush.randomRotationMin, myBrush.randomRotationMax);
-        Tga::Vector3f localUp = finalRotation.GetUp();
-        Tga::Quaternionf yawRotation(localUp, randomYaw);
-        finalRotation = baseRotation * yawRotation;
-    }
-    if (myBrush.useRandomPitch)
-    {
-        float randomPitch = RandomGenerator::GetFloat(myBrush.randomPitchMin, myBrush.randomPitchMax);
-        Tga::Vector3f localRight = finalRotation.GetRight();
-        Tga::Quaternionf pitchRotation(localRight, randomPitch);
-        finalRotation = pitchRotation * finalRotation;
-    }
-    if (myBrush.useRandomRoll)
-    {
-        float randomRoll = RandomGenerator::GetFloat(myBrush.randomRollMin, myBrush.randomRollMax);
-        Tga::Vector3f localForward = finalRotation.GetForward();
-        Tga::Quaternionf rollRotation(localForward, randomRoll);
-        finalRotation = rollRotation * finalRotation;
-    }
-    return finalRotation;
-}
-// Calculate scale
-Tga::Vector3f AssetBrush::CalculateRandomScale() const
-{
-    if (!myBrush.useRandomScale)
-    {
-        return Tga::Vector3f(1.0f, 1.0f, 1.0f);
-    }
-    if (myBrush.uniformScale)
-    {
-        const float scale = RandomGenerator::GetFloat(myBrush.randomScaleMin, myBrush.randomScaleMax);
-        return Tga::Vector3f(scale, scale, scale);
-    }
-    return Tga::Vector3f(
-        RandomGenerator::GetFloat(myBrush.randomScaleMin, myBrush.randomScaleMax),
-        RandomGenerator::GetFloat(myBrush.randomScaleMin, myBrush.randomScaleMax),
-        RandomGenerator::GetFloat(myBrush.randomScaleMin, myBrush.randomScaleMax)
-    );
-}</code></pre>
-        </div>
-      </div>
-      </div>
-
-      <!-- Slope Filtering -->
-      <div class="tp-row tp-row-reverse" id="feat-4">
-        <div class="tp-carousel" data-carousel="feat-4">
-          <div class="tp-carousel-track">
-            <div class="tp-carousel-slide active">
-              <video muted loop playsinline preload="none" data-src="videos/AssetBrushPage/SlopefilteringWeb.mp4" poster="images/assetbrushimages/slopefilterthumbnail.png" style="width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0;"></video>
-            </div>
-          </div>
-          <div class="tp-carousel-bar">
-            <button class="tp-carousel-arrow" onclick="carouselPrev('feat-4')">←</button>
-            <span class="tp-carousel-counter">1 / 1</span>
-            <button class="tp-carousel-arrow" onclick="carouselNext('feat-4')">→</button>
-          </div>
-          <button class="tp-code-toggle" onclick="carouselToggleCode('feat-4')">View Code ↓</button>
-          <div class="tp-carousel-codes"></div>
-        </div>
-        <div class="tp-row-info">
-          <span class="tp-feature-title">Slope Filtering</span>
-          <p class="tp-feature-desc">Slope filtering works by sampling the normals in the terrain map, giving the user the ability to only target specific elevations in the terrain, without worrying about being careful around edges such as walls or steep cliffs. This also works the other way around, if the user only wants to work on cliff walls or paint along a cliff wall for example. An easy implementation but one that made a huge impact on the end result!</p>
-        </div>
-        <div class="tp-code-overlay" id="overlay-feat-4">
-          <div class="tp-overlay-header">
-            <span class="tp-overlay-label">Code</span>
-            <div style="display:flex;align-items:center;gap:0.8rem;">
-              <div class="tp-overlay-arrows">
-                <button class="tp-overlay-arrow" onclick="overlayNav('feat-4',-1)">←</button>
-                <span class="tp-overlay-counter" id="overlay-counter-feat-4">1 / 2</span>
-                <button class="tp-overlay-arrow" onclick="overlayNav('feat-4',1)">→</button>
-              </div>
-              <button class="tp-overlay-close" onclick="carouselToggleCode('feat-4')">✕ Close</button>
-            </div>
-          </div>
-        <div class="tp-overlay-code active" data-slide="0">
-          <pre><code class="language-cpp">// By using the normal of the position we got from doing the placement calculations, we now check if the slope is valid:
-const OffsetResult offsetResult = CalculateOffsetPosition();
-if (!offsetResult.valid)
-{
-    continue;
-}
-const Tga::Vector3f position = offsetResult.position;
-const Tga::Vector3f surfaceNormal = offsetResult.normal;
-if (!IsSlopeValid(surfaceNormal))
-{
-    continue;
-}</code></pre>
-        </div>
-        <div class="tp-overlay-code" data-slide="1">
-          <pre><code class="language-cpp">bool AssetBrush::IsSlopeValid(const Tga::Vector3f&amp; aNormal) const
-{
-    if (!myBrush.useSlopeFilter)
-    {
-        return true;
-    }
-    // Calculate slope angle from normal
-    float normalY = std::abs(aNormal.y);
-    float slopeDegrees = acosf(std::clamp(normalY, 0.0f, 1.0f)) * (180.0f / FMath::Pi);
-    if (slopeDegrees &lt; myBrush.minSlope || slopeDegrees &gt; myBrush.maxSlope)
-    {
-        return false;
-    }
-    return true;
-}</code></pre>
-        </div>
-        </div>
-      </div>
-          </div>
-          <div class="tp-carousel-bar">
-            <button class="tp-carousel-arrow" onclick="carouselPrev('feat-4')">←</button>
-            <span class="tp-carousel-counter">1 / 1</span>
-            <button class="tp-carousel-arrow" onclick="carouselNext('feat-4')">→</button>
-          </div>
-          <button class="tp-code-toggle" onclick="carouselToggleCode('feat-4')">View Code ↓</button>
-          <div class="tp-carousel-codes">
-            <div class="tp-code-block tp-carousel-code active" style="display:none;">
-              <pre><code class="language-cpp">// Slide 1 — Add your slope filtering code here</code></pre>
-            </div>
-            <div class="tp-code-block tp-carousel-code" style="display:none;">
-              <pre><code class="language-cpp">// Slide 2 — Add your code here</code></pre>
-            </div>
-          </div>
-        </div>
-        <div class="tp-row-info">
-          <span class="tp-feature-title">Slope Filtering</span>
-          <p class="tp-feature-desc">Slope filtering works by sampling the normals in the terrain map, giving the user the ability to only target specific elevations in the terrain, without worrying about being careful around edges such as walls or steep cliffs. This also works the other way around, if the user only wants to work on cliff walls or paint along a cliff wall for example. An easy implementation but one that made a huge impact on the end result!</p>
-        </div>
-            <button class="tp-overlay-close" onclick="carouselToggleCode('feat-4')">✕ Close</button>
-          </div>
-        </div>
-        <div class="tp-overlay-code active" data-slide="0">
-          <pre><code class="language-cpp">// By using the normal of the position we got from doing the placement calculations, we now check if the slope is valid:
-const OffsetResult offsetResult = CalculateOffsetPosition();
-if (!offsetResult.valid)
-{
-    continue;
-}
-const Tga::Vector3f position = offsetResult.position;
-const Tga::Vector3f surfaceNormal = offsetResult.normal;
-if (!IsSlopeValid(surfaceNormal))
-{
-    continue;
-}</code></pre>
-        </div>
-        <div class="tp-overlay-code" data-slide="1">
-          <pre><code class="language-cpp">bool AssetBrush::IsSlopeValid(const Tga::Vector3f&amp; aNormal) const
-{
-    if (!myBrush.useSlopeFilter)
-    {
-        return true;
-    }
-    // Calculate slope angle from normal
-    float normalY = std::abs(aNormal.y);
-    float slopeDegrees = acosf(std::clamp(normalY, 0.0f, 1.0f)) * (180.0f / FMath::Pi);
-    if (slopeDegrees &lt; myBrush.minSlope || slopeDegrees &gt; myBrush.maxSlope)
-    {
-        return false;
-    }
-    return true;
-}</code></pre>
-        </div>
-      </div>
-            <button class="tp-overlay-close" onclick="carouselToggleCode('feat-4')">✕ Close</button>
-          </div>
-        </div>
-        <div class="tp-overlay-code active" data-slide="0">
-          <pre><code class="language-cpp">// By using the normal of the position we got from doing the placement calculations, we now check if the slope is valid:
-const OffsetResult offsetResult = CalculateOffsetPosition();
-if (!offsetResult.valid)
-{
-    continue;
-}
-const Tga::Vector3f position = offsetResult.position;
-const Tga::Vector3f surfaceNormal = offsetResult.normal;
-if (!IsSlopeValid(surfaceNormal))
-{
-    continue;
-}
-bool AssetBrush::IsSlopeValid(const Tga::Vector3f&amp; aNormal) const
-{
-    if (!myBrush.useSlopeFilter)
-    {
-        return true;
-    }
-    // Calculate slope angle from normal
-    float normalY = std::abs(aNormal.y);
-    float slopeDegrees = acosf(std::clamp(normalY, 0.0f, 1.0f)) * (180.0f / FMath::Pi);
-    if (slopeDegrees &lt; myBrush.minSlope || slopeDegrees &gt; myBrush.maxSlope)
-    {
-        return false;
-    }
-    return true;
-}</code></pre>
-        </div>
-      </div>
-      </div>
-
     </div>
 
-    <!-- CHALLENGES -->
-    <div class="tp-section" id="ab-challenges">
-      <span class="section-label" style="font-size:1.6rem;opacity:0.85;">Technical Challenges</span>
-      <div style="max-width:1100px; margin:0 auto;">
+    <!-- feat-3: Randomize -->
+    <div class="tp-row" id="feat-3">
+      <div class="tp-carousel" data-carousel="feat-3">
+        <div class="tp-carousel-track">
+          <div class="tp-carousel-slide active">
+            <video muted loop playsinline preload="none" data-src="videos/AssetBrushPage/RandomizationWeb.mp4" poster="images/assetbrushimages/randomizationthumbnail.png" style="width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0;"></video>
+          </div>
+        </div>
+        <div class="tp-carousel-bar">
+          <button class="tp-carousel-arrow" onclick="carouselPrev('feat-3')">←</button>
+          <span class="tp-carousel-counter">1 / 1</span>
+          <button class="tp-carousel-arrow" onclick="carouselNext('feat-3')">→</button>
+        </div>
+        <button class="tp-code-toggle" onclick="carouselToggleCode('feat-3')">View Code ↓</button>
+        <div class="tp-carousel-codes"></div>
+      </div>
+      <div class="tp-row-info">
+        <span class="tp-feature-title">Randomize</span>
+        <p class="tp-feature-desc">Randomization gives the user a tool for creating unique assets in each batch. I've chosen to divide it into yaw/pitch/roll and scale, to give the user an easy overview of what is available. I noticed that with the inclusion of previews and the ability to turn off auto generate (the freeze function described earlier), this became even more useful. The user can now generate a new randomized batch if they feel like the brush stroke is in a position they like. One thing I really would like to add is the ability to only regenerate the randomness of the current batch assets, without also switching out the current batch assets. But for now, this is more than enough, giving a lot of options.<br><br>I noticed this was also very useful for more detailed work, such as single asset placement, when working in a concentrated area. The user also has the ability to change yaw/pitch/roll and scale of the current batch manually, by certain key commands such as shift+scroll, x+scroll etc, for even more fine tuning.</p>
+      </div>
+      <div class="tp-code-overlay" id="overlay-feat-3">
+        <div class="tp-overlay-header">
+          <span class="tp-overlay-label">Code</span>
+          <div style="display:flex;align-items:center;gap:0.8rem;">
+            <div class="tp-overlay-arrows">
+              <button class="tp-overlay-arrow" onclick="overlayNav('feat-3',-1)">←</button>
+              <span class="tp-overlay-counter" id="overlay-counter-feat-3">1 / 2</span>
+              <button class="tp-overlay-arrow" onclick="overlayNav('feat-3',1)">→</button>
+            </div>
+            <button class="tp-overlay-close" onclick="carouselToggleCode('feat-3')">✕ Close</button>
+          </div>
+        </div>
+        <div class="tp-overlay-code active" data-slide="0">
+          <pre><code class="language-cpp">// First calculate the base rotation using the normal, then add the rotations as implied by the user:
+Tga::Quaternionf AssetBrush::CalculateRandomRotation(const Tga::Vector3f&amp; aSurfaceNormal) const
+{
+    Tga::Quaternionf baseRotation = Tga::Quaternionf::CreateFromUpDirection(aSurfaceNormal);
+    Tga::Quaternionf finalRotation = baseRotation;
+    if (myBrush.useRandomRotation)
+    {
+        float randomYaw = RandomGenerator::GetFloat(myBrush.randomRotationMin, myBrush.randomRotationMax);
+        Tga::Vector3f localUp = finalRotation.GetUp();
+        Tga::Quaternionf yawRotation(localUp, randomYaw);
+        finalRotation = baseRotation * yawRotation;
+    }
+    if (myBrush.useRandomPitch)
+    {
+        float randomPitch = RandomGenerator::GetFloat(myBrush.randomPitchMin, myBrush.randomPitchMax);
+        Tga::Vector3f localRight = finalRotation.GetRight();
+        Tga::Quaternionf pitchRotation(localRight, randomPitch);
+        finalRotation = pitchRotation * finalRotation;
+    }
+    if (myBrush.useRandomRoll)
+    {
+        float randomRoll = RandomGenerator::GetFloat(myBrush.randomRollMin, myBrush.randomRollMax);
+        Tga::Vector3f localForward = finalRotation.GetForward();
+        Tga::Quaternionf rollRotation(localForward, randomRoll);
+        finalRotation = rollRotation * finalRotation;
+    }
+    return finalRotation;
+}</code></pre>
+        </div>
+        <div class="tp-overlay-code" data-slide="1">
+          <pre><code class="language-cpp">// Calculate scale
+Tga::Vector3f AssetBrush::CalculateRandomScale() const
+{
+    if (!myBrush.useRandomScale)
+    {
+        return Tga::Vector3f(1.0f, 1.0f, 1.0f);
+    }
+    if (myBrush.uniformScale)
+    {
+        const float scale = RandomGenerator::GetFloat(myBrush.randomScaleMin, myBrush.randomScaleMax);
+        return Tga::Vector3f(scale, scale, scale);
+    }
+    return Tga::Vector3f(
+        RandomGenerator::GetFloat(myBrush.randomScaleMin, myBrush.randomScaleMax),
+        RandomGenerator::GetFloat(myBrush.randomScaleMin, myBrush.randomScaleMax),
+        RandomGenerator::GetFloat(myBrush.randomScaleMin, myBrush.randomScaleMax)
+    );
+}</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- feat-4: Slope Filtering -->
+    <div class="tp-row tp-row-reverse" id="feat-4">
+      <div class="tp-carousel" data-carousel="feat-4">
+        <div class="tp-carousel-track">
+          <div class="tp-carousel-slide active">
+            <video muted loop playsinline preload="none" data-src="videos/AssetBrushPage/SlopefilteringWeb.mp4" poster="images/assetbrushimages/slopefilterthumbnail.png" style="width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0;"></video>
+          </div>
+        </div>
+        <div class="tp-carousel-bar">
+          <button class="tp-carousel-arrow" onclick="carouselPrev('feat-4')">←</button>
+          <span class="tp-carousel-counter">1 / 1</span>
+          <button class="tp-carousel-arrow" onclick="carouselNext('feat-4')">→</button>
+        </div>
+        <button class="tp-code-toggle" onclick="carouselToggleCode('feat-4')">View Code ↓</button>
+        <div class="tp-carousel-codes"></div>
+      </div>
+      <div class="tp-row-info">
+        <span class="tp-feature-title">Slope Filtering</span>
+        <p class="tp-feature-desc">Slope filtering works by sampling the normals in the terrain map, giving the user the ability to only target specific elevations in the terrain, without worrying about being careful around edges such as walls or steep cliffs. This also works the other way around, if the user only wants to work on cliff walls or paint along a cliff wall for example. An easy implementation but one that made a huge impact on the end result!</p>
+      </div>
+      <div class="tp-code-overlay" id="overlay-feat-4">
+        <div class="tp-overlay-header">
+          <span class="tp-overlay-label">Code</span>
+          <div style="display:flex;align-items:center;gap:0.8rem;">
+            <div class="tp-overlay-arrows">
+              <button class="tp-overlay-arrow" onclick="overlayNav('feat-4',-1)">←</button>
+              <span class="tp-overlay-counter" id="overlay-counter-feat-4">1 / 2</span>
+              <button class="tp-overlay-arrow" onclick="overlayNav('feat-4',1)">→</button>
+            </div>
+            <button class="tp-overlay-close" onclick="carouselToggleCode('feat-4')">✕ Close</button>
+          </div>
+        </div>
+        <div class="tp-overlay-code active" data-slide="0">
+          <pre><code class="language-cpp">// By using the normal of the position we got from doing the placement calculations, we now check if the slope is valid:
+const OffsetResult offsetResult = CalculateOffsetPosition();
+if (!offsetResult.valid)
+{
+    continue;
+}
+const Tga::Vector3f position = offsetResult.position;
+const Tga::Vector3f surfaceNormal = offsetResult.normal;
+if (!IsSlopeValid(surfaceNormal))
+{
+    continue;
+}</code></pre>
+        </div>
+        <div class="tp-overlay-code" data-slide="1">
+          <pre><code class="language-cpp">bool AssetBrush::IsSlopeValid(const Tga::Vector3f&amp; aNormal) const
+{
+    if (!myBrush.useSlopeFilter)
+    {
+        return true;
+    }
+    // Calculate slope angle from normal
+    float normalY = std::abs(aNormal.y);
+    float slopeDegrees = acosf(std::clamp(normalY, 0.0f, 1.0f)) * (180.0f / FMath::Pi);
+    if (slopeDegrees &lt; myBrush.minSlope || slopeDegrees &gt; myBrush.maxSlope)
+    {
+        return false;
+    }
+    return true;
+}</code></pre>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- CHALLENGES -->
+  <div class="tp-section" id="ab-challenges">
+    <span class="section-label" style="font-size:1.6rem;opacity:0.85;">Technical Challenges</span>
+    <div style="max-width:1100px; margin:0 auto;">
 
       <!-- PERFORMANCE -->
       <div class="proj-contribution-border">
@@ -716,18 +378,21 @@ bool AssetBrush::IsSlopeValid(const Tga::Vector3f&amp; aNormal) const
         </div>
         <p class="proj-contribution-desc" style="max-width:820px; margin-bottom:0.9rem;">I encountered several performance issues during the development of the tool. As a first iteration, I kept iterating over all previously placed assets by the brush when doing checks for object spacing, an O(n) operation, meaning every new placement had to check against every single previously placed object, growing slower the more objects existed. I noticed this quickly became a blocker which introduced the need to handle scaleable performance. A first solution was to create a spatial grid based on the minimum spacing allowed between objects, with the current object checking a 3D grid around itself for other objects placed. This effectively removed several unnecessary iterations during the check.</p>
         <p class="proj-contribution-desc" style="max-width:820px; margin-bottom:0.9rem;">Even with this improvement, performance was still an issue. After profiling, I found that the biggest bottleneck was our naming system in the editor, which iterated over all instances of the same asset to generate a unique name when adding an asset to the scene. After adding a simple counter system which names assets uniquely based on whether they are painted by the brush or not, and checking how many instances of one asset exist during startup, I effectively eliminated the lag that was previously caused.</p>
-        <div class="chal-code-full"><div class="proj-code-slides">
-              <div class="proj-code-slides-bar">
-                <button class="proj-slide-arrow" onclick="projSlideNav(this,-1)">←</button>
-                <span class="proj-slide-counter">1 / 2</span>
-                <button class="proj-slide-arrow" onclick="projSlideNav(this,1)">→</button>
-              </div>
-              <div class="proj-code-slide active"><div class="proj-code-block" style="display:block; max-height:360px; overflow:auto;"><pre><code class="language-cpp">struct CellKey
+        <div class="chal-code-full">
+          <div class="proj-code-slides">
+            <div class="proj-code-slides-bar">
+              <button class="proj-slide-arrow" onclick="projSlideNav(this,-1)">←</button>
+              <span class="proj-slide-counter">1 / 2</span>
+              <button class="proj-slide-arrow" onclick="projSlideNav(this,1)">→</button>
+            </div>
+            <div class="proj-code-slide active">
+              <div class="proj-code-block" style="display:block; max-height:360px; overflow:auto;">
+                <pre><code class="language-cpp">struct CellKey
 {
     int x, y, z;
     bool operator==(const CellKey&amp; other) const
     {
-        return x == other.x && y == other.y && z == other.z;
+        return x == other.x &amp;&amp; y == other.y &amp;&amp; z == other.z;
     }
 };
 
@@ -746,7 +411,12 @@ uint64_t AssetBrush::GetSpatialKey(int cellX, int cellZ)
 {
     return (static_cast&lt;uint64_t&gt;(static_cast&lt;uint32_t&gt;(cellX)) &lt;&lt; 32)
         | (static_cast&lt;uint64_t&gt;(static_cast&lt;uint32_t&gt;(cellZ)));
-}</code></pre></div></div><div class="proj-code-slide"><div class="proj-code-block" style="display:block; max-height:360px; overflow:auto;"><pre><code class="language-cpp">void AssetBrush::InitNameCounters()
+}</code></pre>
+              </div>
+            </div>
+            <div class="proj-code-slide">
+              <div class="proj-code-block" style="display:block; max-height:360px; overflow:auto;">
+                <pre><code class="language-cpp">void AssetBrush::InitNameCounters()
 {
     myAssetNameCounters.clear();
 
@@ -756,7 +426,7 @@ uint64_t AssetBrush::GetSpatialKey(int cellX, int cellZ)
         std::string name = obj-&gt;GetName();
 
         // Brush-placed assets are named "AssetName_b#"
-        size_t separatorPos = name.rfind("_b");
+        size_t separatorPos = name.rfind(&quot;_b&quot;);
         if (separatorPos == std::string::npos)
         {
             continue;
@@ -777,13 +447,16 @@ uint64_t AssetBrush::GetSpatialKey(int cellX, int cellZ)
             counter = index + 1;
         }
     }
-}</code></pre></div></div>
-            </div></div>
+}</code></pre>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- GBUFFER READBACK -->
       <div class="proj-contribution-border">
-        <h3 class="chal-title">GBuffer Readback & Picking</h3>
+        <h3 class="chal-title">GBuffer Readback &amp; Picking</h3>
         <div class="proj-compare" style="margin-bottom:2rem;">
           <div class="proj-compare-item">
             <div class="proj-twocol-media" style="aspect-ratio:16/9;"><div class="tp-video-placeholder">[]</div></div>
@@ -797,13 +470,16 @@ uint64_t AssetBrush::GetSpatialKey(int cellX, int cellZ)
         <p class="proj-contribution-desc" style="max-width:820px; margin-bottom:0.9rem;">Since we already had GBuffer textures in place, I decided to use those as a source for generating the textures I needed for the picking. Two staging textures were used for this, one containing the vertex normals and one containing the world position of the currently drawn scene. I created a component tag that could be added to any scene object, used to mark it as paintable terrain. Only objects carrying this tag were drawn to the staging textures, meaning the brush would only snap to intentionally marked surfaces. In the render pipeline, I then drew the terrain objects first. After these were drawn, we could fetch the textures.</p>
         <p class="proj-contribution-desc" style="max-width:820px; margin-bottom:0.9rem;">The world position is drawn to a texture using the format DXGI_FORMAT_R32G32B32A32_FLOAT. Since the data is stored as 4 values of 32 bits and we use floats as a representation of our world position, reading the world position back is straightforward.</p>
         <p class="proj-contribution-desc" style="max-width:820px; margin-bottom:0.9rem;">The normals however needed converting back to a -1 to 1 range, since when drawing to the GBuffer texture, we remap to 0-1 because the shader can't store negative values in a texture. The normals are saved to a texture with the format DXGI_FORMAT_R10G10B10A2_UNORM, using 10 bits for each channel. On readback, the 10-bit channels are unpacked and the encoding is reversed back to -1 to 1.</p>
-        <div class="chal-code-full"><div class="proj-code-slides">
-              <div class="proj-code-slides-bar">
-                <button class="proj-slide-arrow" onclick="projSlideNav(this,-1)">←</button>
-                <span class="proj-slide-counter">1 / 2</span>
-                <button class="proj-slide-arrow" onclick="projSlideNav(this,1)">→</button>
-              </div>
-              <div class="proj-code-slide active"><div class="proj-code-block" style="display:block; max-height:360px; overflow:auto;"><pre><code class="language-cpp">void TerrainMap::ReadPositions(ID3D11Texture2D* source)
+        <div class="chal-code-full">
+          <div class="proj-code-slides">
+            <div class="proj-code-slides-bar">
+              <button class="proj-slide-arrow" onclick="projSlideNav(this,-1)">←</button>
+              <span class="proj-slide-counter">1 / 2</span>
+              <button class="proj-slide-arrow" onclick="projSlideNav(this,1)">→</button>
+            </div>
+            <div class="proj-code-slide active">
+              <div class="proj-code-block" style="display:block; max-height:360px; overflow:auto;">
+                <pre><code class="language-cpp">void TerrainMap::ReadPositions(ID3D11Texture2D* source)
 {
     D3D11_MAPPED_SUBRESOURCE mapped;
     HRESULT hr = Tga::DX11::Context-&gt;Map(source, 0, D3D11_MAP_READ, 0, &amp;mapped);
@@ -825,7 +501,12 @@ uint64_t AssetBrush::GetSpatialKey(int cellX, int cellZ)
         }
     }
     Tga::DX11::Context-&gt;Unmap(source, 0);
-}</code></pre></div></div><div class="proj-code-slide"><div class="proj-code-block" style="display:block; max-height:360px; overflow:auto;"><pre><code class="language-cpp">void TerrainMap::ReadNormals(ID3D11Texture2D* source)
+}</code></pre>
+              </div>
+            </div>
+            <div class="proj-code-slide">
+              <div class="proj-code-block" style="display:block; max-height:360px; overflow:auto;">
+                <pre><code class="language-cpp">void TerrainMap::ReadNormals(ID3D11Texture2D* source)
 {
     D3D11_MAPPED_SUBRESOURCE mapped;
     Tga::DX11::Context-&gt;Map(source, 0, D3D11_MAP_READ, 0, &amp;mapped);
@@ -852,8 +533,11 @@ uint64_t AssetBrush::GetSpatialKey(int cellX, int cellZ)
         }
     }
     Tga::DX11::Context-&gt;Unmap(source, 0);
-}</code></pre></div></div>
-            </div></div>
+}</code></pre>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- PREVIEW MODE -->
@@ -864,7 +548,9 @@ uint64_t AssetBrush::GetSpatialKey(int cellX, int cellZ)
             <p class="proj-contribution-desc" style="max-width:820px; margin-bottom:0.9rem;">Preview mode came with a lot of challenges. We now needed to save a version of the object that could be updated manually by the user if they wished to do so. For my first iteration, I did not need to care since the assets got updated between each brush stroke in regards to the settings chosen by the user. Now, we needed to keep the position/rotation/scale for the object, or some combination of them, based on the settings.</p>
             <p class="proj-contribution-desc" style="max-width:820px; margin-bottom:0.9rem;">For this, I created a struct related to the already existing scene object. By caching the current previews of the current stroke and batch of that stroke, I was able to update it cleanly as the user dragged the mouse across the screen. This also introduced the "Update on move" and "Manual update on R" settings, since the need for more control arose as a product of the preview tool.</p>
           </div>
-          <div class="proj-twocol-code"><div class="proj-code-block" style="display:block; max-height:360px; overflow:auto;"><pre><code class="language-cpp">struct PreviewObject
+          <div class="proj-twocol-code">
+            <div class="proj-code-block" style="display:block; max-height:360px; overflow:auto;">
+              <pre><code class="language-cpp">struct PreviewObject
 {
     std::shared_ptr&lt;Tga::SceneObject&gt; sceneObject;
     bool isValid;
@@ -875,14 +561,15 @@ uint64_t AssetBrush::GetSpatialKey(int cellX, int cellZ)
     Tga::Vector3f cachedScale;
     Tga::StringId assetPath;
     float pivotOffset = 0.f;
-};</code></pre></div>
+};</code></pre>
+            </div>
           </div>
         </div>
       </div>
 
       <!-- TANGENT & BITANGENT -->
       <div class="proj-contribution-border">
-        <h3 class="chal-title">Tangent & Bitangent</h3>
+        <h3 class="chal-title">Tangent &amp; Bitangent</h3>
         <div class="proj-twocol has-video" style="align-items:start;">
           <div class="proj-twocol-media">
             <video muted loop playsinline preload="none" data-src="videos/AssetBrushPage/PlaneplacementWeb.mp4" poster="images/assetbrushimages/planeplacementthumbnail.png" style="width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0;"></video>
@@ -892,7 +579,9 @@ uint64_t AssetBrush::GetSpatialKey(int cellX, int cellZ)
             <p class="proj-contribution-desc" style="max-width:820px; margin-bottom:0.9rem;">One problem that still persists is that the scatter area is in screen space, occasionally placing objects far away if the disc is outside the intended area but where valid terrain still exists. This can be solved by doing a simple world position check as well, so that the asset is not too far from the world position of the brush center — a feature I am looking to add.</p>
           </div>
         </div>
-        <div class="chal-code-full" style="margin-top:1.5rem;"><div class="proj-code-block" style="display:block; max-height:360px; overflow:auto;"><pre><code class="language-cpp">void AssetBrush::GetSurfaceTangentFrame(
+        <div class="chal-code-full" style="margin-top:1.5rem;">
+          <div class="proj-code-block" style="display:block; max-height:360px; overflow:auto;">
+            <pre><code class="language-cpp">void AssetBrush::GetSurfaceTangentFrame(
     const Tga::Vector3f&amp; normal,
     Tga::Vector3f&amp; outTangent,
     Tga::Vector3f&amp; outBitangent)
@@ -906,8 +595,9 @@ uint64_t AssetBrush::GetSpatialKey(int cellX, int cellZ)
     outTangent.Normalize();
     outBitangent = normal.Cross(outTangent);
     outBitangent.Normalize();
-}</code></pre></div>
+}</code></pre>
           </div>
+        </div>
       </div>
 
       <!-- PIVOT -->
@@ -926,10 +616,10 @@ uint64_t AssetBrush::GetSpatialKey(int cellX, int cellZ)
         </div>
       </div>
 
-      </div>
     </div>
-
   </div>
+
+</div>
 
 <!-- LIGHTBOX -->
 <div id="tp-lightbox" class="tp-lightbox" onclick="lbClickOutside(event)">
@@ -955,7 +645,6 @@ uint64_t AssetBrush::GetSpatialKey(int cellX, int cellZ)
     </div>
   </div>
 </div>
-
 
 <footer>
   <span class="footer-name">Fredrik Lundin</span>
