@@ -331,15 +331,6 @@ enum class UIFloatBindingType : uint8_t
     <span class="section-label" style="font-size:1.6rem;opacity:0.85;">Technical Challenges</span>
     <div style="max-width:820px; margin:0 auto;">
 
-      <!-- CHALLENGE 0: Iteration Plans -->
-      <div class="proj-contribution-border">
-        <h3 class="chal-title">Iteration Plans</h3>
-        <div class="proj-twocol-media" style="aspect-ratio:16/9; margin-bottom:1.5rem;">
-          <video muted loop playsinline preload="none" data-src="videos/UIEditorPage/MenuswitchWeb.mp4" poster="images/UIeditorimages/menuswithcthumbnail.png" style="width:100%;height:100%;object-fit:cover;display:block;"></video>
-        </div>
-        <p class="proj-contribution-desc" style="max-width:820px; margin-bottom:0.9rem;">[ Add your iteration plans text here ]</p>
-      </div>
-
       <!-- CHALLENGE 1: Components -->
       <div class="proj-contribution-border">
         <h3 class="chal-title">Integrating the UI elements into our component system</h3>
@@ -627,21 +618,85 @@ if (scene)
         <h3 class="chal-title">3D Background Scene Representation</h3>
         <p class="proj-contribution-desc" style="max-width:820px; margin-bottom:0.9rem;">One thing I found hard to implement in a performant way was the ability to live edit a background scene while also being able to switch to preview mode for the UI. When I first started making the UI Editor, I started off by having an orthographic camera and setting a reference resolution size which the artist applied on the main canvas. This worked well for editing a single scene with a single non-perspective camera, where every object in the scene represented a UI element. A good start, but when adding the ability to live edit a 3D scene in the background, this quickly introduced some challenges.</p>
         <p class="proj-contribution-desc" style="max-width:820px; margin-bottom:0.9rem;">We already had a way to render a 3D scene, but our editor was only made for editing and viewing a single scene file at a time. The implementation had a pointer to the active document, with that document owning the current scene. So to actually swap scenes, I would have either needed to switch document completely, or switch the scene the document pointed to during its render and update.</p>
+        <div class="proj-code-block" style="display:block; max-height:400px; overflow:auto; margin:1.2rem 0;">
+          <pre><code class="language-cpp">// Member added in UIScene:
+std::shared_ptr&lt;RunTimeScene&gt; myBackgroundScene;
+
+void UIScene::Update(float aDeltaTime)
+{
+    if (myBackgroundScene)
+    {
+        myBackgroundScene-&gt;Update(aDeltaTime);
+    }
+    for (auto&amp; element : myUIElements)
+    {
+        element-&gt;Update(aDeltaTime);
+    }
+}
+
+void RenderManager::RenderScene(UIScene&amp; aUIScene)
+{
+    if (RunTimeScene* bgScene = aUIScene.GetBackgroundScene().get())
+    {
+        RenderScene(*bgScene, bgScene-&gt;GetSceneType());
+    }
+    NCE::UIRenderData renderData = BuildUIRenderData(aUIScene);
+    SetUICanvasViewport();
+    ExecuteUIRenderPipeline(renderData, nullptr, nullptr, aUIScene);
+}</code></pre>
+        </div>
         <p class="proj-contribution-desc" style="max-width:820px; margin-bottom:0.9rem;">I decided to go with the latter, switching the pointer to the scene currently being rendered. This way I could stay in the same viewport and just swap between scenes. We also already had a representation of an in-game scene, which I decided to reuse for the live preview of the UI scene. I gave the UI scene a reference to its background scene, and ran our already implemented update and render functions for game scenes on it. This meant that all loading of the background scene went through the same pipeline as a regular game scene, including physics setup, audio setup and so on. I managed to strip out some of the subsystems that were not relevant, although some had to stay, which is not optimal, but with the time constraints I had it was a reasonable tradeoff for this project. A lightweight scene representation is something I want to implement in the future (Read more below).</p>
+        <div class="proj-code-block" style="display:block; max-height:400px; overflow:auto; margin:1.2rem 0;">
+          <pre><code class="language-cpp">if (myUIContext.GetLiveScene() &amp;&amp; !myUIContext.GetLiveScene()-&gt;GetBackgroundScenePath().IsEmpty())
+{
+    ImGui::TableSetColumnIndex(7);
+    if (ImGui::Selectable(myIsEditingBackground ? ICON_LC_IMAGE : ICON_LC_CLAPPERBOARD, myIsEditingBackground, 0, toolbarItemSize))
+    {
+        myIsEditingBackground = !myIsEditingBackground;
+        if (myIsEditingBackground)
+        {
+            myUIScene = myScene;
+            Tga::StringId bgPath = myUIContext.GetLiveScene()-&gt;GetBackgroundScenePath();
+            myScene = myCache.GetSceneUsingCache(bgPath);
+        }
+        else
+        {
+            Save();
+            if (myViewport.IsUsingBackgroundCamera())
+            {
+                myViewport.ToggleBackgroundCamera(myScene, Editor::GetEditor()-&gt;GetSceneObjectDefinitionManager());
+            }
+            myScene = myUIScene;
+            myUIScene = nullptr;
+            myUIContext.ClearBackgroundScene();
+            myUIContext.MarkDirty();
+        }
+        mySceneSelection.ClearSelection();
+        mySwitchingToBackground = true;
+        mySwitchingFrameCounter = 0;
+        SetActiveScene(myScene);
+    }
+    ImGui::PopFont();
+    if (ImGui::IsItemHovered())
+    {
+        ImGui::SetTooltip(myIsEditingBackground ? "Switch to UI editing" : "Switch to background scene editing");
+    }
+    ImGui::PushFont(ImGuiInterface::GetIconFontLarge());
+}</code></pre>
+        </div>
       </div>
 
-    </div>
-  </div>
-
-  <!-- WHAT I WANT TO IMPLEMENT NEXT -->
-  <div class="tp-section">
-    <span class="section-label" style="font-size:1.6rem;opacity:0.85;">What I want to implement next</span>
-    <div style="max-width:820px; margin:0 auto;">
+      <!-- What I want to implement next -->
       <div class="proj-contribution-border">
-        <p class="proj-contribution-desc" style="max-width:820px; margin-bottom:0.9rem;">As mentioned above, a lightweight background scene representation is a high priority. Right now the background scene runs the same update and render logic as a regular game scene, with some constraints already in place — physics is disabled for example. But there is still a lot of unnecessary logic running, such as enemies checking against the player each frame, which we have no need for in the editor. What we actually need is a simple way to play animations and render objects. Our current setup also requires a player to be present, which I worked around by keeping a non-rendered player in the background scene just to get the first iteration going. Stripping all of this out would make the background scene a lot more lightweight and easier to work with.</p>
+        <h3 class="chal-title">What I want to implement next</h3>
+        <p class="proj-contribution-desc" style="max-width:820px; margin-bottom:0.9rem;">As mentioned above, a lightweight background scene representation is a high priority. Right now the background scene runs the same update and render logic as a regular game scene, with some constraints already in place, physics is disabled for example. But there is still a lot of unnecessary logic running, such as enemies checking against the player each frame, which we have no need for in the editor. What we actually need is a simple way to play animations and render objects. Our current setup also requires a player to be present, which I worked around by keeping a non-rendered player in the background scene just to get the first iteration going. Stripping all of this out would make the background scene a lot more lightweight and easier to work with.</p>
         <p class="proj-contribution-desc" style="max-width:820px; margin-bottom:0.9rem;">Another thing I would like to implement is the ability to render UI elements in 3D space, similar to how Unity handles it. Right now the only way to view the 3D world is to switch scene representation completely, which stops the UI elements from rendering. Doing this properly would require rendering UI sprites into 3D world space, handling billboarding, correct position calculations and so on. Ideally it would also mean having a single scene representation containing both UI elements and 3D objects, rather than having to switch between the two. My current setup works well as a first iteration though, and the ability to switch camera projection type mid-render would make this a natural next step.</p>
+        <div class="proj-twocol-media" style="aspect-ratio:16/9; margin-bottom:1.5rem; margin-top:1.5rem;">
+          <video muted loop playsinline preload="none" data-src="videos/UIEditorPage/MenuswitchWeb.mp4" poster="images/UIeditorimages/menuswithcthumbnail.png" style="width:100%;height:100%;object-fit:cover;display:block;"></video>
+        </div>
         <p class="proj-contribution-desc" style="max-width:820px; margin-bottom:0.9rem;">One thing I also want to improve is relative position support in the parenting system. Right now if you animate a parent panel to move left by X units, the children clump to the parent's position on the first keyframe rather than maintaining their offsets. The solution I am looking at is storing each child's offset from its parent at the start of the animation, and adding that offset back when applying keyframe positions, so the parent moves by a relative amount and the children maintain their spacing throughout.</p>
       </div>
+
     </div>
   </div>
 
