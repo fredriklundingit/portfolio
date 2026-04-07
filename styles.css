@@ -613,6 +613,7 @@ footer {
   line-height: 1.8;
   opacity: 0.75;
   max-width: 600px;
+  text-align: left;
 }
 
 .tp-jumplinks {
